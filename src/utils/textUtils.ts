@@ -4,6 +4,7 @@
 
 /**
  * Cleans up meditation text by removing markdown formatting and metadata
+ * while preserving pause markers for speech rhythm
  */
 export function cleanupText(text: string): string {
   if (!text) return '';
@@ -52,5 +53,7 @@ export function cleanupText(text: string): string {
       index === 0 || line !== array[index - 1]
     );
   
+  // IMPORTANT: We are now keeping line breaks and pause indicators like "..." and "-"
+  // to maintain the speech rhythm intended in the meditation
   return cleanedLines.join('\n\n');
 } 

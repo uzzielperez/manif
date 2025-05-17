@@ -66,8 +66,11 @@ export async function generateMeditation(prompt: string, model: string = "llama3
             6. Begin directly with the meditation guidance (e.g., "Close your eyes...", "Take a deep breath...")
             7. Use plain, clear language designed for speaking
             8. Avoid any text that isn't meant to be read aloud
+            9. IMPORTANT: Include frequent natural speech pauses using "..." and "-" to create rhythm
+            10. Insert longer pauses between meditation sections using "..." to give listeners time to experience the meditation
+            11. Use "..." to indicate where the listener should take a breath or pause in their practice
             
-            Your response should be the exact text a narrator would read, without any additional content.`
+            Your response should be the exact text a narrator would read, with natural pauses included.`
           },
           {
             role: "user",

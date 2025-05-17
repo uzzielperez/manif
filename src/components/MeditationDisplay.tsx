@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Share2, Download, Volume2 } from 'lucide-react';
+import { Save, Share2, Download, Volume2, Music } from 'lucide-react';
 import PaymentModal from './PaymentModal';
 import { cleanupText } from '../utils/textUtils';
 import { useMeditationStore } from '../store/meditationStore';
@@ -13,8 +13,8 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const { meditation } = useMeditationStore();
-  const [isSavingAudio, setIsSavingAudio] = useState(false);
-  const [audioFilePath, setAudioFilePath] = useState<string | null>(null);
+  const [isDownloadingAudio, setIsDownloadingAudio] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState<{type: string, filename: string} | null>(null);
   
   // Clean up the text before processing
   const cleanedText = cleanupText(text);
@@ -59,45 +59,60 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
     const element = document.createElement('a');
     const file = new Blob([cleanedText], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
-    element.download = `meditation-${new Date().getTime()}.txt`;
+    const filename = `meditation-${new Date().getTime()}.txt`;
+    element.download = filename;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
+    
+    // Show success message
+    setDownloadSuccess({
+      type: 'text',
+      filename: filename
+    });
+    
+    // Clear success message after 5 seconds
+    setTimeout(() => {
+      setDownloadSuccess(null);
+    }, 5000);
   };
 
-  const handleSaveAudioToServer = async () => {
+  const handleDownloadAudio = async () => {
     if (!meditation?.audioUrl) {
-      alert('No audio available to save');
+      alert('No audio available to download');
       return;
     }
 
     try {
-      setIsSavingAudio(true);
-      // Extract the base64 content from the data URL
-      const base64Audio = meditation.audioUrl.split(',')[1];
+      setIsDownloadingAudio(true);
       
-      // Send to server to save as a file
-      const response = await fetch('http://localhost:5001/api/meditations/save-audio-file', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          audioData: base64Audio,
-          filename: `meditation-${meditation.id}`
-        })
+      // Create a clean filename based on timestamp
+      const filename = `meditation-${meditation.id || Date.now()}.mp3`;
+      
+      // Create a direct download link
+      const element = document.createElement('a');
+      element.href = meditation.audioUrl;
+      element.download = filename;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      
+      // Show success message
+      setDownloadSuccess({
+        type: 'audio',
+        filename: filename
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to save audio file');
-      }
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setDownloadSuccess(null);
+      }, 5000);
       
-      const data = await response.json();
-      setAudioFilePath(data.filePath);
-      alert(`Audio saved to: ${data.filePath}\nYou can access it directly from the terminal.`);
     } catch (err: any) {
-      console.error('Error saving audio file:', err);
-      alert('Error saving audio file: ' + err.message);
+      console.error('Error downloading audio file:', err);
+      alert('Error downloading audio file: ' + err.message);
     } finally {
-      setIsSavingAudio(false);
+      setIsDownloadingAudio(false);
     }
   };
 
@@ -114,11 +129,11 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
         <div className="flex space-x-2">
           <button 
             className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-colors"
-            onClick={handleSaveAudioToServer}
-            disabled={isSavingAudio || !meditation?.audioUrl}
-            title={meditation?.audioUrl ? "Save audio file to server" : "No audio available"}
+            onClick={handleDownloadAudio}
+            disabled={isDownloadingAudio || !meditation?.audioUrl}
+            title={meditation?.audioUrl ? "Download audio as MP3" : "No audio available"}
           >
-            <Save size={20} />
+            <Music size={20} />
           </button>
           <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-colors">
             <Share2 size={20} />
@@ -126,23 +141,30 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
           <button 
             onClick={handleDownload}
             className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-colors"
+            title="Download meditation text"
           >
             <Download size={20} />
           </button>
         </div>
       </div>
 
-      {audioFilePath && (
+      {downloadSuccess && (
         <div className="mb-4 p-3 bg-green-900/20 text-green-300 rounded-lg text-sm">
-          <p>Audio saved to: {audioFilePath}</p>
-          <p className="mt-1">Access from terminal: <code className="bg-black/30 px-2 py-1 rounded">afplay {audioFilePath}</code></p>
+          <p>
+            {downloadSuccess.type === 'audio' 
+              ? '🎵 MP3 audio file downloaded successfully' 
+              : '📄 Text file downloaded successfully'}
+          </p>
+          <p className="mt-1">
+            Saved to your browser's Downloads folder: <code className="bg-black/30 px-2 py-1 rounded">{downloadSuccess.filename}</code>
+          </p>
         </div>
       )}
 
-      {isSavingAudio && (
+      {isDownloadingAudio && (
         <div className="mb-4 p-3 flex items-center bg-indigo-900/20 text-indigo-300 rounded-lg">
           <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin mr-2"></div>
-          <span className="text-sm">Saving audio file to server...</span>
+          <span className="text-sm">Downloading audio file...</span>
         </div>
       )}
 

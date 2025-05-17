@@ -10,11 +10,10 @@ interface PromptFormProps {
 
 // Define Eleven Labs voice options
 const ELEVEN_LABS_VOICES = [
-  { id: "29vD33N1CtxCmqQRPOHJ", name: "Rachel - Calm" },
-  { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah - Soothing" },
-  { id: "pNInz6obpgDQGcFmaJgB", name: "Adam - Gentle" },
-  { id: "yoZ06aMxZJJ28mfd3POQ", name: "Sam - Clear" },
-  { id: "MF3mGyEYCl7XYWbV9V6O", name: "Elli - Peaceful" }
+  { id: "XrExE9yKIg1WjnnlVkGX", name: "John Doe Deep" },
+  { id: "ZQe5CZNOzWyzPSCn5a3c", name: "Jameson - Guided Meditation" },
+  { id: "3BU6uFpHysSBHbYVkPX1", name: "Professor Bill" },
+  { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah - Soothing" }
 ];
 
 const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
@@ -43,7 +42,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         const textResponse = await fetch('http://localhost:5001/api/meditations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, model: 'allam-2-7b' }) // Using Anthropic Allam 2 7B model
+          body: JSON.stringify({ prompt, model: 'gemma2-9b-it' }) // Using Google Gemma 2 9B model
         });
         
         if (!textResponse.ok) {
@@ -190,35 +189,19 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
       
       const filename = baseFilename || `meditation-${new Date().getTime()}`;
       
-      // Extract the base64 data from the data URL
-      const base64Data = meditation.audioUrl.split(',')[1];
+      // Direct browser download using data URL
+      // Create a download link using the data URL
+      const element = document.createElement('a');
+      element.href = meditation.audioUrl; // Already a data URL with proper MIME type
+      element.download = `${filename}.mp3`;
       
-      // Call the server endpoint to save the audio file
-      const response = await fetch('http://localhost:5001/api/meditations/save-audio-file', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          audioData: base64Data,
-          filename: filename
-        })
-      });
+      // Trigger browser download (goes directly to user's Downloads folder)
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
       
-      if (!response.ok) {
-        throw new Error('Failed to save audio file');
-      }
-      
-      const result = await response.json();
-      
-      // Create download link for the saved file
-      const downloadUrl = `http://localhost:5001/audio/${result.filename}`;
-      
-      // Create and trigger download link
-      const downloadLink = document.createElement('a');
-      downloadLink.href = downloadUrl;
-      downloadLink.download = result.filename;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
+      // Show success message in console
+      console.log(`MP3 file '${filename}.mp3' downloaded successfully to your Downloads folder`);
       
     } catch (err: any) {
       console.error('Audio download error:', err);

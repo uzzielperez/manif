@@ -58,6 +58,7 @@ export function cleanupTextForAudio(text: string): string {
     })
     .map(line => line.trim());
   
+  // IMPORTANT: DO NOT remove ellipses (...) or hyphens (-) as they indicate speech pauses
   return cleanedLines.join('\n');
 }
 
