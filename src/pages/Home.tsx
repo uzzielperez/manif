@@ -12,12 +12,17 @@ const Home: React.FC = () => {
 
   const handleGenerateMeditation = async (prompt: string) => {
     setIsGenerating(true);
-    // In a real implementation, we would call the actual API
-    // For now we'll simulate a delay
+    // The actual API call is now handled in PromptForm.tsx
+    // This method is just for tracking the loading state
     setTimeout(() => {
       setIsGenerating(false);
-    }, 3000);
+    }, 1000);
   };
+
+  // Debug log for tracking audio URL
+  if (hasMeditation && meditation) {
+    console.log("Home component audioUrl:", meditation.audioUrl);
+  }
 
   return (
     <motion.div

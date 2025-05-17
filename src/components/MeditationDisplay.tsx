@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Share2, Download } from 'lucide-react';
+import { Save, Share2, Download, Volume2 } from 'lucide-react';
 import PaymentModal from './PaymentModal';
 import { cleanupText } from '../utils/textUtils';
+import { useMeditationStore } from '../store/meditationStore';
 
 interface MeditationDisplayProps {
   text: string;
@@ -11,6 +12,9 @@ interface MeditationDisplayProps {
 const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const { meditation } = useMeditationStore();
+  const [isSavingAudio, setIsSavingAudio] = useState(false);
+  const [audioFilePath, setAudioFilePath] = useState<string | null>(null);
   
   // Clean up the text before processing
   const cleanedText = cleanupText(text);
@@ -61,6 +65,42 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
     document.body.removeChild(element);
   };
 
+  const handleSaveAudioToServer = async () => {
+    if (!meditation?.audioUrl) {
+      alert('No audio available to save');
+      return;
+    }
+
+    try {
+      setIsSavingAudio(true);
+      // Extract the base64 content from the data URL
+      const base64Audio = meditation.audioUrl.split(',')[1];
+      
+      // Send to server to save as a file
+      const response = await fetch('http://localhost:5001/api/meditations/save-audio-file', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          audioData: base64Audio,
+          filename: `meditation-${meditation.id}`
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save audio file');
+      }
+      
+      const data = await response.json();
+      setAudioFilePath(data.filePath);
+      alert(`Audio saved to: ${data.filePath}\nYou can access it directly from the terminal.`);
+    } catch (err: any) {
+      console.error('Error saving audio file:', err);
+      alert('Error saving audio file: ' + err.message);
+    } finally {
+      setIsSavingAudio(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
@@ -72,7 +112,12 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
         <h2 className="text-2xl font-semibold text-white">Your Meditation</h2>
         
         <div className="flex space-x-2">
-          <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-colors">
+          <button 
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-colors"
+            onClick={handleSaveAudioToServer}
+            disabled={isSavingAudio || !meditation?.audioUrl}
+            title={meditation?.audioUrl ? "Save audio file to server" : "No audio available"}
+          >
             <Save size={20} />
           </button>
           <button className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-colors">
@@ -86,6 +131,20 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
           </button>
         </div>
       </div>
+
+      {audioFilePath && (
+        <div className="mb-4 p-3 bg-green-900/20 text-green-300 rounded-lg text-sm">
+          <p>Audio saved to: {audioFilePath}</p>
+          <p className="mt-1">Access from terminal: <code className="bg-black/30 px-2 py-1 rounded">afplay {audioFilePath}</code></p>
+        </div>
+      )}
+
+      {isSavingAudio && (
+        <div className="mb-4 p-3 flex items-center bg-indigo-900/20 text-indigo-300 rounded-lg">
+          <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+          <span className="text-sm">Saving audio file to server...</span>
+        </div>
+      )}
 
       <div 
         ref={containerRef}

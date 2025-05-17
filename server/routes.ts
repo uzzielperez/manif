@@ -5,9 +5,19 @@ import { generateMeditation, listModels } from "./groq.ts";
 import { synthesizeSpeech, listVoices } from "./elevenlabs.ts";
 import { insertMeditationSchema, updateMeditationSchema } from "../shared/schema.ts";
 import { ZodError } from "zod";
+import fs from "fs";
+import path from "path";
 
 export async function registerRoutes(app: Express) {
   console.log('Registering routes:');
+  
+  // Serve static audio files
+  const audioDir = path.join(process.cwd(), 'audio');
+  if (!fs.existsSync(audioDir)) {
+    fs.mkdirSync(audioDir, { recursive: true });
+  }
+  console.log('  Static /audio');
+  app.use('/audio', express.static(audioDir));
   
   // Add this new route to list models
   console.log('  GET /api/models');
@@ -65,6 +75,142 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Failed to generate audio:', error);
       res.status(500).json({ error: "Failed to generate audio" });
+    }
+  });
+
+  // Generate audio for meditation text
+  console.log('  POST /api/meditations/audio');
+  app.post("/api/meditations/audio", async (req, res) => {
+    try {
+      const { text, voiceId, duration } = req.body;
+      
+      if (!text) {
+        return res.status(400).json({ error: "Text is required" });
+      }
+      
+      if (!voiceId) {
+        return res.status(400).json({ error: "Voice ID is required" });
+      }
+      
+      console.log(`Generating audio for meditation with voice ID: ${voiceId}`);
+      console.log(`Text length: ${text.length} characters`);
+      
+      // Generate audio from the text
+      const audioBuffer = await synthesizeSpeech(text, voiceId);
+      
+      // Convert buffer to base64 for response
+      const base64Audio = audioBuffer.toString('base64');
+      
+      // Create a data URL that can be used in an audio element
+      const audioUrl = `data:audio/mpeg;base64,${base64Audio}`;
+      
+      res.json({
+        success: true,
+        audioUrl,
+        duration: duration || 5, // Default to 5 minutes if not specified
+        format: 'mp3'
+      });
+    } catch (error) {
+      console.error('Failed to generate audio:', error);
+      res.status(500).json({ 
+        error: "Failed to generate audio",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Save audio file to disk (for terminal download)
+  console.log('  POST /api/meditations/save-audio');
+  app.post("/api/meditations/save-audio", async (req, res) => {
+    try {
+      const { text, voiceId, filename } = req.body;
+      
+      if (!text) {
+        return res.status(400).json({ error: "Text is required" });
+      }
+      
+      if (!voiceId) {
+        return res.status(400).json({ error: "Voice ID is required" });
+      }
+      
+      console.log(`Generating audio file for download with voice ID: ${voiceId}`);
+      
+      // Generate audio from the text
+      const audioBuffer = await synthesizeSpeech(text, voiceId);
+      
+      // Create audio directory if it doesn't exist
+      const audioDir = path.join(process.cwd(), 'audio');
+      if (!fs.existsSync(audioDir)) {
+        fs.mkdirSync(audioDir, { recursive: true });
+      }
+      
+      // Save the audio file
+      const defaultFilename = `meditation-${Date.now()}.mp3`;
+      const safeFilename = filename ? 
+        filename.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.mp3' : 
+        defaultFilename;
+      
+      const filePath = path.join(audioDir, safeFilename);
+      fs.writeFileSync(filePath, audioBuffer);
+      
+      console.log(`Audio saved to: ${filePath}`);
+      
+      res.json({
+        success: true,
+        message: "Audio file saved successfully",
+        filePath: filePath,
+        filename: safeFilename
+      });
+    } catch (error) {
+      console.error('Failed to save audio file:', error);
+      res.status(500).json({ 
+        error: "Failed to save audio file",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Save base64 audio data as file (for current meditation without regenerating)
+  console.log('  POST /api/meditations/save-audio-file');
+  app.post("/api/meditations/save-audio-file", async (req, res) => {
+    try {
+      const { audioData, filename } = req.body;
+      
+      if (!audioData) {
+        return res.status(400).json({ error: "Audio data is required" });
+      }
+      
+      // Create audio directory if it doesn't exist
+      const audioDir = path.join(process.cwd(), 'audio');
+      if (!fs.existsSync(audioDir)) {
+        fs.mkdirSync(audioDir, { recursive: true });
+      }
+      
+      // Create a valid filename
+      const safeFilename = filename ? 
+        filename.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.mp3' : 
+        `meditation-${Date.now()}.mp3`;
+      
+      const filePath = path.join(audioDir, safeFilename);
+      
+      // Convert base64 to buffer and save
+      const audioBuffer = Buffer.from(audioData, 'base64');
+      fs.writeFileSync(filePath, audioBuffer);
+      
+      console.log(`Saved audio file to: ${filePath}`);
+      
+      res.json({
+        success: true,
+        message: "Audio file saved successfully",
+        filePath: filePath,
+        filename: safeFilename
+      });
+    } catch (error) {
+      console.error('Failed to save audio file:', error);
+      res.status(500).json({ 
+        error: "Failed to save audio file",
+        details: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 
