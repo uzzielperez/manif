@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Save, Share2, Download } from 'lucide-react';
 import PaymentModal from './PaymentModal';
+import { cleanupText } from '../utils/textUtils';
 
 interface MeditationDisplayProps {
   text: string;
@@ -10,7 +11,11 @@ interface MeditationDisplayProps {
 const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const sentences = text.split('. ').filter(Boolean).map(s => s + '.');
+  
+  // Clean up the text before processing
+  const cleanedText = cleanupText(text);
+  const sentences = cleanedText.split('. ').filter(Boolean).map(s => s.trim() + (s.endsWith('.') ? '' : '.'));
+  
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,6 +52,13 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text }) => {
     // Handle successful payment and download
     setIsPaymentModalOpen(false);
     // Implement download functionality here
+    const element = document.createElement('a');
+    const file = new Blob([cleanedText], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = `meditation-${new Date().getTime()}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
 
   return (

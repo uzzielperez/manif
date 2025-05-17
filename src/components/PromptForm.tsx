@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Download } from 'lucide-react';
 import { useMeditationStore } from '../store/meditationStore';
+import { cleanupText } from '../utils/textUtils';
 
 interface PromptFormProps {
   onSubmit: (prompt: string) => void;
@@ -22,7 +23,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         const response = await fetch('http://localhost:5001/api/meditations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, model: 'qwen-qwq-32b' }) // Using Qwen QWQ 32B model
+          body: JSON.stringify({ prompt, model: 'allam-2-7b' }) // Using Anthropic Allam 2 7B model
         });
         
         if (!response.ok) {
@@ -56,9 +57,12 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
     if (!meditation?.text) return;
     
     try {
+      // Clean up the text before downloading
+      const cleanedText = cleanupText(meditation.text);
+      
       // Option 1: Client-side download (more reliable)
       const element = document.createElement('a');
-      const file = new Blob([meditation.text], {type: 'text/plain'});
+      const file = new Blob([cleanedText], {type: 'text/plain'});
       element.href = URL.createObjectURL(file);
       element.download = `meditation-${new Date().getTime()}.txt`;
       document.body.appendChild(element);
@@ -71,7 +75,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          content: meditation.text,
+          content: cleanedText,
           title: `meditation-${new Date().getTime()}`
         })
       });
