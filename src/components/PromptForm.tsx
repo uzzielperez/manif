@@ -99,7 +99,7 @@ const TypewriterText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-// Utility functions for per-meditation unlock
+// Utility functions for per-meditation unlock and download credits
 function isMeditationUnlocked(id) {
   const unlocked = JSON.parse(localStorage.getItem('unlockedMeditations') || '[]');
   return unlocked.includes(id);
@@ -111,6 +111,24 @@ function unlockMeditation(id) {
     unlocked.push(id);
     localStorage.setItem('unlockedMeditations', JSON.stringify(unlocked));
   }
+}
+
+function getDownloadCredits() {
+  return parseInt(localStorage.getItem('downloadCredits') || '0', 10);
+}
+
+function addDownloadCredits(amount) {
+  const current = getDownloadCredits();
+  localStorage.setItem('downloadCredits', (current + amount).toString());
+}
+
+function useDownloadCredit() {
+  const current = getDownloadCredits();
+  if (current > 0) {
+    localStorage.setItem('downloadCredits', (current - 1).toString());
+    return true;
+  }
+  return false;
 }
 
 const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
@@ -130,11 +148,13 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [hasPaid, setHasPaid] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
+  const [downloadCredits, setDownloadCredits] = useState(getDownloadCredits());
 
   useEffect(() => {
     if (meditation?.id) {
-      setHasPaid(isMeditationUnlocked(meditation.id));
+      setHasPaid(isMeditationUnlocked(meditation.id) || getDownloadCredits() > 0);
     }
+    setDownloadCredits(getDownloadCredits());
   }, [meditation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -261,29 +281,8 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
     }
   };
 
-  const handleDownload = async () => {
-    if (!meditation?.text) return;
-    console.log('Download text: hasPaid?', hasPaid, 'meditation.id:', meditation?.id);
-    console.log('Unlocked meditations:', localStorage.getItem('unlockedMeditations'));
-    if (!hasPaid) {
-      handleRequestPaywall(false);
-      return;
-    }
-    downloadTextFile();
-  };
-
-  const handleAudioDownload = async () => {
-    if (!meditation?.text || !meditation?.audioUrl) return;
-    console.log('Download audio: hasPaid?', hasPaid, 'meditation.id:', meditation?.id);
-    console.log('Unlocked meditations:', localStorage.getItem('unlockedMeditations'));
-    if (!hasPaid) {
-      handleRequestPaywall(true);
-      return;
-    }
-    downloadAudioFile();
-  };
-
   const handlePaymentComplete = async () => {
+    // Single unlock: process payment (simulated)
     const paymentSuccessful = await processPayment(paymentAmount);
     if (paymentSuccessful && meditation?.id) {
       unlockMeditation(meditation.id);
@@ -297,6 +296,50 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
     } else if (!paymentSuccessful) {
       alert("Payment failed. Please try again.");
     }
+  };
+
+  // New: Claim credits after Stripe purchase
+  const handleClaimCredits = (amount: number) => {
+    addDownloadCredits(amount);
+    setDownloadCredits(getDownloadCredits());
+    alert(`You have claimed ${amount} meditation downloads!`);
+    setShowPaymentModal(false);
+  };
+
+  const handleDownload = async () => {
+    if (!meditation?.text) return;
+    console.log('Download text: hasPaid?', hasPaid, 'meditation.id:', meditation?.id);
+    console.log('Unlocked meditations:', localStorage.getItem('unlockedMeditations'));
+    if (!hasPaid) {
+      if (getDownloadCredits() > 0) {
+        useDownloadCredit();
+        unlockMeditation(meditation.id);
+        setHasPaid(true);
+        setDownloadCredits(getDownloadCredits());
+      } else {
+        handleRequestPaywall(false);
+        return;
+      }
+    }
+    downloadTextFile();
+  };
+
+  const handleAudioDownload = async () => {
+    if (!meditation?.text || !meditation?.audioUrl) return;
+    console.log('Download audio: hasPaid?', hasPaid, 'meditation.id:', meditation?.id);
+    console.log('Unlocked meditations:', localStorage.getItem('unlockedMeditations'));
+    if (!hasPaid) {
+      if (getDownloadCredits() > 0) {
+        useDownloadCredit();
+        unlockMeditation(meditation.id);
+        setHasPaid(true);
+        setDownloadCredits(getDownloadCredits());
+      } else {
+        handleRequestPaywall(true);
+        return;
+      }
+    }
+    downloadAudioFile();
   };
 
   const downloadTextFile = async () => {
@@ -489,7 +532,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
             className="bg-white rounded-xl p-6 max-w-md w-full mx-4"
           >
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Unlock Full Meditation</h3>
-            <p className="text-gray-600 mb-4">Enter coupon code or proceed to payment to unlock the full meditation and download options.</p>
+            <p className="text-gray-600 mb-4">Enter coupon code or choose a purchase option to unlock the full meditation and download options.</p>
             <form onSubmit={handleCouponSubmit} className="mb-3">
               <div className="flex items-center gap-2">
                 <input 
@@ -510,20 +553,47 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
                 <p className="text-red-500 text-xs mt-1">{couponError}</p>
               )}
             </form>
-            <button 
-              onClick={handlePaymentComplete}
-              disabled={isProcessingPayment}
-              className={`w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg flex items-center justify-center ${isProcessingPayment ? 'opacity-70 cursor-not-allowed' : ''}`}
-            >
-              {isProcessingPayment ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Processing...
-                </>
-              ) : (
-                <>Pay ${paymentAmount.toFixed(2)}</>
-              )}
-            </button>
+            <div className="space-y-2 mb-3">
+              <a
+                href="https://buy.stripe.com/28E8wR508gzA47Tdm4cfK01"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-center mb-1"
+              >
+                $ Unlock Single Meditation
+              </a>
+              <a
+                href="https://buy.stripe.com/3csdUTcZH6fidmofYY"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg text-center mb-1"
+              >
+                €9.99 for 20 Downloads
+              </a>
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-center mb-1 opacity-70 cursor-not-allowed"
+                onClick={e => { e.preventDefault(); alert('Please provide the Stripe link for 50 downloads.'); }}
+              >
+                €20 for 50 Downloads (Coming Soon)
+              </a>
+            </div>
+            <div className="mb-3">
+              <button
+                onClick={() => handleClaimCredits(20)}
+                className="w-full py-2 px-4 bg-green-100 hover:bg-green-200 text-green-800 font-medium rounded-lg mb-1"
+              >
+                I purchased 20 downloads – Claim Credits
+              </button>
+              <button
+                onClick={() => handleClaimCredits(50)}
+                className="w-full py-2 px-4 bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium rounded-lg"
+              >
+                I purchased 50 downloads – Claim Credits
+              </button>
+            </div>
             <button 
               onClick={() => {
                 setShowPaymentModal(false);
@@ -534,6 +604,11 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
             >
               Cancel
             </button>
+            {downloadCredits > 0 && (
+              <div className="mt-3 text-center text-green-700 text-sm">
+                You have <b>{downloadCredits}</b> meditation downloads remaining.
+              </div>
+            )}
           </motion.div>
         </div>
       )}
