@@ -28,7 +28,7 @@ Before deploying, you'll need:
 Create a `.env` file with the following variables:
 
 ```env
-VITE_GROQ_API_KEY=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
+VITE_GROQ_API_KEY=your_groq_api_key
 VITE_ELEVEN_LABS_API_KEY=your_eleven_labs_api_key
 VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 VITE_STRIPE_SECRET_KEY=your_stripe_secret_key

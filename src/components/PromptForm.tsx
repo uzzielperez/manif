@@ -91,12 +91,21 @@ const TypewriterText: React.FC<{ text: string }> = ({ text }) => {
   }, [currentIndex, text]);
 
   return (
-    <p className="text-white/70 max-w-lg mx-auto font-light italic">
+    <p className="text-white/40 text-sm max-w-lg mx-auto font-light italic">
       {displayText}
       <span className="animate-pulse">|</span>
     </p>
   );
 };
+
+// Define voice options
+const VOICE_OPTIONS = [
+  { id: "B69tnztZ1gRYSVTCL8Cv", name: "Uzi" },
+  { id: "XrExE9yKIg1WjnnlVkGX", name: "John Doe Deep" },
+  { id: "ZQe5CZNOzWyzPSCn5a3c", name: "Jameson - Guided Meditation" },
+  { id: "3BU6uFpHysSBHbYVkPX1", name: "Professor Bill" },
+  { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah - Soothing" }
+];
 
 const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [prompt, setPrompt] = useState('');
@@ -376,13 +385,13 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
           </div>
           
           <div className="w-full sm:w-2/3">
-            <label className="block text-white/70 mb-2 text-sm">Voice (Eleven Labs)</label>
+            <label className="block text-white/70 mb-2 text-sm">Voice</label>
             <select 
               className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white outline-none"
               value={selectedVoice}
               onChange={(e) => setSelectedVoice(e.target.value)}
             >
-              {ELEVEN_LABS_VOICES.map(voice => (
+              {VOICE_OPTIONS.map(voice => (
                 <option key={voice.id} value={voice.id}>{voice.name}</option>
               ))}
             </select>
