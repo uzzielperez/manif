@@ -16,12 +16,21 @@
   timeout = 30
   memory = 512
 
+# Handle static assets first
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+  force = true
+
+# Handle API routes
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
   force = true
 
+# Handle all other routes with SPA fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"
