@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Download, Music, DollarSign } from 'lucide-react';
-import { useMeditationStore } from '../store/meditationStore';
+import { useMeditationStore, Meditation } from '../store/meditationStore';
+import { useUIStore } from '../store/uiStore';
 import { cleanupText } from '../utils/textUtils';
+import { 
+  isMeditationUnlocked, 
+  unlockMeditation, 
+  getDownloadCredits, 
+  useDownloadCredit, 
+  getPriceByDuration 
+} from '../utils/paymentUtils';
+import { downloadTextFileUtility, downloadAudioFileUtility } from '../utils/downloadUtils';
 import AudioControls from './AudioControls';
 
 interface PromptFormProps {
@@ -38,33 +47,30 @@ const RotatingPrompt: React.FC<{ onPromptChange: (prompt: string) => void }> = (
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    const currentPrompt = MANIFESTATION_PROMPTS[currentPromptIndex];
+    const currentPromptText = MANIFESTATION_PROMPTS[currentPromptIndex];
     
-    if (!isDeleting && currentIndex < currentPrompt.length) {
-      // Typing
+    if (!isDeleting && currentIndex < currentPromptText.length) {
       const timeout = setTimeout(() => {
-        setDisplayText(prev => prev + currentPrompt[currentIndex]);
+        setDisplayText(prev => prev + currentPromptText[currentIndex]);
         setCurrentIndex(prev => prev + 1);
       }, 50);
       return () => clearTimeout(timeout);
-    } else if (!isDeleting && currentIndex === currentPrompt.length) {
-      // Pause at the end of typing
+    } else if (!isDeleting && currentIndex === currentPromptText.length) {
       const timeout = setTimeout(() => {
         setIsDeleting(true);
       }, 2000);
       return () => clearTimeout(timeout);
     } else if (isDeleting && currentIndex > 0) {
-      // Deleting
       const timeout = setTimeout(() => {
         setDisplayText(prev => prev.slice(0, -1));
         setCurrentIndex(prev => prev - 1);
       }, 30);
       return () => clearTimeout(timeout);
     } else if (isDeleting && currentIndex === 0) {
-      // Move to next prompt
       setIsDeleting(false);
-      setCurrentPromptIndex(prev => (prev + 1) % MANIFESTATION_PROMPTS.length);
-      onPromptChange(MANIFESTATION_PROMPTS[(currentPromptIndex + 1) % MANIFESTATION_PROMPTS.length]);
+      const nextPromptIndex = (currentPromptIndex + 1) % MANIFESTATION_PROMPTS.length;
+      setCurrentPromptIndex(nextPromptIndex);
+      onPromptChange(MANIFESTATION_PROMPTS[nextPromptIndex]);
     }
   }, [currentIndex, isDeleting, currentPromptIndex, onPromptChange]);
 
@@ -99,294 +105,171 @@ const TypewriterText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-// Utility functions for per-meditation unlock and download credits
-function isMeditationUnlocked(id) {
-  const unlocked = JSON.parse(localStorage.getItem('unlockedMeditations') || '[]');
-  return unlocked.includes(id);
-}
-
-function unlockMeditation(id) {
-  const unlocked = JSON.parse(localStorage.getItem('unlockedMeditations') || '[]');
-  if (!unlocked.includes(id)) {
-    unlocked.push(id);
-    localStorage.setItem('unlockedMeditations', JSON.stringify(unlocked));
-  }
-}
-
-function getDownloadCredits() {
-  return parseInt(localStorage.getItem('downloadCredits') || '0', 10);
-}
-
-function addDownloadCredits(amount) {
-  const current = getDownloadCredits();
-  localStorage.setItem('downloadCredits', (current + amount).toString());
-}
-
-function useDownloadCredit() {
-  const current = getDownloadCredits();
-  if (current > 0) {
-    localStorage.setItem('downloadCredits', (current - 1).toString());
-    return true;
-  }
-  return false;
-}
-
 const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [prompt, setPrompt] = useState('');
   const [isActive, setIsActive] = useState(false);
   const { setMeditation, meditation } = useMeditationStore();
+  const { openPaywallModal } = useUIStore();
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState(ELEVEN_LABS_VOICES[0].id);
   const [meditationLength, setMeditationLength] = useState("5");
   const [status, setStatus] = useState<string>('');
-  const [isDownloadingAudio, setIsDownloadingAudio] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState(0);
-  const [paymentForAudio, setPaymentForAudio] = useState(false);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [isInitiatingDownload, setIsInitiatingDownload] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(MANIFESTATION_PROMPTS[0]);
-  const [hasPaid, setHasPaid] = useState(false);
-  const [couponCode, setCouponCode] = useState('');
-  const [couponError, setCouponError] = useState('');
-  const [downloadCredits, setDownloadCredits] = useState(getDownloadCredits());
-
-  useEffect(() => {
-    if (meditation?.id) {
-      setHasPaid(isMeditationUnlocked(meditation.id) || getDownloadCredits() > 0);
-    }
-    setDownloadCredits(getDownloadCredits());
-  }, [meditation]);
+  
+  const currentMeditationIsUnlocked = meditation?.id ? isMeditationUnlocked(meditation.id) : false;
+  const userHasCredits = getDownloadCredits() > 0;
+  const canAccessCurrentMeditation = currentMeditationIsUnlocked || userHasCredits;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (prompt.trim()) {
+      setIsGenerating(true);
+      setStatus('Generating meditation text...');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       try {
-        setIsGenerating(true);
-        setStatus('Generating meditation text...');
-        
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000);
-        
-        try {
-          const textResponse = await fetch('/.netlify/functions/meditations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt, model: 'gemma2-9b-it' }),
-            signal: controller.signal
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (!textResponse.ok) {
-            const errorText = await textResponse.text();
-            console.error('API Error:', textResponse.status, errorText);
-            throw new Error(`Failed to generate meditation text: ${errorText}`);
-          }
-          
-          const meditationData = await textResponse.json();
-          
-          setStatus('Generating audio...');
-          const cleanedText = cleanupText(meditationData.content);
-          
-          const audioResponse = await fetch('/.netlify/functions/meditations/audio', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              text: cleanedText,
-              voiceId: selectedVoice,
-              duration: parseInt(meditationLength)
-            }),
-            signal: controller.signal
-          });
-          
-          if (!audioResponse.ok) {
-            const errorText = await audioResponse.text();
-            console.error('Audio API Error:', audioResponse.status, errorText);
-            throw new Error(`Failed to generate audio: ${errorText}`);
-          }
-          
-          const audioBuffer = await audioResponse.arrayBuffer();
-          if (audioBuffer.byteLength === 0) {
-            alert('Audio buffer is empty. There may be an issue with the TTS service.');
-            throw new Error('Audio buffer is empty');
-          }
-          const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          
-          setMeditation({
-            id: meditationData.id,
-            prompt,
-            text: meditationData.content,
-            audioUrl: audioUrl,
-            date: new Date().toLocaleDateString(),
-            duration: meditationData.duration || parseInt(meditationLength)
-          });
-          
-          onSubmit(prompt);
-        } catch (err: any) {
-          console.error('Error details:', err);
-          if (err.name === 'AbortError') {
-            alert('Request timed out. Please try again.');
-          } else {
-            alert('Error: ' + err.message);
-          }
-        } finally {
-          clearTimeout(timeoutId);
-          setIsGenerating(false);
-          setStatus('');
+        const textResponse = await fetch('/.netlify/functions/meditations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, model: 'gemma2-9b-it' }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (!textResponse.ok) {
+          const errorText = await textResponse.text();
+          throw new Error(`Failed to generate meditation text: ${errorText}`);
         }
+        const meditationData = await textResponse.json();
+        setStatus('Generating audio...');
+        const cleanedTextForAudio = cleanupText(meditationData.content);
+        const audioResponse = await fetch('/.netlify/functions/meditations/audio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: cleanedTextForAudio,
+            voiceId: selectedVoice,
+            duration: parseInt(meditationLength)
+          }),
+          signal: controller.signal
+        });
+        if (!audioResponse.ok) {
+          const errorText = await audioResponse.text();
+          throw new Error(`Failed to generate audio: ${errorText}`);
+        }
+        const audioBuffer = await audioResponse.arrayBuffer();
+        if (audioBuffer.byteLength === 0) {
+          throw new Error('Audio buffer is empty');
+        }
+        const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const newMeditation: Meditation = {
+          id: meditationData.id,
+          prompt,
+          text: meditationData.content,
+          audioUrl: audioUrl,
+          date: new Date().toLocaleDateString(),
+          duration: meditationData.duration || parseInt(meditationLength)
+        };
+        setMeditation(newMeditation);
+        onSubmit(prompt);
       } catch (err: any) {
+        clearTimeout(timeoutId);
         console.error('Error details:', err);
-        alert('Error: ' + err.message);
+        if (err.name === 'AbortError') {
+          alert('Request timed out. Please try again.');
+        } else {
+          alert('Error generating meditation: ' + err.message);
+        }
+      } finally {
+        setIsGenerating(false);
+        setStatus('');
       }
     }
   };
 
-  const getPriceByDuration = (duration: number): number => {
-    if (duration <= 5) return 2.99;
-    if (duration <= 10) return 4.99;
-    return 4.99;
-  };
+  const initiateDownload = (type: 'text' | 'audio') => {
+    if (!meditation) return;
+    
+    const performDownload = () => {
+      setIsInitiatingDownload(true);
+      if (type === 'text') {
+        downloadTextFileUtility(meditation.text, meditation.prompt);
+      } else if (type === 'audio' && meditation.audioUrl) {
+        downloadAudioFileUtility(meditation.audioUrl, meditation.prompt);
+      }
+      setIsInitiatingDownload(false);
+    };
 
-  const processPayment = async (amount: number): Promise<boolean> => {
-    setIsProcessingPayment(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsProcessingPayment(false);
-    return true;
-  };
-
-  const handleRequestPaywall = (isAudio: boolean = false) => {
-    const duration = meditation?.duration || parseInt(meditationLength);
-    const amount = getPriceByDuration(duration);
-    setPaymentAmount(amount);
-    setPaymentForAudio(isAudio);
-    setShowPaymentModal(true);
-  };
-
-  const handleCouponSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (couponCode.trim() === 'Magic25M' && meditation?.id) {
-      unlockMeditation(meditation.id);
-      setHasPaid(true);
-      setShowPaymentModal(false);
-      setCouponError('');
-      alert('Coupon applied! You can now download and listen to the full meditation.');
-      if (paymentForAudio) {
-        downloadAudioFile();
+    if (isMeditationUnlocked(meditation.id)) {
+      performDownload();
+    } else if (getDownloadCredits() > 0) {
+      if (useDownloadCredit()) {
+        unlockMeditation(meditation.id);
+        alert('Download credit used!');
+        performDownload();
       } else {
-        downloadTextFile();
+        openPaywallModal({
+          meditationId: meditation.id,
+          meditationPrompt: meditation.prompt,
+          meditationDuration: meditation.duration,
+          downloadType: type,
+          audioUrl: meditation.audioUrl,
+          onUnlockSuccess: () => {
+            if (isMeditationUnlocked(meditation.id) || getDownloadCredits() > 0) {
+                if(!isMeditationUnlocked(meditation.id) && getDownloadCredits() > 0) {
+                    useDownloadCredit();
+                    unlockMeditation(meditation.id);
+                }
+                performDownload();
+            } else {
+                 alert("Unlock seemed to succeed, but access is still denied. Please try again or contact support.")
+            }
+          }
+        });
       }
     } else {
-      setCouponError('Invalid coupon code.');
+      openPaywallModal({
+        meditationId: meditation.id,
+        meditationPrompt: meditation.prompt,
+        meditationDuration: meditation.duration,
+        downloadType: type,
+        audioUrl: meditation.audioUrl,
+        onUnlockSuccess: () => {
+            if (isMeditationUnlocked(meditation.id) || getDownloadCredits() > 0) {
+                if(!isMeditationUnlocked(meditation.id) && getDownloadCredits() > 0) {
+                    useDownloadCredit();
+                    unlockMeditation(meditation.id);
+                }
+                performDownload();
+            } else {
+                 alert("Unlock seemed to succeed, but access is still denied. Please try again or contact support.")
+            }
+        }
+      });
     }
   };
 
-  const handlePaymentComplete = async () => {
-    // Single unlock: process payment (simulated)
-    const paymentSuccessful = await processPayment(paymentAmount);
-    if (paymentSuccessful && meditation?.id) {
-      unlockMeditation(meditation.id);
-      setShowPaymentModal(false);
-      setHasPaid(true);
-      if (paymentForAudio) {
-        downloadAudioFile();
-      } else {
-        downloadTextFile();
-      }
-    } else if (!paymentSuccessful) {
-      alert("Payment failed. Please try again.");
-    }
-  };
-
-  // New: Claim credits after Stripe purchase
-  const handleClaimCredits = (amount: number) => {
-    addDownloadCredits(amount);
-    setDownloadCredits(getDownloadCredits());
-    alert(`You have claimed ${amount} meditation downloads!`);
-    setShowPaymentModal(false);
-  };
-
-  const handleDownload = async () => {
-    if (!meditation?.text) return;
-    console.log('Download text: hasPaid?', hasPaid, 'meditation.id:', meditation?.id);
-    console.log('Unlocked meditations:', localStorage.getItem('unlockedMeditations'));
-    if (!hasPaid) {
-      if (getDownloadCredits() > 0) {
-        useDownloadCredit();
-        unlockMeditation(meditation.id);
-        setHasPaid(true);
-        setDownloadCredits(getDownloadCredits());
-      } else {
-        handleRequestPaywall(false);
-        return;
-      }
-    }
-    downloadTextFile();
-  };
-
-  const handleAudioDownload = async () => {
-    if (!meditation?.text || !meditation?.audioUrl) return;
-    console.log('Download audio: hasPaid?', hasPaid, 'meditation.id:', meditation?.id);
-    console.log('Unlocked meditations:', localStorage.getItem('unlockedMeditations'));
-    if (!hasPaid) {
-      if (getDownloadCredits() > 0) {
-        useDownloadCredit();
-        unlockMeditation(meditation.id);
-        setHasPaid(true);
-        setDownloadCredits(getDownloadCredits());
-      } else {
-        handleRequestPaywall(true);
-        return;
-      }
-    }
-    downloadAudioFile();
-  };
-
-  const downloadTextFile = async () => {
-    if (!meditation?.text) return;
-    
-    try {
-      const cleanedText = cleanupText(meditation.text);
-      const element = document.createElement('a');
-      const file = new Blob([cleanedText], { type: 'text/plain' });
-      element.href = URL.createObjectURL(file);
-      element.download = `meditation-${new Date().getTime()}.txt`;
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-    } catch (err: any) {
-      console.error('Download error:', err);
-      alert('Error downloading meditation: ' + err.message);
-    }
-  };
-
-  const downloadAudioFile = async () => {
-    if (!meditation?.text || !meditation?.audioUrl) return;
-    
-    try {
-      setIsDownloadingAudio(true);
-      const baseFilename = prompt.trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '_')
-        .substring(0, 30);
-      const filename = baseFilename || `meditation-${new Date().getTime()}`;
-      const element = document.createElement('a');
-      element.href = meditation.audioUrl;
-      element.download = `${filename}.mp3`;
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-      console.log(`MP3 file '${filename}.mp3' downloaded successfully`);
-    } catch (err: any) {
-      console.error('Audio download error:', err);
-      alert('Error downloading audio: ' + err.message);
-    } finally {
-      setIsDownloadingAudio(false);
-    }
-  };
+  const handleTextDownloadClick = () => initiateDownload('text');
+  const handleAudioDownloadClick = () => initiateDownload('audio');
 
   const handleFocus = () => setIsActive(true);
   const handleBlur = () => setIsActive(false);
+
+  const requestPaywallForAudioControls = () => {
+    if (meditation && !canAccessCurrentMeditation) {
+      openPaywallModal({
+        meditationId: meditation.id,
+        meditationPrompt: meditation.prompt,
+        meditationDuration: meditation.duration,
+        downloadType: 'audio',
+        audioUrl: meditation.audioUrl,
+        onUnlockSuccess: () => {
+          console.log('Audio unlocked via paywall for AudioControls');
+        }
+      });
+    }
+  };
 
   return (
     <motion.div
@@ -467,8 +350,8 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             type="submit"
-            disabled={isGenerating || isDownloadingAudio || isProcessingPayment}
-            className={`flex-1 py-4 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg shadow-indigo-900/30 flex items-center justify-center ${(isGenerating || isDownloadingAudio || isProcessingPayment) ? 'opacity-70 cursor-not-allowed' : ''}`}
+            disabled={isGenerating || isInitiatingDownload}
+            className={`flex-1 py-4 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg shadow-indigo-900/30 flex items-center justify-center ${(isGenerating || isInitiatingDownload) ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {isGenerating ? status || 'Generating...' : 'Generate Meditation & Audio'}
             <ArrowRight className="ml-2" size={18} />
@@ -479,10 +362,10 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               type="button"
-              onClick={handleDownload}
-              disabled={isProcessingPayment}
+              onClick={handleTextDownloadClick}
+              disabled={isGenerating || isInitiatingDownload}
               className="py-4 px-6 bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-medium rounded-xl shadow-lg shadow-green-900/30 flex items-center justify-center"
-              title={`Download Text ($${getPriceByDuration(meditation.duration || parseInt(meditationLength)).toFixed(2)})`}
+              title={`Download Text (Price: $${getPriceByDuration(meditation.duration).toFixed(2)})`}
             >
               <Download size={18} />
               <DollarSign size={14} className="ml-1" />
@@ -494,14 +377,14 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               type="button"
-              onClick={handleAudioDownload}
-              disabled={isDownloadingAudio || isProcessingPayment}
-              className={`py-4 px-6 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-medium rounded-xl shadow-lg shadow-blue-900/30 flex items-center justify-center ${isDownloadingAudio ? 'opacity-70 cursor-not-allowed' : ''}`}
-              title={`Download MP3 ($${getPriceByDuration(meditation.duration || parseInt(meditationLength)).toFixed(2)})`}
+              onClick={handleAudioDownloadClick}
+              disabled={isGenerating || isInitiatingDownload}
+              className={`py-4 px-6 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-medium rounded-xl shadow-lg shadow-blue-900/30 flex items-center justify-center ${isInitiatingDownload ? 'opacity-70 cursor-not-allowed' : ''}`}
+              title={`Download MP3 (Price: $${getPriceByDuration(meditation.duration).toFixed(2)})`}
             >
               <Music size={18} />
               <DollarSign size={14} className="ml-1" />
-              {isDownloadingAudio && <div className="ml-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
+              {isInitiatingDownload && <div className="ml-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
             </motion.button>
           )}
         </div>
@@ -524,111 +407,12 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         </div>
       )}
 
-      {showPaymentModal && (() => {
-        console.log("Payment modal rendering. showPaymentModal is true. Stripe links section should be visible.");
-        return (
-          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }} 
-              animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-xl p-6 max-w-md w-full mx-4"
-            >
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Unlock Full Meditation</h3>
-              <p className="text-gray-600 mb-4">Enter coupon code or choose a purchase option to unlock the full meditation and download options.</p>
-              <form onSubmit={handleCouponSubmit} className="mb-3">
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="text" 
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Enter coupon code"
-                    className="flex-1 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-indigo-400"
-                  />
-                  <button 
-                    type="submit"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
-                  >
-                    Apply
-                  </button>
-                </div>
-                {couponError && (
-                  <p className="text-red-500 text-xs mt-1">{couponError}</p>
-                )}
-              </form>
-              <div className="space-y-2 mb-3">
-                <a
-                  href="https://buy.stripe.com/28E8wR508gzA47Tdm4cfK01"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-center mb-1"
-                >
-                  $ Unlock Single Meditation
-                </a>
-                <a
-                  href="https://buy.stripe.com/3csdUTcZH6fidmofYY"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg text-center mb-1"
-                >
-                  €9.99 for 20 Downloads
-                </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-center mb-1 opacity-70 cursor-not-allowed"
-                  onClick={e => { e.preventDefault(); alert('Please provide the Stripe link for 50 downloads.'); }}
-                >
-                  €20 for 50 Downloads (Coming Soon)
-                </a>
-              </div>
-              <div className="mb-3">
-                <button
-                  onClick={() => handleClaimCredits(20)}
-                  className="w-full py-2 px-4 bg-green-100 hover:bg-green-200 text-green-800 font-medium rounded-lg mb-1"
-                >
-                  I purchased 20 downloads – Claim Credits
-                </button>
-                <button
-                  onClick={() => handleClaimCredits(50)}
-                  className="w-full py-2 px-4 bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium rounded-lg"
-                >
-                  I purchased 50 downloads – Claim Credits
-                </button>
-              </div>
-              <button 
-                onClick={() => {
-                  setShowPaymentModal(false);
-                  setCouponCode('');
-                  setCouponError('');
-                }}
-                className="w-full mt-2 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg"
-              >
-                Cancel
-              </button>
-              {downloadCredits > 0 && (
-                <div className="mt-3 text-center text-green-700 text-sm">
-                  You have <b>{downloadCredits}</b> meditation downloads remaining.
-                </div>
-              )}
-            </motion.div>
-          </div>
-        );
-      })()}
-
-      {meditation?.text && (
+      {meditation?.text && meditation.audioUrl && (
         <AudioControls 
-          audioUrl={meditation?.audioUrl} 
-          hasPaid={hasPaid} 
-          onRequestPaywall={() => handleRequestPaywall(true)}
+          audioUrl={meditation.audioUrl} 
+          hasPaid={isMeditationUnlocked(meditation.id) || getDownloadCredits() > 0} 
+          onRequestPaywall={requestPaywallForAudioControls}
         />
-      )}
-
-      {meditation?.id && (
-        <div className="mt-4 p-2 bg-black/30 rounded text-xs text-white/60">
-          <div><b>Debug:</b> Meditation ID: <span className="font-mono">{meditation.id}</span></div>
-          <div>Unlocked: <span className="font-mono">{JSON.stringify(localStorage.getItem('unlockedMeditations'))}</span></div>
-        </div>
       )}
     </motion.div>
   );
