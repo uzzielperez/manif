@@ -4,9 +4,10 @@ import { AlertTriangle } from 'lucide-react';
 
 interface AudioControlsProps {
   audioUrl?: string;
+  hasPaid?: boolean;
 }
 
-const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
+const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl, hasPaid }) => {
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
@@ -21,7 +22,13 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
         </div>
       )}
 
-      {audioUrl && (
+      {audioUrl && !hasPaid && (
+        <div className="bg-indigo-900/20 text-indigo-200 p-3 mb-4 rounded-lg flex items-center justify-center">
+          <span className="text-sm font-medium">Please complete your purchase to play the audio.</span>
+        </div>
+      )}
+
+      {audioUrl && hasPaid && (
         <div className="w-full flex flex-col items-center">
           <audio
             key={audioUrl}
