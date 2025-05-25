@@ -1,16 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Volume2, Music, AlertTriangle } from 'lucide-react';
-import { useSettingsStore } from '../store/settingsStore';
+import { AlertTriangle } from 'lucide-react';
 
 interface AudioControlsProps {
   audioUrl?: string;
 }
 
 const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
-  const { musicVolume, voiceVolume, musicEnabled, voiceEnabled } = useSettingsStore();
-  const [activeTab, setActiveTab] = React.useState<'meditation' | 'music'>('meditation');
-
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
@@ -18,31 +14,6 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl"
     >
-      <div className="flex border-b border-white/10 mb-4">
-        <button
-          className={`py-2 px-4 flex items-center ${
-            activeTab === 'meditation' 
-              ? 'text-white border-b-2 border-indigo-400' 
-              : 'text-white/60 hover:text-white/80'
-          }`}
-          onClick={() => setActiveTab('meditation')}
-        >
-          <Volume2 size={16} className="mr-2" />
-          Voice
-        </button>
-        <button
-          className={`py-2 px-4 flex items-center ${
-            activeTab === 'music' 
-              ? 'text-white border-b-2 border-indigo-400' 
-              : 'text-white/60 hover:text-white/80'
-          }`}
-          onClick={() => setActiveTab('music')}
-        >
-          <Music size={16} className="mr-2" />
-          Music
-        </button>
-      </div>
-
       {!audioUrl && (
         <div className="bg-yellow-900/20 text-yellow-300 p-3 mb-4 rounded-lg flex items-center">
           <AlertTriangle size={16} className="mr-2" />
@@ -51,7 +22,7 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
       )}
 
       {audioUrl && (
-        <div className="w-full flex flex-col items-center mt-4">
+        <div className="w-full flex flex-col items-center">
           <audio
             key={audioUrl}
             controls
