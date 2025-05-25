@@ -177,15 +177,18 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
             throw new Error(`Failed to generate audio: ${errorText}`);
           }
           
-          const audioData = await audioResponse.json();
-          console.log('Audio generated successfully:', audioData);
+          // Handle audio as arrayBuffer and create a Blob URL
+          const audioBuffer = await audioResponse.arrayBuffer();
+          const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          console.log('Audio generated successfully:', audioUrl);
           
           // Step 3: Set the complete meditation with text and audio
           setMeditation({
             id: meditationData.id,
             prompt,
             text: meditationData.content,
-            audioUrl: audioData.audioUrl,
+            audioUrl: audioUrl,
             date: new Date().toLocaleDateString(),
             duration: meditationData.duration || parseInt(meditationLength)
           });
