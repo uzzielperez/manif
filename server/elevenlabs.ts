@@ -167,12 +167,18 @@ async function synthesizeWithElevenLabs(text: string, voiceId: string): Promise<
       }),
     });
     
+    console.log('TTS response status:', response.status);
+    const contentType = response.headers.get('content-type');
+    console.log('TTS response content-type:', contentType);
+
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`ElevenLabs API error: ${response.status} ${errorText}`);
+      console.error('TTS error:', errorText);
+      throw new Error('TTS failed: ' + errorText);
     }
     
     const audioBuffer = Buffer.from(await response.arrayBuffer());
+    console.log('Audio buffer first bytes:', audioBuffer.slice(0, 10));
     allAudioBuffers.push(audioBuffer);
   }
   

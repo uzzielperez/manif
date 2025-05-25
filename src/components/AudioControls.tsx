@@ -131,6 +131,20 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
               disabled={activeTab === 'meditation' ? !voiceEnabled : !musicEnabled}
             />
           </div>
+
+          <audio key={audioUrl} controls>
+            <source src={audioUrl} type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio>
+
+          {/* Plain audio element for testing (remove after debugging) */}
+          {audioUrl && (
+            <div className="mb-4">
+              <audio key={audioUrl + '-plain'} controls src={audioUrl} type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          )}
         </div>
       )}
     </motion.div>
