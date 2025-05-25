@@ -524,94 +524,97 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         </div>
       )}
 
-      {showPaymentModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} 
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-xl p-6 max-w-md w-full mx-4"
-          >
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Unlock Full Meditation</h3>
-            <p className="text-gray-600 mb-4">Enter coupon code or choose a purchase option to unlock the full meditation and download options.</p>
-            <form onSubmit={handleCouponSubmit} className="mb-3">
-              <div className="flex items-center gap-2">
-                <input 
-                  type="text" 
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Enter coupon code"
-                  className="flex-1 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-indigo-400"
-                />
-                <button 
-                  type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
+      {showPaymentModal && (() => {
+        console.log("Payment modal rendering. showPaymentModal is true. Stripe links section should be visible.");
+        return (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-xl p-6 max-w-md w-full mx-4"
+            >
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Unlock Full Meditation</h3>
+              <p className="text-gray-600 mb-4">Enter coupon code or choose a purchase option to unlock the full meditation and download options.</p>
+              <form onSubmit={handleCouponSubmit} className="mb-3">
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    placeholder="Enter coupon code"
+                    className="flex-1 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-indigo-400"
+                  />
+                  <button 
+                    type="submit"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Apply
+                  </button>
+                </div>
+                {couponError && (
+                  <p className="text-red-500 text-xs mt-1">{couponError}</p>
+                )}
+              </form>
+              <div className="space-y-2 mb-3">
+                <a
+                  href="https://buy.stripe.com/28E8wR508gzA47Tdm4cfK01"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-center mb-1"
                 >
-                  Apply
+                  $ Unlock Single Meditation
+                </a>
+                <a
+                  href="https://buy.stripe.com/3csdUTcZH6fidmofYY"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg text-center mb-1"
+                >
+                  €9.99 for 20 Downloads
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-center mb-1 opacity-70 cursor-not-allowed"
+                  onClick={e => { e.preventDefault(); alert('Please provide the Stripe link for 50 downloads.'); }}
+                >
+                  €20 for 50 Downloads (Coming Soon)
+                </a>
+              </div>
+              <div className="mb-3">
+                <button
+                  onClick={() => handleClaimCredits(20)}
+                  className="w-full py-2 px-4 bg-green-100 hover:bg-green-200 text-green-800 font-medium rounded-lg mb-1"
+                >
+                  I purchased 20 downloads – Claim Credits
+                </button>
+                <button
+                  onClick={() => handleClaimCredits(50)}
+                  className="w-full py-2 px-4 bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium rounded-lg"
+                >
+                  I purchased 50 downloads – Claim Credits
                 </button>
               </div>
-              {couponError && (
-                <p className="text-red-500 text-xs mt-1">{couponError}</p>
+              <button 
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  setCouponCode('');
+                  setCouponError('');
+                }}
+                className="w-full mt-2 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg"
+              >
+                Cancel
+              </button>
+              {downloadCredits > 0 && (
+                <div className="mt-3 text-center text-green-700 text-sm">
+                  You have <b>{downloadCredits}</b> meditation downloads remaining.
+                </div>
               )}
-            </form>
-            <div className="space-y-2 mb-3">
-              <a
-                href="https://buy.stripe.com/28E8wR508gzA47Tdm4cfK01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-center mb-1"
-              >
-                $ Unlock Single Meditation
-              </a>
-              <a
-                href="https://buy.stripe.com/3csdUTcZH6fidmofYY"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg text-center mb-1"
-              >
-                €9.99 for 20 Downloads
-              </a>
-              <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-center mb-1 opacity-70 cursor-not-allowed"
-                onClick={e => { e.preventDefault(); alert('Please provide the Stripe link for 50 downloads.'); }}
-              >
-                €20 for 50 Downloads (Coming Soon)
-              </a>
-            </div>
-            <div className="mb-3">
-              <button
-                onClick={() => handleClaimCredits(20)}
-                className="w-full py-2 px-4 bg-green-100 hover:bg-green-200 text-green-800 font-medium rounded-lg mb-1"
-              >
-                I purchased 20 downloads – Claim Credits
-              </button>
-              <button
-                onClick={() => handleClaimCredits(50)}
-                className="w-full py-2 px-4 bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium rounded-lg"
-              >
-                I purchased 50 downloads – Claim Credits
-              </button>
-            </div>
-            <button 
-              onClick={() => {
-                setShowPaymentModal(false);
-                setCouponCode('');
-                setCouponError('');
-              }}
-              className="w-full mt-2 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg"
-            >
-              Cancel
-            </button>
-            {downloadCredits > 0 && (
-              <div className="mt-3 text-center text-green-700 text-sm">
-                You have <b>{downloadCredits}</b> meditation downloads remaining.
-              </div>
-            )}
-          </motion.div>
-        </div>
-      )}
+            </motion.div>
+          </div>
+        );
+      })()}
 
       {meditation?.text && (
         <AudioControls 
