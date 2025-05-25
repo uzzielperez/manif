@@ -179,9 +179,15 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
           
           // Handle audio as arrayBuffer and create a Blob URL
           const audioBuffer = await audioResponse.arrayBuffer();
+          console.log('Audio buffer byteLength:', audioBuffer.byteLength);
+          if (audioBuffer.byteLength === 0) {
+            alert('Audio buffer is empty. There may be an issue with the TTS service.');
+            throw new Error('Audio buffer is empty');
+          }
           const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+          console.log('Audio Blob size:', audioBlob.size, 'type:', audioBlob.type);
           const audioUrl = URL.createObjectURL(audioBlob);
-          console.log('Audio generated successfully:', audioUrl);
+          console.log('Audio generated successfully, Blob URL:', audioUrl);
           
           // Step 3: Set the complete meditation with text and audio
           setMeditation({
