@@ -1,0 +1,30 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@neondatabase/serverless", "drizzle-orm", "groq", "stripe"]
+  included_files = ["server/**/*"]
+  timeout = 60
+
+[functions.meditations]
+  timeout = 60
+  memory = 1024
+
+[functions.payment]
+  timeout = 30
+  memory = 512
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true 

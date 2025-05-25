@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Download, Music, DollarSign } from 'lucide-react';
 import { useMeditationStore } from '../store/meditationStore';
@@ -10,12 +10,93 @@ interface PromptFormProps {
 
 // Define Eleven Labs voice options
 const ELEVEN_LABS_VOICES = [
-  { id: "B69tnztZ1gRYSVTCL8Cv", name: "Uzzie" },
+  { id: "B69tnztZ1gRYSVTCL8Cv", name: "Uzi" },
   { id: "XrExE9yKIg1WjnnlVkGX", name: "John Doe Deep" },
   { id: "ZQe5CZNOzWyzPSCn5a3c", name: "Jameson - Guided Meditation" },
   { id: "3BU6uFpHysSBHbYVkPX1", name: "Professor Bill" },
   { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah - Soothing" }
 ];
+
+// Manifestation prompts
+const MANIFESTATION_PROMPTS = [
+  "I want to manifest abundance and success in my career...",
+  "I am attracting deep, meaningful relationships...",
+  "I am manifesting perfect health and vitality...",
+  "I am creating financial freedom and prosperity...",
+  "I am attracting opportunities for growth and learning...",
+  "I am manifesting inner peace and emotional balance...",
+  "I am creating a life filled with joy and purpose...",
+  "I am attracting positive change and transformation..."
+];
+
+// RotatingPrompt component for animated placeholder
+const RotatingPrompt: React.FC<{ onPromptChange: (prompt: string) => void }> = ({ onPromptChange }) => {
+  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const currentPrompt = MANIFESTATION_PROMPTS[currentPromptIndex];
+    
+    if (!isDeleting && currentIndex < currentPrompt.length) {
+      // Typing
+      const timeout = setTimeout(() => {
+        setDisplayText(prev => prev + currentPrompt[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 50);
+      return () => clearTimeout(timeout);
+    } else if (!isDeleting && currentIndex === currentPrompt.length) {
+      // Pause at the end of typing
+      const timeout = setTimeout(() => {
+        setIsDeleting(true);
+      }, 2000);
+      return () => clearTimeout(timeout);
+    } else if (isDeleting && currentIndex > 0) {
+      // Deleting
+      const timeout = setTimeout(() => {
+        setDisplayText(prev => prev.slice(0, -1));
+        setCurrentIndex(prev => prev - 1);
+      }, 30);
+      return () => clearTimeout(timeout);
+    } else if (isDeleting && currentIndex === 0) {
+      // Move to next prompt
+      setIsDeleting(false);
+      setCurrentPromptIndex(prev => (prev + 1) % MANIFESTATION_PROMPTS.length);
+      onPromptChange(MANIFESTATION_PROMPTS[(currentPromptIndex + 1) % MANIFESTATION_PROMPTS.length]);
+    }
+  }, [currentIndex, isDeleting, currentPromptIndex, onPromptChange]);
+
+  return (
+    <span className="text-white/40">
+      {displayText}
+      <span className="animate-pulse">|</span>
+    </span>
+  );
+};
+
+// TypewriterText component for animated text
+const TypewriterText: React.FC<{ text: string }> = ({ text }) => {
+  const [displayText, setDisplayText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, text]);
+
+  return (
+    <p className="text-white/70 max-w-lg mx-auto font-light italic">
+      {displayText}
+      <span className="animate-pulse">|</span>
+    </p>
+  );
+};
 
 const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [prompt, setPrompt] = useState('');
@@ -30,6 +111,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [paymentForAudio, setPaymentForAudio] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(MANIFESTATION_PROMPTS[0]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,63 +122,81 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         
         // Step 1: Generate meditation text
         console.log('Sending request to generate meditation...');
-        const textResponse = await fetch('http://localhost:5001/api/meditations', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, model: 'gemma2-9b-it' }) // Using Google Gemma 2 9B model
-        });
         
-        if (!textResponse.ok) {
-          const errorText = await textResponse.text();
-          console.error('API Error:', textResponse.status, errorText);
-          throw new Error('Failed to generate meditation text');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        
+        try {
+          const textResponse = await fetch('/.netlify/functions/meditations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, model: 'gemma2-9b-it' }),
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
+          if (!textResponse.ok) {
+            const errorText = await textResponse.text();
+            console.error('API Error:', textResponse.status, errorText);
+            throw new Error(`Failed to generate meditation text: ${errorText}`);
+          }
+          
+          const meditationData = await textResponse.json();
+          console.log('Received meditation:', meditationData);
+          
+          // Step 2: Generate audio from the meditation text
+          setStatus('Generating audio...');
+          console.log('Generating audio for meditation...');
+          
+          const cleanedText = cleanupText(meditationData.content);
+          
+          const audioResponse = await fetch('/.netlify/functions/meditations/audio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text: cleanedText,
+              voiceId: selectedVoice,
+              duration: parseInt(meditationLength)
+            }),
+            signal: controller.signal
+          });
+          
+          if (!audioResponse.ok) {
+            const errorText = await audioResponse.text();
+            console.error('Audio API Error:', audioResponse.status, errorText);
+            throw new Error(`Failed to generate audio: ${errorText}`);
+          }
+          
+          const audioData = await audioResponse.json();
+          console.log('Audio generated successfully:', audioData);
+          
+          // Step 3: Set the complete meditation with text and audio
+          setMeditation({
+            id: meditationData.id,
+            prompt,
+            text: meditationData.content,
+            audioUrl: audioData.audioUrl,
+            date: new Date().toLocaleDateString(),
+            duration: meditationData.duration || parseInt(meditationLength)
+          });
+          
+          onSubmit(prompt);
+        } catch (err: any) {
+          console.error('Error details:', err);
+          if (err.name === 'AbortError') {
+            alert('Request timed out. Please try again.');
+          } else {
+            alert('Error: ' + err.message);
+          }
+        } finally {
+          clearTimeout(timeoutId);
+          setIsGenerating(false);
+          setStatus('');
         }
-        
-        const meditationData = await textResponse.json();
-        console.log('Received meditation:', meditationData);
-        
-        // Step 2: Generate audio from the meditation text
-        setStatus('Generating audio...');
-        console.log('Generating audio for meditation...');
-        
-        const cleanedText = cleanupText(meditationData.content);
-        
-        const audioResponse = await fetch('http://localhost:5001/api/meditations/audio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: cleanedText,
-            voiceId: selectedVoice,
-            duration: parseInt(meditationLength)
-          })
-        });
-        
-        if (!audioResponse.ok) {
-          const errorText = await audioResponse.text();
-          console.error('Audio API Error:', audioResponse.status, errorText);
-          throw new Error('Failed to generate audio');
-        }
-        
-        const audioData = await audioResponse.json();
-        console.log('Audio generated successfully:', audioData);
-        
-        // Step 3: Set the complete meditation with text and audio
-        setMeditation({
-          id: meditationData.id,
-          prompt,
-          text: meditationData.content,
-          audioUrl: audioData.audioUrl,
-          date: new Date().toLocaleDateString(),
-          duration: meditationData.duration || parseInt(meditationLength)
-        });
-        
-        onSubmit(prompt);
       } catch (err: any) {
         console.error('Error details:', err);
         alert('Error: ' + err.message);
-      } finally {
-        setIsGenerating(false);
-        setStatus('');
       }
     }
   };
@@ -232,7 +332,8 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
           </motion.div>
         </div>
         <h1 className="text-3xl md:text-4xl font-semibold text-white mb-2">Manifestation Meditation</h1>
-        <p className="text-white/70 max-w-lg mx-auto">
+        <TypewriterText text="Drawing from Stanford Neuroscientist Dr. James Doty's pioneering research, manifestation is the art of consciously programming your subconscious mind through focused intention and mindful practice." />
+        <p className="text-white/70 max-w-lg mx-auto mt-4">
           Enter what you'd like to manifest in your life, and we'll create a personalized guided meditation to help you attract it.
         </p>
       </div>
@@ -244,10 +345,16 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
             onChange={(e) => setPrompt(e.target.value)}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            placeholder="I want to manifest abundance and success in my career..."
+            placeholder={currentPlaceholder}
             className="w-full h-32 px-5 py-4 rounded-xl bg-white/5 border border-white/20 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 outline-none text-white resize-none placeholder:text-white/40 transition-colors"
             required
           />
+          
+          {!isActive && !prompt && (
+            <div className="absolute top-4 left-5 pointer-events-none">
+              <RotatingPrompt onPromptChange={setCurrentPlaceholder} />
+            </div>
+          )}
           
           <div className="absolute bottom-4 right-4 text-white/50 text-sm">
             {prompt.length} / 200
