@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Download, Music, DollarSign } from 'lucide-react';
 import { useMeditationStore } from '../store/meditationStore';
 import { cleanupText } from '../utils/textUtils';
-import PaymentModal from './PaymentModal';
 import AudioControls from './AudioControls';
 
 interface PromptFormProps {
@@ -100,15 +99,6 @@ const TypewriterText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-// Define voice options
-const VOICE_OPTIONS = [
-  { id: "B69tnztZ1gRYSVTCL8Cv", name: "Uzi" },
-  { id: "XrExE9yKIg1WjnnlVkGX", name: "John Doe Deep" },
-  { id: "ZQe5CZNOzWyzPSCn5a3c", name: "Jameson - Guided Meditation" },
-  { id: "3BU6uFpHysSBHbYVkPX1", name: "Professor Bill" },
-  { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah - Soothing" }
-];
-
 const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [prompt, setPrompt] = useState('');
   const [isActive, setIsActive] = useState(false);
@@ -124,7 +114,6 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(MANIFESTATION_PROMPTS[0]);
   const [hasPaid, setHasPaid] = useState(false);
-  const [showCouponInput, setShowCouponInput] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
 
@@ -245,6 +234,9 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   };
 
   const handleRequestPaywall = () => {
+    const duration = meditation?.duration || parseInt(meditationLength);
+    const amount = getPriceByDuration(duration);
+    setPaymentAmount(amount);
     setShowPaymentModal(true);
   };
 
@@ -253,7 +245,6 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
     if (couponCode.trim() === 'Magic25M') {
       setHasPaid(true);
       setShowPaymentModal(false);
-      setShowCouponInput(false);
       setCouponError('');
       alert('Coupon applied! You can now download and listen to the full meditation.');
     } else {
@@ -264,6 +255,10 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const handleDownload = async () => {
     if (!meditation?.text) return;
     if (!hasPaid) {
+      const duration = meditation?.duration || parseInt(meditationLength);
+      const amount = getPriceByDuration(duration);
+      setPaymentAmount(amount);
+      setPaymentForAudio(false); // This is for text download
       setShowPaymentModal(true);
       return;
     }
@@ -273,6 +268,10 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const handleAudioDownload = async () => {
     if (!meditation?.text || !meditation?.audioUrl) return;
     if (!hasPaid) {
+      const duration = meditation?.duration || parseInt(meditationLength);
+      const amount = getPriceByDuration(duration);
+      setPaymentAmount(amount);
+      setPaymentForAudio(true); // This is for audio download
       setShowPaymentModal(true);
       return;
     }
@@ -422,7 +421,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
               value={selectedVoice}
               onChange={(e) => setSelectedVoice(e.target.value)}
             >
-              {VOICE_OPTIONS.map(voice => (
+              {ELEVEN_LABS_VOICES.map(voice => (
                 <option key={voice.id} value={voice.id}>{voice.name}</option>
               ))}
             </select>
@@ -508,7 +507,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                   placeholder="Enter coupon code"
-                  className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-indigo-400"
+                  className="flex-1 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-indigo-400"
                 />
                 <button 
                   type="submit"
@@ -536,7 +535,11 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
               )}
             </button>
             <button 
-              onClick={() => setShowPaymentModal(false)}
+              onClick={() => {
+                setShowPaymentModal(false);
+                setCouponCode('');
+                setCouponError('');
+              }}
               className="w-full mt-2 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg"
             >
               Cancel
@@ -546,7 +549,11 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
       )}
 
       {meditation?.text && (
-        <AudioControls audioUrl={meditation?.audioUrl} hasPaid={hasPaid} onRequestPaywall={handleRequestPaywall} />
+        <AudioControls 
+          audioUrl={meditation?.audioUrl} 
+          hasPaid={hasPaid} 
+          onRequestPaywall={handleRequestPaywall} 
+        />
       )}
     </motion.div>
   );
