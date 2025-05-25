@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, Lock } from 'lucide-react';
+import { AlertTriangle, Lock, DollarSign } from 'lucide-react';
 
 interface AudioControlsProps {
   audioUrl?: string;
@@ -25,7 +25,6 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl, hasPaid, onRequ
     const onTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
       
-      // If user hasn't paid and reaches 50% of the audio, pause and show paywall
       if (!hasPaid && audio.currentTime >= (audio.duration * 0.5)) {
         audio.pause();
         setHasHitPaywall(true);
@@ -44,7 +43,6 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl, hasPaid, onRequ
     };
   }, [audioUrl, hasPaid, onRequestPaywall]);
 
-  // Reset paywall state when payment status changes
   useEffect(() => {
     if (hasPaid) {
       setHasHitPaywall(false);
@@ -84,7 +82,6 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl, hasPaid, onRequ
             Your browser does not support the audio element.
           </audio>
           
-          {/* Free preview info */}
           {!hasPaid && duration > 0 && (
             <div className="mt-3 text-center">
               <div className="text-indigo-200 text-sm">
@@ -96,18 +93,25 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl, hasPaid, onRequ
             </div>
           )}
 
-          {/* Paywall message when user hits the limit */}
           {hasHitPaywall && !hasPaid && (
             <div className="mt-4 p-4 bg-indigo-900/30 border border-indigo-400/30 rounded-lg text-center">
               <Lock size={24} className="mx-auto text-indigo-300 mb-2" />
               <div className="text-indigo-200 font-medium mb-1">Preview Complete</div>
-              <div className="text-white/70 text-sm">
+              <div className="text-white/70 text-sm mb-3">
                 Unlock the full meditation to continue listening and download your audio
               </div>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={onRequestPaywall}
+                className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg flex items-center justify-center mx-auto"
+              >
+                <DollarSign size={14} className="mr-1" />
+                Unlock Full Meditation
+              </motion.button>
             </div>
           )}
 
-          {/* Full access message */}
           {hasPaid && (
             <div className="mt-3 text-center">
               <div className="text-green-300 text-sm">

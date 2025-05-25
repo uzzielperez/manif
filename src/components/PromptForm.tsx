@@ -124,11 +124,8 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         setIsGenerating(true);
         setStatus('Generating meditation text...');
         
-        // Step 1: Generate meditation text
-        console.log('Sending request to generate meditation...');
-        
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
         
         try {
           const textResponse = await fetch('/.netlify/functions/meditations', {
@@ -147,12 +144,8 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
           }
           
           const meditationData = await textResponse.json();
-          console.log('Received meditation:', meditationData);
           
-          // Step 2: Generate audio from the meditation text
           setStatus('Generating audio...');
-          console.log('Generating audio for meditation...');
-          
           const cleanedText = cleanupText(meditationData.content);
           
           const audioResponse = await fetch('/.netlify/functions/meditations/audio', {
@@ -172,19 +165,14 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
             throw new Error(`Failed to generate audio: ${errorText}`);
           }
           
-          // Handle audio as arrayBuffer and create a Blob URL
           const audioBuffer = await audioResponse.arrayBuffer();
-          console.log('Audio buffer byteLength:', audioBuffer.byteLength);
           if (audioBuffer.byteLength === 0) {
             alert('Audio buffer is empty. There may be an issue with the TTS service.');
             throw new Error('Audio buffer is empty');
           }
           const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-          console.log('Audio Blob size:', audioBlob.size, 'type:', audioBlob.type);
           const audioUrl = URL.createObjectURL(audioBlob);
-          console.log('Audio generated successfully, Blob URL:', audioUrl);
           
-          // Step 3: Set the complete meditation with text and audio
           setMeditation({
             id: meditationData.id,
             prompt,
@@ -217,26 +205,21 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const getPriceByDuration = (duration: number): number => {
     if (duration <= 5) return 2.99;
     if (duration <= 10) return 4.99;
-    return 4.99; // Default to higher price if duration is longer
+    return 4.99;
   };
 
   const processPayment = async (amount: number): Promise<boolean> => {
-    // This is a mock payment processing function
-    // In a real app, you would integrate with a payment processor like Stripe
     setIsProcessingPayment(true);
-    
-    // Simulate payment processing time
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // For demo purposes, always succeed
     setIsProcessingPayment(false);
     return true;
   };
 
-  const handleRequestPaywall = () => {
+  const handleRequestPaywall = (isAudio: boolean = false) => {
     const duration = meditation?.duration || parseInt(meditationLength);
     const amount = getPriceByDuration(duration);
     setPaymentAmount(amount);
+    setPaymentForAudio(isAudio);
     setShowPaymentModal(true);
   };
 
@@ -247,6 +230,11 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
       setShowPaymentModal(false);
       setCouponError('');
       alert('Coupon applied! You can now download and listen to the full meditation.');
+      if (paymentForAudio) {
+        downloadAudioFile();
+      } else {
+        downloadTextFile();
+      }
     } else {
       setCouponError('Invalid coupon code.');
     }
@@ -255,11 +243,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const handleDownload = async () => {
     if (!meditation?.text) return;
     if (!hasPaid) {
-      const duration = meditation?.duration || parseInt(meditationLength);
-      const amount = getPriceByDuration(duration);
-      setPaymentAmount(amount);
-      setPaymentForAudio(false); // This is for text download
-      setShowPaymentModal(true);
+      handleRequestPaywall(false);
       return;
     }
     downloadTextFile();
@@ -268,11 +252,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const handleAudioDownload = async () => {
     if (!meditation?.text || !meditation?.audioUrl) return;
     if (!hasPaid) {
-      const duration = meditation?.duration || parseInt(meditationLength);
-      const amount = getPriceByDuration(duration);
-      setPaymentAmount(amount);
-      setPaymentForAudio(true); // This is for audio download
-      setShowPaymentModal(true);
+      handleRequestPaywall(true);
       return;
     }
     downloadAudioFile();
@@ -283,7 +263,6 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
     if (paymentSuccessful) {
       setShowPaymentModal(false);
       setHasPaid(true);
-      // Proceed with download based on type
       if (paymentForAudio) {
         downloadAudioFile();
       } else {
@@ -298,12 +277,9 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
     if (!meditation?.text) return;
     
     try {
-      // Clean up the text before downloading
       const cleanedText = cleanupText(meditation.text);
-      
-      // Client-side download
       const element = document.createElement('a');
-      const file = new Blob([cleanedText], {type: 'text/plain'});
+      const file = new Blob([cleanedText], { type: 'text/plain' });
       element.href = URL.createObjectURL(file);
       element.download = `meditation-${new Date().getTime()}.txt`;
       document.body.appendChild(element);
@@ -320,29 +296,18 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
     
     try {
       setIsDownloadingAudio(true);
-      
-      // Get clean filename from the meditation prompt
       const baseFilename = prompt.trim()
         .toLowerCase()
         .replace(/[^a-z0-9]/g, '_')
         .substring(0, 30);
-      
       const filename = baseFilename || `meditation-${new Date().getTime()}`;
-      
-      // Direct browser download using data URL
-      // Create a download link using the data URL
       const element = document.createElement('a');
-      element.href = meditation.audioUrl; // Already a data URL with proper MIME type
+      element.href = meditation.audioUrl;
       element.download = `${filename}.mp3`;
-      
-      // Trigger browser download (goes directly to user's Downloads folder)
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
-      
-      // Show success message in console
-      console.log(`MP3 file '${filename}.mp3' downloaded successfully to your Downloads folder`);
-      
+      console.log(`MP3 file '${filename}.mp3' downloaded successfully`);
     } catch (err: any) {
       console.error('Audio download error:', err);
       alert('Error downloading audio: ' + err.message);
@@ -490,7 +455,6 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         </div>
       )}
 
-      {/* Payment Modal */}
       {showPaymentModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <motion.div 
@@ -552,7 +516,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         <AudioControls 
           audioUrl={meditation?.audioUrl} 
           hasPaid={hasPaid} 
-          onRequestPaywall={handleRequestPaywall} 
+          onRequestPaywall={() => handleRequestPaywall(true)}
         />
       )}
     </motion.div>
