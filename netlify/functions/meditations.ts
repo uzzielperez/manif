@@ -59,10 +59,42 @@ export const handler: Handler = async (event, context) => {
         const { prompt, model } = JSON.parse(event.body || '{}');
         console.log('Meditation generation params:', { prompt, model });
         
-        // Add your meditation generation logic here
-        // For now, we'll simulate a delay to match the actual processing time
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
+        // Call Groq API for real meditation generation
+        const groqApiKey = process.env.GROQ_API_KEY;
+        if (!groqApiKey) {
+          throw new Error('GROQ_API_KEY is not set in environment variables');
+        }
+
+        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${groqApiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: model || 'gemma-7b-it',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a meditation coach. Generate a personalized manifestation meditation script based on the user\'s intention.'
+              },
+              {
+                role: 'user',
+                content: prompt
+              }
+            ],
+            max_tokens: 500
+          })
+        });
+
+        if (!groqResponse.ok) {
+          const errorText = await groqResponse.text();
+          throw new Error(`Groq API error: ${groqResponse.status} ${errorText}`);
+        }
+
+        const groqData = await groqResponse.json();
+        const meditationText = groqData.choices?.[0]?.message?.content || 'Sorry, could not generate meditation.';
+
         console.log('Meditation generated successfully');
         return {
           statusCode: 200,
@@ -72,7 +104,7 @@ export const handler: Handler = async (event, context) => {
           },
           body: JSON.stringify({
             id: Date.now(),
-            content: `Generated meditation for: ${prompt}`,
+            content: meditationText,
             duration: 5
           })
         };
