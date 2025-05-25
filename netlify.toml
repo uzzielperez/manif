@@ -7,7 +7,6 @@
   node_bundler = "esbuild"
   external_node_modules = ["@neondatabase/serverless", "drizzle-orm", "groq", "stripe"]
   included_files = ["server/**/*"]
-  timeout = 60
 
 [functions.meditations]
   timeout = 60
