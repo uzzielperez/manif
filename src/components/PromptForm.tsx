@@ -4,6 +4,7 @@ import { Sparkles, ArrowRight, Download, Music, DollarSign } from 'lucide-react'
 import { useMeditationStore } from '../store/meditationStore';
 import { cleanupText } from '../utils/textUtils';
 import PaymentModal from './PaymentModal';
+import AudioControls from './AudioControls';
 
 interface PromptFormProps {
   onSubmit: (prompt: string) => void;
@@ -123,6 +124,9 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(MANIFESTATION_PROMPTS[0]);
   const [hasPaid, setHasPaid] = useState(false);
+  const [showCouponInput, setShowCouponInput] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponError, setCouponError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,12 +244,26 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
     return true;
   };
 
+  const handleRequestPaywall = () => {
+    setShowPaymentModal(true);
+  };
+
+  const handleCouponSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (couponCode.trim() === 'Magic25M') {
+      setHasPaid(true);
+      setShowPaymentModal(false);
+      setShowCouponInput(false);
+      setCouponError('');
+      alert('Coupon applied! You can now download and listen to the full meditation.');
+    } else {
+      setCouponError('Invalid coupon code.');
+    }
+  };
+
   const handleDownload = async () => {
     if (!meditation?.text) return;
     if (!hasPaid) {
-      const price = getPriceByDuration(meditation.duration || parseInt(meditationLength));
-      setPaymentAmount(price);
-      setPaymentForAudio(false);
       setShowPaymentModal(true);
       return;
     }
@@ -255,9 +273,6 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const handleAudioDownload = async () => {
     if (!meditation?.text || !meditation?.audioUrl) return;
     if (!hasPaid) {
-      const price = getPriceByDuration(meditation.duration || parseInt(meditationLength));
-      setPaymentAmount(price);
-      setPaymentForAudio(true);
       setShowPaymentModal(true);
       return;
     }
@@ -339,11 +354,6 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
 
   const handleFocus = () => setIsActive(true);
   const handleBlur = () => setIsActive(false);
-
-  const handlePaymentSuccess = () => {
-    setHasPaid(true);
-    setShowPaymentModal(false);
-  };
 
   return (
     <motion.div
@@ -483,11 +493,60 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
 
       {/* Payment Modal */}
       {showPaymentModal && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          onSuccess={handlePaymentSuccess}
-        />
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }} 
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-xl p-6 max-w-md w-full mx-4"
+          >
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Unlock Full Meditation</h3>
+            <p className="text-gray-600 mb-4">Enter coupon code or proceed to payment to unlock the full meditation and download options.</p>
+            <form onSubmit={handleCouponSubmit} className="mb-3">
+              <div className="flex items-center gap-2">
+                <input 
+                  type="text" 
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Enter coupon code"
+                  className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-indigo-400"
+                />
+                <button 
+                  type="submit"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
+              {couponError && (
+                <p className="text-red-500 text-xs mt-1">{couponError}</p>
+              )}
+            </form>
+            <button 
+              onClick={handlePaymentComplete}
+              disabled={isProcessingPayment}
+              className={`w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg flex items-center justify-center ${isProcessingPayment ? 'opacity-70 cursor-not-allowed' : ''}`}
+            >
+              {isProcessingPayment ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Processing...
+                </>
+              ) : (
+                <>Pay ${paymentAmount.toFixed(2)}</>
+              )}
+            </button>
+            <button 
+              onClick={() => setShowPaymentModal(false)}
+              className="w-full mt-2 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg"
+            >
+              Cancel
+            </button>
+          </motion.div>
+        </div>
+      )}
+
+      {meditation?.text && (
+        <AudioControls audioUrl={meditation?.audioUrl} hasPaid={hasPaid} onRequestPaywall={handleRequestPaywall} />
       )}
     </motion.div>
   );
