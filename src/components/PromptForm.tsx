@@ -263,6 +263,8 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
 
   const handleDownload = async () => {
     if (!meditation?.text) return;
+    console.log('Download text: hasPaid?', hasPaid, 'meditation.id:', meditation?.id);
+    console.log('Unlocked meditations:', localStorage.getItem('unlockedMeditations'));
     if (!hasPaid) {
       handleRequestPaywall(false);
       return;
@@ -272,6 +274,8 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
 
   const handleAudioDownload = async () => {
     if (!meditation?.text || !meditation?.audioUrl) return;
+    console.log('Download audio: hasPaid?', hasPaid, 'meditation.id:', meditation?.id);
+    console.log('Unlocked meditations:', localStorage.getItem('unlockedMeditations'));
     if (!hasPaid) {
       handleRequestPaywall(true);
       return;
@@ -540,6 +544,13 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
           hasPaid={hasPaid} 
           onRequestPaywall={() => handleRequestPaywall(true)}
         />
+      )}
+
+      {meditation?.id && (
+        <div className="mt-4 p-2 bg-black/30 rounded text-xs text-white/60">
+          <div><b>Debug:</b> Meditation ID: <span className="font-mono">{meditation.id}</span></div>
+          <div>Unlocked: <span className="font-mono">{JSON.stringify(localStorage.getItem('unlockedMeditations'))}</span></div>
+        </div>
       )}
     </motion.div>
   );
