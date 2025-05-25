@@ -99,6 +99,20 @@ const TypewriterText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
+// Utility functions for per-meditation unlock
+function isMeditationUnlocked(id) {
+  const unlocked = JSON.parse(localStorage.getItem('unlockedMeditations') || '[]');
+  return unlocked.includes(id);
+}
+
+function unlockMeditation(id) {
+  const unlocked = JSON.parse(localStorage.getItem('unlockedMeditations') || '[]');
+  if (!unlocked.includes(id)) {
+    unlocked.push(id);
+    localStorage.setItem('unlockedMeditations', JSON.stringify(unlocked));
+  }
+}
+
 const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [prompt, setPrompt] = useState('');
   const [isActive, setIsActive] = useState(false);
@@ -116,6 +130,12 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [hasPaid, setHasPaid] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
+
+  useEffect(() => {
+    if (meditation?.id) {
+      setHasPaid(isMeditationUnlocked(meditation.id));
+    }
+  }, [meditation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -225,7 +245,8 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
 
   const handleCouponSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (couponCode.trim() === 'Magic25M') {
+    if (couponCode.trim() === 'Magic25M' && meditation?.id) {
+      unlockMeditation(meditation.id);
       setHasPaid(true);
       setShowPaymentModal(false);
       setCouponError('');
@@ -260,7 +281,8 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
 
   const handlePaymentComplete = async () => {
     const paymentSuccessful = await processPayment(paymentAmount);
-    if (paymentSuccessful) {
+    if (paymentSuccessful && meditation?.id) {
+      unlockMeditation(meditation.id);
       setShowPaymentModal(false);
       setHasPaid(true);
       if (paymentForAudio) {
@@ -268,7 +290,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
       } else {
         downloadTextFile();
       }
-    } else {
+    } else if (!paymentSuccessful) {
       alert("Payment failed. Please try again.");
     }
   };
