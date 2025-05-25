@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Download, Music, DollarSign } from 'lucide-react';
 import { useMeditationStore } from '../store/meditationStore';
 import { cleanupText } from '../utils/textUtils';
+import PaymentModal from './PaymentModal';
 
 interface PromptFormProps {
   onSubmit: (prompt: string) => void;
@@ -339,6 +340,11 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const handleFocus = () => setIsActive(true);
   const handleBlur = () => setIsActive(false);
 
+  const handlePaymentSuccess = () => {
+    setHasPaid(true);
+    setShowPaymentModal(false);
+  };
+
   return (
     <motion.div
       initial={{ scale: 0.95, opacity: 0 }}
@@ -477,51 +483,11 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
 
       {/* Payment Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} 
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-xl p-6 max-w-md w-full mx-4"
-          >
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Complete Your Purchase</h3>
-            <p className="text-gray-600 mb-2">
-              {paymentForAudio ? 'MP3 Audio Download' : 'Meditation Text Download'}
-            </p>
-            <p className="text-gray-600 mb-4">
-              {meditation?.duration || parseInt(meditationLength)} minute meditation
-            </p>
-            
-            <div className="bg-gray-100 p-3 rounded-lg mb-6">
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Total:</span>
-                <span className="text-xl font-bold">${paymentAmount.toFixed(2)}</span>
-              </div>
-            </div>
-            
-            <div className="flex gap-3">
-              <button 
-                onClick={() => setShowPaymentModal(false)}
-                className="flex-1 py-3 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handlePaymentComplete}
-                disabled={isProcessingPayment}
-                className={`flex-1 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg flex items-center justify-center ${isProcessingPayment ? 'opacity-70 cursor-not-allowed' : ''}`}
-              >
-                {isProcessingPayment ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Processing...
-                  </>
-                ) : (
-                  <>Pay ${paymentAmount.toFixed(2)}</>
-                )}
-              </button>
-            </div>
-          </motion.div>
-        </div>
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          onSuccess={handlePaymentSuccess}
+        />
       )}
     </motion.div>
   );
