@@ -121,6 +121,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [paymentForAudio, setPaymentForAudio] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(MANIFESTATION_PROMPTS[0]);
+  const [hasPaid, setHasPaid] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,28 +241,33 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
 
   const handleDownload = async () => {
     if (!meditation?.text) return;
-    
-    const price = getPriceByDuration(meditation.duration || parseInt(meditationLength));
-    setPaymentAmount(price);
-    setPaymentForAudio(false);
-    setShowPaymentModal(true);
+    if (!hasPaid) {
+      const price = getPriceByDuration(meditation.duration || parseInt(meditationLength));
+      setPaymentAmount(price);
+      setPaymentForAudio(false);
+      setShowPaymentModal(true);
+      return;
+    }
+    downloadTextFile();
   };
 
   const handleAudioDownload = async () => {
     if (!meditation?.text || !meditation?.audioUrl) return;
-    
-    const price = getPriceByDuration(meditation.duration || parseInt(meditationLength));
-    setPaymentAmount(price);
-    setPaymentForAudio(true);
-    setShowPaymentModal(true);
+    if (!hasPaid) {
+      const price = getPriceByDuration(meditation.duration || parseInt(meditationLength));
+      setPaymentAmount(price);
+      setPaymentForAudio(true);
+      setShowPaymentModal(true);
+      return;
+    }
+    downloadAudioFile();
   };
 
   const handlePaymentComplete = async () => {
     const paymentSuccessful = await processPayment(paymentAmount);
-    
     if (paymentSuccessful) {
       setShowPaymentModal(false);
-      
+      setHasPaid(true);
       // Proceed with download based on type
       if (paymentForAudio) {
         downloadAudioFile();

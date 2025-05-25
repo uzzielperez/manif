@@ -132,15 +132,16 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
             />
           </div>
 
-          <audio key={audioUrl} controls>
-            <source src={audioUrl} type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
-
-          {/* Plain audio element for testing (remove after debugging) */}
+          {/* Use native audio element for Blob URLs and playback */}
           {audioUrl && (
-            <div className="mb-4">
-              <audio key={audioUrl + '-plain'} controls src={audioUrl} type="audio/mpeg">
+            <div className="w-full flex flex-col items-center mt-4">
+              <audio
+                key={audioUrl}
+                controls
+                src={audioUrl}
+                className="w-full rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600"
+                style={{ outline: 'none', background: 'transparent' }}
+              >
                 Your browser does not support the audio element.
               </audio>
             </div>
