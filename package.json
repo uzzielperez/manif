@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
+    "@stripe/react-stripe-js": "^3.7.0",
+    "@stripe/stripe-js": "^7.3.0",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.43.1",
     "drizzle-zod": "^0.7.1",
@@ -24,6 +26,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.22.0",
+    "stripe": "^18.1.0",
     "ws": "^8.18.2",
     "zod": "^3.24.4",
     "zustand": "^4.5.0"

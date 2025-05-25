@@ -1,8 +1,9 @@
-import express, { type Express, type Request, type Response } from "express";
+import express, { type Express, type Request, type Response, type Router, type RequestHandler } from "express";
 import { createServer } from "http";
 import { storage } from "./storage.ts";
 import { generateMeditation, listModels } from "./groq.ts";
 import { synthesizeSpeech, listVoices } from "./elevenlabs.ts";
+import { createPaymentIntent, confirmPaymentIntent, createCheckoutSession, retrieveCheckoutSession } from "./stripe.ts";
 import { insertMeditationSchema, updateMeditationSchema } from "../shared/schema.ts";
 import { ZodError } from "zod";
 import fs from "fs";
@@ -10,6 +11,9 @@ import path from "path";
 
 export async function registerRoutes(app: Express) {
   console.log('Registering routes:');
+  
+  // Create a router
+  const router: Router = express.Router();
   
   // Serve static audio files
   const audioDir = path.join(process.cwd(), 'audio');
@@ -19,9 +23,106 @@ export async function registerRoutes(app: Express) {
   console.log('  Static /audio');
   app.use('/audio', express.static(audioDir));
   
+  // Add Stripe checkout route
+  console.log('  POST /api/payment/create-checkout');
+  router.post("/payment/create-checkout", (async (req, res) => {
+    try {
+      const { amount, successUrl, cancelUrl, metadata } = req.body;
+      
+      if (!amount || typeof amount !== 'number' || amount <= 0) {
+        return res.status(400).json({ error: "Valid amount is required" });
+      }
+      
+      if (!successUrl || !cancelUrl) {
+        return res.status(400).json({ error: "Success and cancel URLs are required" });
+      }
+      
+      console.log(`Creating checkout session for amount: $${amount}`);
+      console.log(`Success URL: ${successUrl}`);
+      console.log(`Cancel URL: ${cancelUrl}`);
+      
+      const session = await createCheckoutSession(amount, successUrl, cancelUrl, metadata);
+      
+      res.json(session);
+    } catch (error) {
+      console.error('Failed to create checkout session:', error);
+      res.status(500).json({ 
+        error: "Failed to create checkout session",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }) as RequestHandler);
+  
+  console.log('  GET /api/payment/checkout-status/:sessionId');
+  router.get("/payment/checkout-status/:sessionId", (async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      
+      if (!sessionId) {
+        return res.status(400).json({ error: "Session ID is required" });
+      }
+      
+      console.log(`Checking checkout session status: ${sessionId}`);
+      const sessionStatus = await retrieveCheckoutSession(sessionId);
+      
+      res.json(sessionStatus);
+    } catch (error) {
+      console.error('Failed to retrieve checkout session:', error);
+      res.status(500).json({ 
+        error: "Failed to retrieve checkout session",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }) as RequestHandler);
+  
+  // Add Stripe payment routes (legacy)
+  console.log('  POST /api/payment/create-intent');
+  router.post("/payment/create-intent", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || typeof amount !== 'number' || amount <= 0) {
+        return res.status(400).json({ error: "Valid amount is required" });
+      }
+      
+      console.log(`Creating payment intent for amount: $${amount}`);
+      const paymentIntent = await createPaymentIntent(amount);
+      
+      res.json(paymentIntent);
+    } catch (error) {
+      console.error('Failed to create payment intent:', error);
+      res.status(500).json({ 
+        error: "Failed to create payment intent",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+  
+  console.log('  POST /api/payment/confirm');
+  router.post("/payment/confirm", async (req, res) => {
+    try {
+      const { paymentIntentId } = req.body;
+      
+      if (!paymentIntentId) {
+        return res.status(400).json({ error: "Payment intent ID is required" });
+      }
+      
+      console.log(`Confirming payment intent: ${paymentIntentId}`);
+      const confirmation = await confirmPaymentIntent(paymentIntentId);
+      
+      res.json(confirmation);
+    } catch (error) {
+      console.error('Failed to confirm payment:', error);
+      res.status(500).json({ 
+        error: "Failed to confirm payment",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+  
   // Add this new route to list models
   console.log('  GET /api/models');
-  app.get("/api/models", async (_req: Request, res: Response) => {
+  router.get("/models", async (_req: Request, res: Response) => {
     try {
       const models = await listModels();
       res.json(models.map(model => model.id));
@@ -33,7 +134,7 @@ export async function registerRoutes(app: Express) {
 
   // Get available voices
   console.log('  GET /api/voices');
-  app.get("/api/voices", async (_req: Request, res: Response) => {
+  router.get("/voices", async (_req: Request, res: Response) => {
     try {
       const voicesData = await listVoices();
       res.json(voicesData);
@@ -45,7 +146,7 @@ export async function registerRoutes(app: Express) {
 
   // Stream meditation audio
   console.log('  GET /api/meditations/:id/audio');
-  app.get("/api/meditations/:id/audio", async (req, res) => {
+  router.get("/meditations/:id/audio", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -80,7 +181,7 @@ export async function registerRoutes(app: Express) {
 
   // Generate audio for meditation text
   console.log('  POST /api/meditations/audio');
-  app.post("/api/meditations/audio", async (req, res) => {
+  router.post("/meditations/audio", async (req, res) => {
     try {
       const { text, voiceId, duration } = req.body;
       
@@ -121,7 +222,7 @@ export async function registerRoutes(app: Express) {
 
   // Save audio file to disk (for terminal download)
   console.log('  POST /api/meditations/save-audio');
-  app.post("/api/meditations/save-audio", async (req, res) => {
+  router.post("/meditations/save-audio", async (req, res) => {
     try {
       const { text, voiceId, filename } = req.body;
       
@@ -172,7 +273,7 @@ export async function registerRoutes(app: Express) {
 
   // Save base64 audio data as file (for current meditation without regenerating)
   console.log('  POST /api/meditations/save-audio-file');
-  app.post("/api/meditations/save-audio-file", async (req, res) => {
+  router.post("/meditations/save-audio-file", async (req, res) => {
     try {
       const { audioData, filename } = req.body;
       
@@ -216,7 +317,7 @@ export async function registerRoutes(app: Express) {
 
   // Create a new meditation
   console.log('  POST /api/meditations');
-  app.post("/api/meditations", async (req, res) => {
+  router.post("/meditations", async (req, res) => {
     try {
       const { prompt, model } = req.body;
       console.log('Received meditation prompt:', prompt, 'with model:', model);
@@ -273,7 +374,7 @@ export async function registerRoutes(app: Express) {
 
   // List all meditations
   console.log('  GET /api/meditations');
-  app.get("/api/meditations", async (_req, res) => {
+  router.get("/meditations", async (_req, res) => {
     try {
       const meditations = await storage.listMeditations();
       res.json(meditations);
@@ -285,7 +386,7 @@ export async function registerRoutes(app: Express) {
 
   // Get a specific meditation
   console.log('  GET /api/meditations/:id');
-  app.get("/api/meditations/:id", async (req, res) => {
+  router.get("/meditations/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -306,7 +407,7 @@ export async function registerRoutes(app: Express) {
 
   // Rate a meditation
   console.log('  PATCH /api/meditations/:id/rate');
-  app.patch("/api/meditations/:id/rate", async (req, res) => {
+  router.patch("/meditations/:id/rate", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -329,7 +430,7 @@ export async function registerRoutes(app: Express) {
 
   // Delete a meditation
   console.log('  DELETE /api/meditations/:id');
-  app.delete("/api/meditations/:id", async (req, res) => {
+  router.delete("/meditations/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -346,13 +447,13 @@ export async function registerRoutes(app: Express) {
 
   // Add a simple test endpoint
   console.log('  GET /api/test');
-  app.get('/api/test', (req, res) => {
+  router.get('/test', (req, res) => {
     res.json({ status: 'ok', message: 'Server is working' });
   });
 
   // Add a Groq test endpoint
   console.log('  GET /api/groq-test');
-  app.get('/api/groq-test', async (req, res) => {
+  router.get('/groq-test', async (req, res) => {
     console.log("==== GROQ TEST ENDPOINT CALLED ====");
     try {
       console.log("Testing Groq connection...");
@@ -406,7 +507,7 @@ export async function registerRoutes(app: Express) {
 
   // Add a DB test endpoint
   console.log('  GET /api/db-test');
-  app.get('/api/db-test', async (req, res) => {
+  router.get('/db-test', async (req, res) => {
     console.log("==== DB TEST ENDPOINT CALLED ====");
     try {
       // Try a simple write and read
@@ -446,7 +547,7 @@ export async function registerRoutes(app: Express) {
 
   // Add this endpoint to update meditation content
   console.log('  PATCH /api/meditations/:id/content');
-  app.patch("/api/meditations/:id/content", async (req, res) => {
+  router.patch("/meditations/:id/content", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -469,13 +570,27 @@ export async function registerRoutes(app: Express) {
   });
 
   // Download meditation text
-  console.log('  GET /api/meditations/download');
-  app.post("/api/meditations/download", async (req, res) => {
+  console.log('  POST /api/meditations/download');
+  router.post("/meditations/download", async (req, res) => {
     try {
-      const { content, title } = req.body;
+      const { content, title, paymentIntentId } = req.body;
       
       if (!content) {
         return res.status(400).json({ error: "Meditation content is required" });
+      }
+      
+      // Verify payment before allowing download
+      if (!paymentIntentId) {
+        return res.status(403).json({ error: "Payment is required to download content" });
+      }
+      
+      // Verify the payment status with Stripe
+      const confirmation = await confirmPaymentIntent(paymentIntentId);
+      if (!confirmation.success) {
+        return res.status(403).json({ 
+          error: "Payment verification failed", 
+          paymentStatus: confirmation.status 
+        });
       }
       
       // Set headers for file download
@@ -489,6 +604,9 @@ export async function registerRoutes(app: Express) {
       res.status(500).json({ error: "Failed to download meditation" });
     }
   });
+
+  // Mount the router
+  app.use('/api', router);
 
   // Return the server
   const httpServer = createServer(app);

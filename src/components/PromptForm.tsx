@@ -10,6 +10,7 @@ interface PromptFormProps {
 
 // Define Eleven Labs voice options
 const ELEVEN_LABS_VOICES = [
+  { id: "B69tnztZ1gRYSVTCL8Cv", name: "Uzzie" },
   { id: "XrExE9yKIg1WjnnlVkGX", name: "John Doe Deep" },
   { id: "ZQe5CZNOzWyzPSCn5a3c", name: "Jameson - Guided Meditation" },
   { id: "3BU6uFpHysSBHbYVkPX1", name: "Professor Bill" },
