@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Music, AlertTriangle } from 'lucide-react';
-import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { Volume2, Music, AlertTriangle } from 'lucide-react';
 import { useSettingsStore } from '../store/settingsStore';
 
 interface AudioControlsProps {
@@ -9,20 +8,8 @@ interface AudioControlsProps {
 }
 
 const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
-  const { isPlaying, currentTime, duration, isLoading, error, togglePlayPause, seek, reset } = useAudioPlayer({ audioUrl });
   const { musicVolume, voiceVolume, musicEnabled, voiceEnabled } = useSettingsStore();
-  const [activeTab, setActiveTab] = useState<'meditation' | 'music'>('meditation');
-
-  // Format seconds into MM:SS
-  const formatTime = (time: number): string => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  };
-
-  useEffect(() => {
-    console.log("AudioControls received audioUrl:", audioUrl);
-  }, [audioUrl]);
+  const [activeTab, setActiveTab] = React.useState<'meditation' | 'music'>('meditation');
 
   return (
     <motion.div
@@ -56,13 +43,6 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
         </button>
       </div>
 
-      {error && (
-        <div className="bg-red-900/20 text-red-300 p-3 mb-4 rounded-lg flex items-center">
-          <AlertTriangle size={16} className="mr-2" />
-          <span className="text-sm">{error}</span>
-        </div>
-      )}
-
       {!audioUrl && (
         <div className="bg-yellow-900/20 text-yellow-300 p-3 mb-4 rounded-lg flex items-center">
           <AlertTriangle size={16} className="mr-2" />
@@ -70,82 +50,17 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl }) => {
         </div>
       )}
 
-      {isLoading ? (
-        <div className="flex justify-center items-center h-24">
-          <div className="w-8 h-8 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-          <span className="ml-2 text-white/70">Loading audio...</span>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <motion.div 
-                className="h-full bg-indigo-400"
-                style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-xs text-white/60">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
-          </div>
-
-          {/* Player Controls */}
-          <div className="flex justify-center items-center gap-4">
-            <button 
-              className="text-white/70 hover:text-white p-2"
-              onClick={reset}
-              disabled={!audioUrl || isLoading}
-            >
-              <SkipBack size={20} />
-            </button>
-            
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={togglePlayPause}
-              disabled={!audioUrl || isLoading}
-              className={`${!audioUrl || isLoading ? 'bg-indigo-500/50 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-600'} text-white p-4 rounded-full shadow-lg shadow-indigo-900/30`}
-            >
-              {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-            </motion.button>
-            
-            <button 
-              className="text-white/70 hover:text-white p-2"
-              disabled={!audioUrl || isLoading}
-            >
-              <SkipForward size={20} />
-            </button>
-          </div>
-
-          {/* Volume Control */}
-          <div className="flex items-center gap-3">
-            <Volume2 size={16} className="text-white/70" />
-            <input 
-              type="range" 
-              min="0" 
-              max="100" 
-              value={activeTab === 'meditation' ? voiceVolume : musicVolume} 
-              className="w-full accent-indigo-400 cursor-pointer"
-              disabled={activeTab === 'meditation' ? !voiceEnabled : !musicEnabled}
-            />
-          </div>
-
-          {/* Use native audio element for Blob URLs and playback */}
-          {audioUrl && (
-            <div className="w-full flex flex-col items-center mt-4">
-              <audio
-                key={audioUrl}
-                controls
-                src={audioUrl}
-                className="w-full rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600"
-                style={{ outline: 'none', background: 'transparent' }}
-              >
-                Your browser does not support the audio element.
-              </audio>
-            </div>
-          )}
+      {audioUrl && (
+        <div className="w-full flex flex-col items-center mt-4">
+          <audio
+            key={audioUrl}
+            controls
+            src={audioUrl}
+            className="w-full rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg"
+            style={{ outline: 'none', background: 'transparent' }}
+          >
+            Your browser does not support the audio element.
+          </audio>
         </div>
       )}
     </motion.div>
