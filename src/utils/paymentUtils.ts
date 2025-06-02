@@ -36,4 +36,24 @@ export function getPriceByDuration(duration: number | undefined): number {
   if (duration <= 5) return 2.99;
   if (duration <= 10) return 4.99;
   return 4.99; // Max price for longer durations
-} 
+}
+
+// --- Referral Code Utilities ---
+const USER_REFERRAL_CODE_KEY = 'userReferralCode';
+
+function generateReferralCode(): string {
+  const prefix = "MANIFEST";
+  const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `${prefix}-${randomPart}`;
+}
+
+export function getOrCreateUserReferralCode(): string {
+  let code = localStorage.getItem(USER_REFERRAL_CODE_KEY);
+  if (!code) {
+    code = generateReferralCode();
+    localStorage.setItem(USER_REFERRAL_CODE_KEY, code);
+  }
+  return code;
+}
+
+export const HAS_APPLIED_REFERRAL_KEY = 'hasAppliedReferral'; 

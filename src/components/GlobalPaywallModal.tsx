@@ -10,6 +10,11 @@ import {
   getPriceByDuration 
 } from '../utils/paymentUtils';
 
+// Constants from paymentUtils or defined locally if not exported broadly
+const APPLIED_REFERRAL_CODE_FROM_KEY = 'appliedReferralCodeFrom'; // Key to check who referred the current user
+const EARNED_CREDITS_PREFIX = 'earnedCreditsForReferrer_';     // Prefix for storing credits earned by a referrer
+const REFERRER_REWARD_CREDITS = 1; // How many credits a referrer gets per successful referral action
+
 // Simulated payment processing function (replace with actual Stripe logic if needed on client)
 const processStripePaymentClientSide = async (amount: number): Promise<boolean> => {
   console.log(`Simulating client-side processing for Stripe payment of $${amount}`);
@@ -63,22 +68,50 @@ const GlobalPaywallModal: React.FC = () => {
     }
   };
 
-  const handleClaimCredits = (amount: number) => {
-    addDownloadCredits(amount);
-    setDisplayCredits(getDownloadCredits()); // Update display
-    alert(`You have claimed ${amount} meditation downloads!`);
-    // If a meditation was pending, and now they have credits, unlock it.
-    if (meditationId && getDownloadCredits() > 0) {
+  const handleClaimCredits = (creditsToClaimForCurrentUser: number) => {
+    // Step 1: Add credits to the current user (the one claiming their purchased pack)
+    addDownloadCredits(creditsToClaimForCurrentUser);
+    const newTotalCreditsForCurrentUser = getDownloadCredits();
+    setDisplayCredits(newTotalCreditsForCurrentUser);
+    alert(`You have claimed ${creditsToClaimForCurrentUser} meditation downloads! You now have ${newTotalCreditsForCurrentUser} credits.`);
+
+    // Step 2: Check if this user was referred and reward the referrer
+    const referrerCode = localStorage.getItem(APPLIED_REFERRAL_CODE_FROM_KEY);
+    if (referrerCode) {
+      const referrerRewardKey = EARNED_CREDITS_PREFIX + referrerCode;
+      let currentEarnedForReferrer = parseInt(localStorage.getItem(referrerRewardKey) || '0', 10);
+      currentEarnedForReferrer += REFERRER_REWARD_CREDITS;
+      localStorage.setItem(referrerRewardKey, currentEarnedForReferrer.toString());
+      
+      // Important: Remove the key so this specific purchase doesn't reward the referrer multiple times.
+      // A more advanced system might link specific purchases to referrals.
+      localStorage.removeItem(APPLIED_REFERRAL_CODE_FROM_KEY);
+      
+      console.log(`Referrer ${referrerCode} has been awarded ${REFERRER_REWARD_CREDITS} credit(s). They now have ${currentEarnedForReferrer} pending.`);
+      alert(`Thanks for being referred! Your referrer (${referrerCode.substring(0,12)}...) has earned a reward.`);
+    }
+
+    // Step 3: If a meditation unlock was pending, try to unlock it with the new credits
+    if (meditationId && !isMeditationUnlocked(meditationId) && getDownloadCredits() > 0) {
       if (useDownloadCredit()) {
         unlockMeditation(meditationId);
-        setDisplayCredits(getDownloadCredits()); // Update display again after use
-        alert('Credits used! Your content is unlocked.');
+        setDisplayCredits(getDownloadCredits()); 
+        alert('Credits used! Your pending content is now unlocked.');
         onUnlockSuccess();
-        closePaywallModal();
+        closePaywallModal(); // Close modal after successful unlock and claim
         return;
       }
     }
-    // If no specific meditation was pending or credits not used, just update and close or stay for another action.
+    
+    // If modal was just for claiming credits and no unlock was pending, or if unlock failed, it might stay open or close based on UX.
+    // For now, if onUnlockSuccess wasn't called, we assume the user might want to do something else or see their new credit balance.
+    // However, a common UX is to close after a primary action like claiming credits successfully.
+    // Let's opt to close if an unlock wasn't immediately processed by the claimed credits.
+    if (!meditationId || isMeditationUnlocked(meditationId)) { // if no pending item or item now unlocked
+        // If there was an onUnlockSuccess for a *different* reason (e.g. coupon), it would have closed already.
+        // This ensures modal closes if primary action was just claiming credits or if claim unlocked something not pending via onUnlockSuccess context.
+        // closePaywallModal(); // Decided to keep it open to show new credit balance if no immediate unlock happened for context meditationId.
+    }
   };
 
   // This function is a placeholder for what would happen after a Stripe redirect for SINGLE meditation purchase.
