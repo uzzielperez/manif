@@ -11,9 +11,11 @@ import {
 } from '../utils/paymentUtils';
 
 // Constants from paymentUtils or defined locally if not exported broadly
+/*
 const APPLIED_REFERRAL_CODE_FROM_KEY = 'appliedReferralCodeFrom'; // Key to check who referred the current user
 const EARNED_CREDITS_PREFIX = 'earnedCreditsForReferrer_';     // Prefix for storing credits earned by a referrer
 const REFERRER_REWARD_CREDITS = 1; // How many credits a referrer gets per successful referral action
+*/
 
 // Simulated payment processing function (replace with actual Stripe logic if needed on client)
 const processStripePaymentClientSide = async (amount: number): Promise<boolean> => {
@@ -68,6 +70,7 @@ const GlobalPaywallModal: React.FC = () => {
     }
   };
 
+  /*
   const handleClaimCredits = (creditsToClaimForCurrentUser: number) => {
     // Step 1: Add credits to the current user (the one claiming their purchased pack)
     addDownloadCredits(creditsToClaimForCurrentUser);
@@ -107,15 +110,15 @@ const GlobalPaywallModal: React.FC = () => {
     // For now, if onUnlockSuccess wasn't called, we assume the user might want to do something else or see their new credit balance.
     // However, a common UX is to close after a primary action like claiming credits successfully.
     // Let's opt to close if an unlock wasn't immediately processed by the claimed credits.
-    if (!meditationId || isMeditationUnlocked(meditationId)) { // if no pending item or item now unlocked
+    // if (!meditationId || isMeditationUnlocked(meditationId)) { // if no pending item or item now unlocked
         // If there was an onUnlockSuccess for a *different* reason (e.g. coupon), it would have closed already.
         // This ensures modal closes if primary action was just claiming credits or if claim unlocked something not pending via onUnlockSuccess context.
         // closePaywallModal(); // Decided to keep it open to show new credit balance if no immediate unlock happened for context meditationId.
-    }
+    // }
   };
+  */
 
   // This function is a placeholder for what would happen after a Stripe redirect for SINGLE meditation purchase.
-  // In a real app, you'd verify payment with Stripe (e.g. using a session ID from URL params).
   const handleSimulatedPostStripePayment = async () => {
     setIsProcessingPaymentInModal(true);
     const paymentSuccessful = await processStripePaymentClientSide(currentPrice);
