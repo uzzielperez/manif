@@ -33,7 +33,7 @@ export function useDownloadCredit(): boolean {
 
 export function getPriceByDuration(duration: number | undefined): number {
   if (duration === undefined) return 4.99; // Default price if duration not known
-  if (duration <= 5) return 2.99;
+  if (duration <= 5) return 4.99;
   if (duration <= 10) return 4.99;
   return 4.99; // Max price for longer durations
 }

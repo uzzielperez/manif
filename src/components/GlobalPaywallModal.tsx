@@ -153,7 +153,7 @@ const GlobalPaywallModal: React.FC = () => {
               type="text"
               value={couponCodeInModal}
               onChange={(e) => setCouponCodeInModal(e.target.value)}
-              placeholder="Enter coupon code (e.g., Magic25M)"
+              placeholder="Enter coupon code"
               className="flex-1 bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 text-sm"
             />
             <button
@@ -199,7 +199,7 @@ const GlobalPaywallModal: React.FC = () => {
             rel="noopener noreferrer"
             className="block w-full py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg text-center text-sm shadow-sm transition-colors mt-3"
           >
-            €9.99 for 20 Downloads
+            €9.00 for 20 Downloads
           </a>
           <a
             href="#" // Placeholder for 50 downloads pack
@@ -213,6 +213,7 @@ const GlobalPaywallModal: React.FC = () => {
         <hr className="my-4"/>
 
         {/* Claim Credits Section */}
+        {/*
         <div className="mb-4">
           <p className="text-sm font-medium text-gray-700 mb-1">Claim Purchased Credits</p>
           <div className="flex gap-2">
@@ -231,6 +232,7 @@ const GlobalPaywallModal: React.FC = () => {
             </button>
           </div>
         </div>
+        */}
 
         {displayCredits > 0 && (
           <div className="mb-3 text-center text-green-700 text-sm bg-green-50 p-2 rounded-md">
