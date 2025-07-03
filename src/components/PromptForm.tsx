@@ -25,7 +25,8 @@ const ELEVEN_LABS_VOICES = [
   { id: "XrExE9yKIg1WjnnlVkGX", name: "John Doe Deep" },
   { id: "ZQe5CZNOzWyzPSCn5a3c", name: "Jameson - Guided Meditation" },
   { id: "3BU6uFpHysSBHbYVkPX1", name: "Professor Bill" },
-  { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah - Soothing" }
+  { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah - Soothing" },
+  { id: "uagKcbxPLaJH7iYADCbR", name: "Alison" }
 ];
 
 // Manifestation prompts
