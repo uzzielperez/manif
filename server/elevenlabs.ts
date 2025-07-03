@@ -69,13 +69,18 @@ export async function synthesizeSpeech(
 ): Promise<Buffer> {
   const cleanedText = cleanupTextForAudio(text);
   
+  console.log(`Starting TTS synthesis for ${cleanedText.length} characters with voice ${voiceId}`);
+  
   // Try ElevenLabs if configured
   if (process.env.ELEVENLABS_API_KEY && !voiceId.startsWith('openai_') && !voiceId.startsWith('groq_') && !voiceId.startsWith('playai_')) {
     try {
       console.log("Attempting ElevenLabs TTS...");
-      return await synthesizeWithElevenLabs(cleanedText, voiceId);
-    } catch (error) {
-      console.error("ElevenLabs TTS failed:", error);
+      const startTime = Date.now();
+      const result = await synthesizeWithElevenLabs(cleanedText, voiceId);
+      console.log(`ElevenLabs TTS completed in ${Date.now() - startTime}ms`);
+      return result;
+    } catch (error: any) {
+      console.error("ElevenLabs TTS failed:", error?.message || error);
       // Fall through to next option
     }
   }
@@ -88,9 +93,12 @@ export async function synthesizeSpeech(
       
     try {
       console.log("Attempting OpenAI TTS...");
-      return await synthesizeWithOpenAI(cleanedText, openaiVoiceId);
-    } catch (error) {
-      console.error("OpenAI TTS failed:", error);
+      const startTime = Date.now();
+      const result = await synthesizeWithOpenAI(cleanedText, openaiVoiceId);
+      console.log(`OpenAI TTS completed in ${Date.now() - startTime}ms`);
+      return result;
+    } catch (error: any) {
+      console.error("OpenAI TTS failed:", error?.message || error);
       // Fall through to next option
     }
   }
@@ -103,9 +111,12 @@ export async function synthesizeSpeech(
       
     try {
       console.log("Attempting Groq TTS...");
-      return await synthesizeWithGroq(cleanedText, groqModel);
-    } catch (error) {
-      console.error("Groq TTS failed:", error);
+      const startTime = Date.now();
+      const result = await synthesizeWithGroq(cleanedText, groqModel);
+      console.log(`Groq TTS completed in ${Date.now() - startTime}ms`);
+      return result;
+    } catch (error: any) {
+      console.error("Groq TTS failed:", error?.message || error);
     }
   }
   
@@ -117,9 +128,12 @@ export async function synthesizeSpeech(
       
     try {
       console.log("Attempting PlayAI TTS...");
-      return await synthesizeWithPlayAI(cleanedText, playaiVoiceId);
-    } catch (error) {
-      console.error("PlayAI TTS failed:", error);
+      const startTime = Date.now();
+      const result = await synthesizeWithPlayAI(cleanedText, playaiVoiceId);
+      console.log(`PlayAI TTS completed in ${Date.now() - startTime}ms`);
+      return result;
+    } catch (error: any) {
+      console.error("PlayAI TTS failed:", error?.message || error);
     }
   }
   
@@ -143,44 +157,64 @@ async function synthesizeWithElevenLabs(text: string, voiceId: string): Promise<
   
   console.log(`Synthesizing speech with ElevenLabs: ${textChunks.length} chunks`);
   
-  let allAudioBuffers: Buffer[] = [];
-  
-  for (let i = 0; i < textChunks.length; i++) {
-    const chunk = textChunks[i];
-    console.log(`Processing chunk ${i+1}/${textChunks.length}, length: ${chunk.length}`);
+  // Process chunks in parallel for better performance
+  const chunkPromises = textChunks.map(async (chunk, index) => {
+    console.log(`Processing chunk ${index+1}/${textChunks.length}, length: ${chunk.length}`);
     
     const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
     
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'xi-api-key': process.env.ELEVENLABS_API_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        text: chunk,
-        model_id: 'eleven_turbo_v2',
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.5,
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout per chunk
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': process.env.ELEVENLABS_API_KEY,
+          'Content-Type': 'application/json',
         },
-      }),
-    });
-    
-    console.log('TTS response status:', response.status);
-    const contentType = response.headers.get('content-type');
-    console.log('TTS response content-type:', contentType);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('TTS error:', errorText);
-      throw new Error('TTS failed: ' + errorText);
+        body: JSON.stringify({
+          text: chunk,
+          model_id: 'eleven_turbo_v2',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.5,
+          },
+        }),
+        signal: controller.signal,
+      });
+      
+      clearTimeout(timeoutId);
+      
+      console.log(`Chunk ${index+1} TTS response status:`, response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Chunk ${index+1} TTS error:`, errorText);
+        throw new Error(`TTS failed for chunk ${index+1}: ${errorText}`);
+      }
+      
+      const audioBuffer = Buffer.from(await response.arrayBuffer());
+      console.log(`Chunk ${index+1} audio buffer size:`, audioBuffer.length);
+      return { index, buffer: audioBuffer };
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error(`TTS timeout for chunk ${index+1}`);
+      }
+      throw error;
     }
-    
-    const audioBuffer = Buffer.from(await response.arrayBuffer());
-    console.log('Audio buffer first bytes:', audioBuffer.slice(0, 10));
-    allAudioBuffers.push(audioBuffer);
-  }
+  });
+  
+  // Wait for all chunks to complete
+  const chunkResults = await Promise.all(chunkPromises);
+  
+  // Sort by index to maintain order
+  chunkResults.sort((a, b) => a.index - b.index);
+  
+  // Extract buffers
+  const allAudioBuffers = chunkResults.map(result => result.buffer);
   
   // If we only have one chunk, just return it directly
   if (allAudioBuffers.length === 1) {
@@ -303,6 +337,7 @@ function mapElevenLabsToOpenAI(elevenLabsVoiceId: string): string {
     "VR6AewLTigWG4xSOukaG": "fable",  // Elli - female voice
     "pNInz6obpgDQGcFmaJgB": "alloy",  // Antoni - male voice
     "yoZ06aMxZJJ28mfd3POQ": "nova",   // Sam - female voice
+    "uagKcbxPLaJH7iYADCbR": "nova",   // Alison - female voice
   };
   
   return mapping[elevenLabsVoiceId] || "alloy"; // Default to alloy if no match

@@ -129,7 +129,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
       setIsGenerating(true);
       setStatus('Generating meditation text...');
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const timeoutId = setTimeout(() => controller.abort(), 50000); // Increased to 50 seconds
       try {
         const textResponse = await fetch('/.netlify/functions/meditations', {
           method: 'POST',
