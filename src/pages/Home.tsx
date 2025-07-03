@@ -20,6 +20,11 @@ const Home: React.FC = () => {
   const { openPaywallModal } = useUIStore();
 
   const [currentDisplayMeditationUnlocked, setCurrentDisplayMeditationUnlocked] = useState(false);
+  
+  // Audio timing state for text synchronization
+  const [audioCurrentTime, setAudioCurrentTime] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
   useEffect(() => {
     let localCredits = getDownloadCredits(); // Get initial credits
@@ -119,6 +124,12 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleAudioTimeUpdate = (currentTime: number, duration: number, isPlaying: boolean) => {
+    setAudioCurrentTime(currentTime);
+    setAudioDuration(duration);
+    setIsAudioPlaying(isPlaying);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -135,12 +146,16 @@ const Home: React.FC = () => {
             isAudioAvailable={!!meditation.audioUrl}
             onInitiateTextDownload={handleInitiateTextDownloadForDisplay}
             onInitiateAudioDownload={handleInitiateAudioDownloadForDisplay}
+            audioCurrentTime={audioCurrentTime}
+            audioDuration={audioDuration}
+            isAudioPlaying={isAudioPlaying}
           />
           {meditation.audioUrl && (
             <AudioControls 
               audioUrl={meditation.audioUrl} 
               hasPaid={currentDisplayMeditationUnlocked} 
               onRequestPaywall={requestPaywallForAudioControlsHome}
+              onAudioTimeUpdate={handleAudioTimeUpdate}
             />
           )}
         </div>

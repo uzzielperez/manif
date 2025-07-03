@@ -6,13 +6,20 @@ interface AudioControlsProps {
   audioUrl?: string;
   hasPaid?: boolean;
   onRequestPaywall?: () => void;
+  onAudioTimeUpdate?: (currentTime: number, duration: number, isPlaying: boolean) => void;
 }
 
-const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl, hasPaid, onRequestPaywall }) => {
+const AudioControls: React.FC<AudioControlsProps> = ({ 
+  audioUrl, 
+  hasPaid, 
+  onRequestPaywall,
+  onAudioTimeUpdate 
+}) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [hasHitPaywall, setHasHitPaywall] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -20,10 +27,19 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl, hasPaid, onRequ
 
     const onLoadedMetadata = () => {
       setDuration(audio.duration);
+      // Notify parent about duration
+      if (onAudioTimeUpdate) {
+        onAudioTimeUpdate(0, audio.duration, false);
+      }
     };
 
     const onTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
+      
+      // Notify parent about time update
+      if (onAudioTimeUpdate) {
+        onAudioTimeUpdate(audio.currentTime, audio.duration, !audio.paused);
+      }
       
       if (!hasPaid && audio.currentTime >= (audio.duration * 0.5)) {
         audio.pause();
@@ -34,14 +50,41 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl, hasPaid, onRequ
       }
     };
 
+    const onPlay = () => {
+      setIsPlaying(true);
+      if (onAudioTimeUpdate) {
+        onAudioTimeUpdate(audio.currentTime, audio.duration, true);
+      }
+    };
+
+    const onPause = () => {
+      setIsPlaying(false);
+      if (onAudioTimeUpdate) {
+        onAudioTimeUpdate(audio.currentTime, audio.duration, false);
+      }
+    };
+
+    const onEnded = () => {
+      setIsPlaying(false);
+      if (onAudioTimeUpdate) {
+        onAudioTimeUpdate(audio.currentTime, audio.duration, false);
+      }
+    };
+
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
     audio.addEventListener('timeupdate', onTimeUpdate);
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPause);
+    audio.addEventListener('ended', onEnded);
 
     return () => {
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
       audio.removeEventListener('timeupdate', onTimeUpdate);
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPause);
+      audio.removeEventListener('ended', onEnded);
     };
-  }, [audioUrl, hasPaid, onRequestPaywall]);
+  }, [audioUrl, hasPaid, onRequestPaywall, onAudioTimeUpdate]);
 
   useEffect(() => {
     if (hasPaid) {
@@ -117,6 +160,11 @@ const AudioControls: React.FC<AudioControlsProps> = ({ audioUrl, hasPaid, onRequ
               <div className="text-green-300 text-sm">
                 ✅ Full access unlocked - Enjoy your complete meditation
               </div>
+              {isPlaying && (
+                <div className="text-indigo-200 text-xs mt-1">
+                  📖 Text synchronized with audio
+                </div>
+              )}
             </div>
           )}
         </div>

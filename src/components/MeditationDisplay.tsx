@@ -9,20 +9,71 @@ interface MeditationDisplayProps {
   onInitiateTextDownload: () => void;
   onInitiateAudioDownload: () => void;
   isAudioAvailable: boolean;
+  audioCurrentTime?: number;
+  audioDuration?: number;
+  isAudioPlaying?: boolean;
 }
 
-const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text, onInitiateTextDownload, onInitiateAudioDownload, isAudioAvailable }) => {
+const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ 
+  text, 
+  onInitiateTextDownload, 
+  onInitiateAudioDownload, 
+  isAudioAvailable,
+  audioCurrentTime = 0,
+  audioDuration = 0,
+  isAudioPlaying = false 
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { meditation } = useMeditationStore();
   const [isDownloadingAudio, setIsDownloadingAudio] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState<{type: string, filename: string} | null>(null);
+  const [sentenceTimings, setSentenceTimings] = useState<number[]>([]);
 
   const cleanedText = cleanupText(text);
   const sentences = cleanedText.split('. ').filter(Boolean).map(s => s.trim() + (s.endsWith('.') ? '' : '.'));
   
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Calculate sentence timings based on character count and speaking rate
   useEffect(() => {
+    if (sentences.length === 0 || audioDuration === 0) return;
+
+    const totalCharacters = sentences.reduce((sum, sentence) => sum + sentence.length, 0);
+    const avgSpeakingRate = totalCharacters / audioDuration; // characters per second
+    
+    let currentTime = 0;
+    const timings = sentences.map(sentence => {
+      const sentenceTime = currentTime;
+      // Add small buffer between sentences (0.5 seconds)
+      currentTime += (sentence.length / avgSpeakingRate) + 0.5;
+      return sentenceTime;
+    });
+    
+    setSentenceTimings(timings);
+  }, [sentences, audioDuration]);
+
+  // Sync text with audio playback
+  useEffect(() => {
+    if (!isAudioPlaying || sentenceTimings.length === 0) return;
+
+    // Find the current sentence based on audio time
+    let newIndex = 0;
+    for (let i = sentenceTimings.length - 1; i >= 0; i--) {
+      if (audioCurrentTime >= sentenceTimings[i]) {
+        newIndex = i;
+        break;
+      }
+    }
+
+    if (newIndex !== currentIndex) {
+      setCurrentIndex(newIndex);
+    }
+  }, [audioCurrentTime, sentenceTimings, isAudioPlaying]);
+
+  // Fallback to timer-based progression when audio is not playing
+  useEffect(() => {
+    if (isAudioPlaying || sentenceTimings.length > 0) return;
+
     const timer = setInterval(() => {
       setCurrentIndex(prev => {
         if (prev < sentences.length - 1) {
@@ -34,7 +85,7 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text, onInitiateT
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [sentences.length]);
+  }, [sentences.length, isAudioPlaying, sentenceTimings.length]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -98,6 +149,12 @@ const MeditationDisplay: React.FC<MeditationDisplayProps> = ({ text, onInitiateT
           <p className="mt-1">
             Saved to your browser's Downloads folder: <code className="bg-black/30 px-2 py-1 rounded">{downloadSuccess.filename}</code>
           </p>
+        </div>
+      )}
+      
+      {isAudioPlaying && sentenceTimings.length > 0 && (
+        <div className="mb-4 p-2 bg-indigo-900/20 text-indigo-300 rounded-lg text-xs text-center">
+          🎧 Text synchronized with audio playback
         </div>
       )}
       

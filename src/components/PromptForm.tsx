@@ -414,6 +414,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
           audioUrl={meditation.audioUrl} 
           hasPaid={isMeditationUnlocked(meditation.id) || getDownloadCredits() > 0} 
           onRequestPaywall={requestPaywallForAudioControls}
+          onAudioTimeUpdate={() => {}} // No text sync needed in PromptForm
         />
       )}
     </motion.div>
