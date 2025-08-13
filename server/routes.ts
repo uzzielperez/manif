@@ -5,6 +5,7 @@ import { generateMeditation, listModels } from "./groq.ts";
 import { synthesizeSpeech, listVoices } from "./elevenlabs.ts";
 import { createPaymentIntent, confirmPaymentIntent, createCheckoutSession, retrieveCheckoutSession } from "./stripe.ts";
 import { insertMeditationSchema, updateMeditationSchema } from "../shared/schema.ts";
+import { createManifestationGuideHTML, saveManifestationGuideHTML } from "./pdf-generator.ts";
 import { ZodError } from "zod";
 import fs from "fs";
 import path from "path";
@@ -22,6 +23,14 @@ export async function registerRoutes(app: Express) {
   }
   console.log('  Static /audio');
   app.use('/audio', express.static(audioDir));
+  
+  // Serve static download files
+  const downloadsDir = path.join(process.cwd(), 'downloads');
+  if (!fs.existsSync(downloadsDir)) {
+    fs.mkdirSync(downloadsDir, { recursive: true });
+  }
+  console.log('  Static /downloads');
+  app.use('/downloads', express.static(downloadsDir));
   
   // Add Stripe checkout route
   console.log('  POST /api/payment/create-checkout');
@@ -70,6 +79,85 @@ export async function registerRoutes(app: Express) {
       console.error('Failed to retrieve checkout session:', error);
       res.status(500).json({ 
         error: "Failed to retrieve checkout session",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }) as RequestHandler);
+  
+  // Download manifestation guide after payment verification
+  console.log('  GET /api/download/manifestation-guide/:sessionId');
+  router.get("/download/manifestation-guide/:sessionId", (async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      
+      if (!sessionId) {
+        return res.status(400).json({ error: "Session ID is required" });
+      }
+      
+      console.log(`Verifying payment for manifestation guide download: ${sessionId}`);
+      
+      // Verify the payment status with Stripe
+      const sessionStatus = await retrieveCheckoutSession(sessionId);
+      if (!sessionStatus.success) {
+        return res.status(403).json({ 
+          error: "Payment verification failed", 
+          paymentStatus: sessionStatus.status 
+        });
+      }
+      
+      console.log(`Payment verified, generating manifestation guide for session: ${sessionId}`);
+      
+      // Generate the HTML guide
+      const htmlContent = createManifestationGuideHTML();
+      
+      // Set headers for HTML file download
+      res.setHeader('Content-Type', 'text/html');
+      res.setHeader('Content-Disposition', 'attachment; filename="Manifestation-AI-Blueprint-Starter-Guide.html"');
+      
+      // Send the HTML content as a downloadable file
+      res.send(htmlContent);
+    } catch (error) {
+      console.error('Failed to download manifestation guide:', error);
+      res.status(500).json({ 
+        error: "Failed to download manifestation guide",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }) as RequestHandler);
+  
+  // Generate manifestation guide (returns download URL)
+  console.log('  POST /api/generate/manifestation-guide');
+  router.post("/generate/manifestation-guide", (async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      
+      if (!sessionId) {
+        return res.status(400).json({ error: "Payment session ID is required" });
+      }
+      
+      // Verify the payment status
+      const sessionStatus = await retrieveCheckoutSession(sessionId);
+      if (!sessionStatus.success) {
+        return res.status(403).json({ 
+          error: "Payment verification failed", 
+          paymentStatus: sessionStatus.status 
+        });
+      }
+      
+      // Save the HTML file to downloads directory
+      const fileName = await saveManifestationGuideHTML();
+      const downloadUrl = `/downloads/${fileName}`;
+      
+      res.json({
+        success: true,
+        message: "Manifestation guide generated successfully",
+        downloadUrl,
+        fileName
+      });
+    } catch (error) {
+      console.error('Failed to generate manifestation guide:', error);
+      res.status(500).json({ 
+        error: "Failed to generate manifestation guide",
         details: error instanceof Error ? error.message : String(error)
       });
     }

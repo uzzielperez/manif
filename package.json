@@ -22,6 +22,7 @@
     "groq": "^3.88.3",
     "groq-sdk": "^0.22.0",
     "howler": "^2.2.4",
+    "jspdf": "^3.0.1",
     "lucide-react": "^0.344.0",
     "node-fetch": "^3.3.2",
     "react": "^18.3.1",

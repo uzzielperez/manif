@@ -15,10 +15,10 @@ export async function createCheckoutSession(amount: number, successUrl: string, 
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'eur',
             product_data: {
-              name: 'Premium Meditation',
-              description: 'High-quality audio + text meditation content',
+              name: 'Manifestation AI Blueprint - Starter Package',
+              description: 'Complete manifestation guide with AI meditation tools',
             },
             unit_amount: amountInCents,
           },

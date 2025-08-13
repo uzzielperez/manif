@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Program from './pages/Program';
 import Settings from './pages/Settings';
+import PaymentSuccess from './pages/PaymentSuccess';
 import Footer from './components/Footer';
 import { BackgroundAnimation } from './components/BackgroundAnimation';
 import GlobalPaywallModal from './components/GlobalPaywallModal';
@@ -32,6 +33,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/program" element={<Program />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/payment-success" element={<PaymentSuccess />} />
             </Routes>
           </AnimatePresence>
         </main>

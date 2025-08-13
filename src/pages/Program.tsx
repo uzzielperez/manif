@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 const tiers = [
   {
     name: 'Starter',
-    price: '$19/mo',
+    price: '€19/pack',
     features: [
       'Limited (5–10 chats/mo)',
       'Basic set',
@@ -50,6 +50,42 @@ const featureLabels = [
 ];
 
 const Program: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handleStarterPayment = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/payment/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: 19,
+          successUrl: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}/program`,
+          metadata: {
+            product: 'starter_package',
+            description: 'Manifestation AI Blueprint - Starter Package'
+          }
+        }),
+      });
+
+      if (response.ok) {
+        const { url } = await response.json();
+        window.location.href = url;
+      } else {
+        console.error('Failed to create checkout session');
+        alert('Failed to create checkout session. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -97,14 +133,13 @@ const Program: React.FC = () => {
                     }`}
                   >
                     {tier.name === 'Starter' ? (
-                      <a
-                        href="https://buy.stripe.com/dRm7sK47keiJ5ada3ofjG00"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1"
+                      <button
+                        onClick={handleStarterPayment}
+                        disabled={loading}
+                        className="inline-block bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 disabled:hover:transform-none"
                       >
-                        Get Started
-                      </a>
+                        {loading ? 'Processing...' : 'Get Started - €19'}
+                      </button>
                     ) : (
                       <button
                         disabled
