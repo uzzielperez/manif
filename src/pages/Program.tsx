@@ -34,40 +34,32 @@ const Program: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
 
-  const handleStarterPayment = async () => {
+  const handleStarterPayment = () => {
     setLoading(true);
-    try {
-      const response = await fetch('/.netlify/functions/payment/create-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: 19,
-          successUrl: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-          cancelUrl: `${window.location.origin}/program`,
-          couponCode: couponCode,
-          metadata: {
-            product: 'starter_package',
-            description: 'Manifestation AI Blueprint - Starter Package',
-            coupon_used: couponCode || 'none'
-          }
-        }),
-      });
-
-      if (response.ok) {
-        const { url } = await response.json();
-        window.location.href = url;
-      } else {
-        console.error('Failed to create checkout session');
-        alert('Failed to create checkout session. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      alert('An error occurred. Please try again.');
-    } finally {
-      setLoading(false);
+    
+    // Use the direct Stripe payment link
+    let paymentUrl = 'https://buy.stripe.com/dRmcN7eAI3MO33P81KcfK03';
+    
+    // Add success and cancel URLs as parameters
+    const successUrl = encodeURIComponent(`${window.location.origin}/payment-success`);
+    const cancelUrl = encodeURIComponent(`${window.location.origin}/program`);
+    
+    // Append success and cancel URLs
+    paymentUrl += `?success_url=${successUrl}&cancel_url=${cancelUrl}`;
+    
+    // Handle Magic25M code for free access
+    if (couponCode.toUpperCase() === 'MAGIC25M') {
+      // Grant free access immediately
+      localStorage.setItem('manifestation_access', 'true');
+      localStorage.setItem('magic25m_used', 'true');
+      
+      // Redirect directly to success page
+      window.location.href = `${window.location.origin}/payment-success?magic25m=true`;
+      return;
     }
+    
+    // Redirect to Stripe payment link for regular purchases
+    window.location.href = paymentUrl;
   };
 
   return (

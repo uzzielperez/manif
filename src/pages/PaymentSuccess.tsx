@@ -19,9 +19,19 @@ const PaymentSuccess: React.FC = () => {
   const { setHasAccess } = usePayment();
 
   const sessionId = searchParams.get('session_id');
+  const magic25m = searchParams.get('magic25m');
 
   useEffect(() => {
     const verifyPaymentAndGenerateGuide = async () => {
+      // Handle Magic25M free access
+      if (magic25m === 'true') {
+        setPaymentStatus({ success: true, status: 'magic25m' });
+        setHasAccess(true);
+        setDownloadReady(true);
+        setLoading(false);
+        return;
+      }
+      
       if (!sessionId) {
         setPaymentStatus({ success: false, status: 'error', error: 'No session ID provided' });
         setLoading(false);
@@ -75,12 +85,58 @@ const PaymentSuccess: React.FC = () => {
     };
 
     verifyPaymentAndGenerateGuide();
-  }, [sessionId]);
+  }, [sessionId, magic25m, setHasAccess]);
 
   const handleDirectDownload = () => {
-    if (sessionId) {
+    if (magic25m === 'true') {
+      // For Magic25M users, create and download the guide directly
+      const htmlContent = createManifestationGuideHTML();
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Manifestation-AI-Blueprint-Starter-Guide.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else if (sessionId) {
       window.open(`/.netlify/functions/download/manifestation-guide/${sessionId}`, '_blank');
     }
+  };
+
+  // Function to create the manifestation guide HTML (simplified version for client-side)
+  const createManifestationGuideHTML = () => {
+    return \`<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Manifestation AI Blueprint - Starter Guide</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; line-height: 1.6; color: #333; }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #6366f1; padding-bottom: 20px; }
+        .title { font-size: 28px; font-weight: bold; color: #6366f1; margin-bottom: 10px; }
+        .section { margin-bottom: 30px; }
+        .section-title { font-size: 20px; font-weight: bold; color: #6366f1; margin-bottom: 15px; border-left: 4px solid #6366f1; padding-left: 15px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">Manifestation AI Blueprint</div>
+        <div>Starter Guide - Your Path to Manifestation</div>
+    </div>
+    <div class="section">
+        <div class="section-title">Welcome to Your Manifestation Journey!</div>
+        <p>Thank you for using Magic25M! You now have access to our complete manifestation system.</p>
+        <p>Visit our home page to create AI-powered meditations and use our goal template to set your intentions.</p>
+    </div>
+    <div class="section">
+        <div class="section-title">Success Stories</div>
+        <p>When you manifest your desires, email us at <strong>uzzielperez25@gmail.com</strong></p>
+        <p>Your story could inspire others on their journey!</p>
+    </div>
+</body>
+</html>\`;
   };
 
   if (loading) {
@@ -144,9 +200,14 @@ const PaymentSuccess: React.FC = () => {
               <CheckCircle size={40} className="text-white" />
             </div>
             
-            <h1 className="text-3xl font-bold mb-4">Payment Successful!</h1>
+            <h1 className="text-3xl font-bold mb-4">
+              {magic25m === 'true' ? 'Magic25M Access Granted!' : 'Payment Successful!'}
+            </h1>
             <p className="text-xl text-white/80 mb-8">
-              Welcome to the Manifestation AI Blueprint family! 🎉
+              {magic25m === 'true' 
+                ? 'Welcome to free access with Magic25M! ✨🎉'
+                : 'Welcome to the Manifestation AI Blueprint family! 🎉'
+              }
             </p>
 
             <div className="bg-white/5 rounded-xl p-6 mb-8">
