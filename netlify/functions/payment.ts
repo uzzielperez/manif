@@ -1,7 +1,7 @@
 import { Handler } from '@netlify/functions';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY || '', {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16' as Stripe.LatestApiVersion,
 });
 
@@ -23,9 +23,12 @@ export const handler: Handler = async (event, context) => {
   }
 
   try {
+    const pathSegments = event.path.split('/');
+    const action = pathSegments[pathSegments.length - 1];
+    
     switch (event.httpMethod) {
       case 'POST':
-        if (event.path === '/.netlify/functions/payment/create-checkout') {
+        if (action === 'create-checkout' || event.path.includes('create-checkout')) {
           const { amount, successUrl, cancelUrl, metadata } = JSON.parse(event.body || '{}');
           
           if (!amount || typeof amount !== 'number' || amount <= 0) {
@@ -41,10 +44,10 @@ export const handler: Handler = async (event, context) => {
             line_items: [
               {
                 price_data: {
-                  currency: 'usd',
+                  currency: 'eur',
                   product_data: {
-                    name: 'Premium Meditation',
-                    description: 'High-quality audio + text meditation content',
+                    name: 'Manifestation AI Blueprint - Starter Package',
+                    description: 'Complete manifestation guide with AI meditation tools',
                   },
                   unit_amount: Math.round(amount * 100),
                 },
@@ -55,7 +58,7 @@ export const handler: Handler = async (event, context) => {
             success_url: successUrl,
             cancel_url: cancelUrl,
             metadata: {
-              product: 'meditation_download',
+              product: 'starter_package',
               ...metadata
             },
           });
@@ -72,8 +75,8 @@ export const handler: Handler = async (event, context) => {
         break;
 
       case 'GET':
-        if (event.path.startsWith('/.netlify/functions/payment/checkout-status/')) {
-          const sessionId = event.path.split('/').pop();
+        if (event.path.includes('checkout-status')) {
+          const sessionId = pathSegments[pathSegments.length - 1];
           
           if (!sessionId) {
             return {
@@ -107,10 +110,16 @@ export const handler: Handler = async (event, context) => {
     }
   } catch (error) {
     console.error('Payment function error:', error);
+    console.error('Event path:', event.path);
+    console.error('Event method:', event.httpMethod);
+    console.error('Event body:', event.body);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : String(error)
+      })
     };
   }
 }; 

@@ -30,7 +30,7 @@ const PaymentSuccess: React.FC = () => {
 
       try {
         // First, verify the payment status
-        const statusResponse = await fetch(`/api/payment/checkout-status/${sessionId}`);
+        const statusResponse = await fetch(`/.netlify/functions/payment/checkout-status/${sessionId}`);
         const statusData = await statusResponse.json();
 
         if (statusData.success) {
@@ -39,7 +39,7 @@ const PaymentSuccess: React.FC = () => {
           setHasAccess(true);
           
           // Generate the downloadable guide
-          const guideResponse = await fetch('/api/generate/manifestation-guide', {
+          const guideResponse = await fetch('/.netlify/functions/download/generate-guide', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ const PaymentSuccess: React.FC = () => {
 
   const handleDirectDownload = () => {
     if (sessionId) {
-      window.open(`/api/download/manifestation-guide/${sessionId}`, '_blank');
+      window.open(`/.netlify/functions/download/manifestation-guide/${sessionId}`, '_blank');
     }
   };
 

@@ -35,7 +35,7 @@ const Program: React.FC = () => {
   const handleStarterPayment = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/payment/create-checkout', {
+      const response = await fetch('/.netlify/functions/payment/create-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
