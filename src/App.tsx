@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import History from './pages/History';
+import Program from './pages/Program';
 import Settings from './pages/Settings';
 import Footer from './components/Footer';
 import { BackgroundAnimation } from './components/BackgroundAnimation';
@@ -30,7 +30,7 @@ function App() {
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/history" element={<History />} />
+              <Route path="/program" element={<Program />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
           </AnimatePresence>
