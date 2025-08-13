@@ -26,18 +26,7 @@ const tiers = [
       'Monthly resource refresh',
     ],
   },
-  {
-    name: 'Elite',
-    price: '$197/mo',
-    features: [
-      'Unlimited + monthly “focus session” AI plan',
-      'Full library + 1 exclusive ritual per month',
-      'All templates + pre-filled example goals',
-      'Weekly drops + early access to next month’s leads',
-      'Pro board + invite-only mastermind board',
-      'Monthly refresh + bonus mini-course',
-    ],
-  },
+
 ];
 
 const featureLabels = [
