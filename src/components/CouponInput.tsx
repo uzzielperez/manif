@@ -10,22 +10,27 @@ interface CouponInputProps {
 const CouponInput: React.FC<CouponInputProps> = ({ onCouponChange, initialCoupon = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [couponCode, setCouponCode] = useState(initialCoupon);
+  const [appliedCoupon, setAppliedCoupon] = useState(initialCoupon);
 
   const handleApplyCoupon = () => {
-    onCouponChange(couponCode.trim());
-    if (couponCode.trim()) {
+    const trimmedCode = couponCode.trim();
+    onCouponChange(trimmedCode);
+    setAppliedCoupon(trimmedCode);
+    if (trimmedCode) {
       setIsOpen(false);
     }
   };
 
   const handleRemoveCoupon = () => {
     setCouponCode('');
+    setAppliedCoupon('');
     onCouponChange('');
+    setIsOpen(false);
   };
 
   return (
     <div className="mt-4">
-      {!isOpen && !couponCode ? (
+      {!isOpen && !appliedCoupon ? (
         <button
           onClick={() => setIsOpen(true)}
           className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm"
@@ -39,26 +44,36 @@ const CouponInput: React.FC<CouponInputProps> = ({ onCouponChange, initialCoupon
           animate={{ opacity: 1, height: 'auto' }}
           className="bg-white/5 rounded-lg p-4 border border-white/10"
         >
-          <div className="flex items-center gap-2 mb-2">
-            <Percent size={16} className="text-green-400" />
-            <span className="text-sm font-medium">Coupon Code</span>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Percent size={16} className="text-green-400" />
+              <span className="text-sm font-medium">Coupon Code</span>
+            </div>
+            {!appliedCoupon && (
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-white/50 hover:text-white/70 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
           
-          {couponCode ? (
+          {appliedCoupon ? (
             <div className={`flex items-center justify-between rounded-lg p-3 ${
-              couponCode.toUpperCase() === 'MAGIC25M' 
+              appliedCoupon.toUpperCase() === 'MAGIC25M' 
                 ? 'bg-yellow-500/20 border border-yellow-500/30' 
                 : 'bg-green-500/20 border border-green-500/30'
             }`}>
               <div className="flex items-center gap-2">
                 <span className={`font-mono text-sm ${
-                  couponCode.toUpperCase() === 'MAGIC25M' 
+                  appliedCoupon.toUpperCase() === 'MAGIC25M' 
                     ? 'text-yellow-300' 
                     : 'text-green-300'
                 }`}>
-                  {couponCode}
+                  {appliedCoupon}
                 </span>
-                {couponCode.toUpperCase() === 'MAGIC25M' && (
+                {appliedCoupon.toUpperCase() === 'MAGIC25M' && (
                   <span className="text-yellow-300 text-xs font-semibold bg-yellow-500/20 px-2 py-1 rounded">
                     FREE ACCESS ✨
                   </span>
@@ -67,7 +82,7 @@ const CouponInput: React.FC<CouponInputProps> = ({ onCouponChange, initialCoupon
               <button
                 onClick={handleRemoveCoupon}
                 className={`transition-colors ${
-                  couponCode.toUpperCase() === 'MAGIC25M'
+                  appliedCoupon.toUpperCase() === 'MAGIC25M'
                     ? 'text-yellow-300 hover:text-yellow-200'
                     : 'text-green-300 hover:text-green-200'
                 }`}
