@@ -13,6 +13,19 @@ export const handler: Handler = async (event, context) => {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
   };
 
+  // Validate Stripe key is present
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('STRIPE_SECRET_KEY environment variable is not set');
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ 
+        error: 'Payment system configuration error',
+        details: 'Missing Stripe configuration'
+      })
+    };
+  }
+
   // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -23,8 +36,17 @@ export const handler: Handler = async (event, context) => {
   }
 
   try {
+    console.log('Payment function called with:', {
+      path: event.path,
+      method: event.httpMethod,
+      body: event.body
+    });
+    
     const pathSegments = event.path.split('/');
     const action = pathSegments[pathSegments.length - 1];
+    
+    console.log('Path segments:', pathSegments);
+    console.log('Action:', action);
     
     switch (event.httpMethod) {
       case 'POST':
@@ -161,12 +183,20 @@ export const handler: Handler = async (event, context) => {
     console.error('Event path:', event.path);
     console.error('Event method:', event.httpMethod);
     console.error('Event body:', event.body);
+    console.error('Stripe key present:', !!process.env.STRIPE_SECRET_KEY);
+    console.error('Stripe key starts with sk_:', process.env.STRIPE_SECRET_KEY?.startsWith('sk_'));
+    
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : String(error)
+        error: 'Failed to create checkout session. Please try again.',
+        details: error instanceof Error ? error.message : String(error),
+        debug: {
+          hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
+          eventPath: event.path,
+          eventMethod: event.httpMethod
+        }
       })
     };
   }
