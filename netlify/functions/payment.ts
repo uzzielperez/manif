@@ -50,7 +50,9 @@ export const handler: Handler = async (event, context) => {
     
     switch (event.httpMethod) {
       case 'POST':
-        if (action === 'create-checkout' || event.path.includes('create-checkout')) {
+        // Handle any POST request to payment function as checkout creation
+        console.log('Processing checkout creation request');
+        if (true) { // Accept any POST request
           const { amount, successUrl, cancelUrl, metadata, couponCode } = JSON.parse(event.body || '{}');
           
           if (!amount || typeof amount !== 'number' || amount <= 0) {
@@ -145,7 +147,9 @@ export const handler: Handler = async (event, context) => {
         break;
 
       case 'GET':
-        if (event.path.includes('checkout-status')) {
+        // Handle any GET request as status check
+        console.log('Processing status check request');
+        if (true) { // Accept any GET request
           const sessionId = pathSegments[pathSegments.length - 1];
           
           if (!sessionId) {
