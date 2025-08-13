@@ -7,6 +7,7 @@ import Program from './pages/Program';
 import Settings from './pages/Settings';
 import PaymentSuccess from './pages/PaymentSuccess';
 import GoalTemplate from './pages/GoalTemplate';
+import InfluencerDashboard from './pages/InfluencerDashboard';
 import Footer from './components/Footer';
 import { BackgroundAnimation } from './components/BackgroundAnimation';
 import GlobalPaywallModal from './components/GlobalPaywallModal';
@@ -33,11 +34,12 @@ function App() {
           <main className="flex-grow flex items-center justify-center p-4 relative z-10">
             <AnimatePresence mode="wait">
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/program" element={<Program />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/payment-success" element={<PaymentSuccess />} />
-                <Route path="/goal-template" element={<GoalTemplate />} />
+                              <Route path="/" element={<Home />} />
+              <Route path="/program" element={<Program />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/goal-template" element={<GoalTemplate />} />
+              <Route path="/influencer-dashboard" element={<InfluencerDashboard />} />
               </Routes>
             </AnimatePresence>
           </main>

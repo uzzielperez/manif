@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import CouponInput from '../components/CouponInput';
 
 const tiers = [
@@ -33,6 +34,44 @@ const featureLabels = [
 const Program: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
+  const [searchParams] = useSearchParams();
+
+  // Auto-populate coupon code from referral links
+  useEffect(() => {
+    const refCode = searchParams.get('ref');
+    const couponParam = searchParams.get('coupon');
+    
+    if (refCode) {
+      // Convert referral code to coupon code (e.g., ref=sarah25 -> coupon=SARAH25)
+      setCouponCode(refCode.toUpperCase());
+    } else if (couponParam) {
+      setCouponCode(couponParam.toUpperCase());
+    }
+
+    // Track the referral click
+    if (refCode) {
+      trackReferralClick(refCode);
+    }
+  }, [searchParams]);
+
+  const trackReferralClick = async (refCode: string) => {
+    try {
+      await fetch('/.netlify/functions/track-referral', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          referral_code: refCode,
+          referral_url: document.referrer,
+          user_agent: navigator.userAgent,
+          timestamp: new Date().toISOString()
+        }),
+      });
+    } catch (error) {
+      console.log('Referral tracking failed:', error);
+    }
+  };
 
   const handleStarterPayment = () => {
     setLoading(true);
@@ -126,7 +165,7 @@ const Program: React.FC = () => {
                               : 'Get Started - €19'
                           }
                         </button>
-                        <CouponInput onCouponChange={setCouponCode} />
+                        <CouponInput onCouponChange={setCouponCode} initialCoupon={couponCode} />
                       </div>
                     ) : (
                       <button
