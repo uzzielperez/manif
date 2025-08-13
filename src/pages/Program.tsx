@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const tiers = [
   {
     name: 'Starter',
-    price: '$49/mo',
+    price: '$19/mo',
     features: [
       'Limited (5–10 chats/mo)',
       'Basic set',
