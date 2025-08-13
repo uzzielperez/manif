@@ -5,13 +5,13 @@ interface SettingsState {
   voiceVolume: number;
   musicEnabled: boolean;
   voiceEnabled: boolean;
-  theme: 'dark' | 'light';
+  theme: 'dark' | 'light' | 'gold';
   
   setMusicVolume: (volume: number) => void;
   setVoiceVolume: (volume: number) => void;
   toggleMusic: () => void;
   toggleVoice: () => void;
-  setTheme: (theme: 'dark' | 'light') => void;
+  setTheme: (theme: 'dark' | 'light' | 'gold') => void;
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({

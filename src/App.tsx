@@ -8,12 +8,21 @@ import Settings from './pages/Settings';
 import Footer from './components/Footer';
 import { BackgroundAnimation } from './components/BackgroundAnimation';
 import GlobalPaywallModal from './components/GlobalPaywallModal';
+import { useSettingsStore } from '../settingsStore';
 import { HomeIcon, ListCollapse, SettingsIcon } from 'lucide-react';
 
 function App() {
+  const theme = useSettingsStore((state) => state.theme);
+
+  const themeClasses = {
+    dark: 'from-indigo-950 via-purple-900 to-violet-800',
+    light: 'from-gray-100 via-gray-200 to-gray-300',
+    gold: 'from-dark-bg via-black to-dark-bg',
+  };
+
   return (
     <Router>
-      <div className="min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br from-indigo-950 via-purple-900 to-violet-800">
+      <div className={`min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br ${themeClasses[theme]}`}>
         <BackgroundAnimation />
         <GlobalPaywallModal />
         <Navbar />
