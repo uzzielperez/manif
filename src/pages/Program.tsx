@@ -9,9 +9,6 @@ const tiers = [
       'Limited (5–10 chats/mo)',
       'Basic set',
       '1 starter template',
-      '1 drop/mo (5 leads)',
-      '—',
-      'Quarterly resource refresh',
     ],
   },
   {
@@ -21,9 +18,6 @@ const tiers = [
       'Unlimited',
       'Full library',
       'All templates',
-      'Weekly curated drops',
-      'Private discussion board',
-      'Monthly resource refresh',
     ],
   },
 
@@ -33,9 +27,6 @@ const featureLabels = [
   'AI Chat Access',
   'Manifestation Ritual Library',
   'Goal Templates',
-  'Opportunity Vault',
-  'Community',
-  'Updates',
 ];
 
 const Program: React.FC = () => {

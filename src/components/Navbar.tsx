@@ -1,18 +1,28 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Home, Briefcase, Settings as SettingsIcon } from 'lucide-react';
+import { Menu, X, Home, Briefcase, Settings as SettingsIcon, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePayment } from '../context/PaymentContext';
 import Logo from './Logo';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { hasAccess } = usePayment();
 
-  const navItems = [
+  const baseNavItems = [
     { title: 'Home', path: '/', icon: <Home size={18} /> },
     { title: 'Program', path: '/program', icon: <Briefcase size={18} /> },
     { title: 'Settings', path: '/settings', icon: <SettingsIcon size={18} /> },
   ];
+
+  const premiumNavItems = [
+    { title: 'Goals', path: '/goal-template', icon: <Target size={18} /> },
+  ];
+
+  const navItems = hasAccess 
+    ? [...baseNavItems.slice(0, 2), ...premiumNavItems, ...baseNavItems.slice(2)]
+    : baseNavItems;
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 

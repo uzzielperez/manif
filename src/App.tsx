@@ -6,9 +6,11 @@ import Home from './pages/Home';
 import Program from './pages/Program';
 import Settings from './pages/Settings';
 import PaymentSuccess from './pages/PaymentSuccess';
+import GoalTemplate from './pages/GoalTemplate';
 import Footer from './components/Footer';
 import { BackgroundAnimation } from './components/BackgroundAnimation';
 import GlobalPaywallModal from './components/GlobalPaywallModal';
+import { PaymentProvider } from './context/PaymentContext';
 import { useSettingsStore } from '../settingsStore';
 import { HomeIcon, ListCollapse, SettingsIcon } from 'lucide-react';
 
@@ -22,24 +24,27 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className={`min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br ${themeClasses[theme]}`}>
-        <BackgroundAnimation />
-        <GlobalPaywallModal />
-        <Navbar />
-        <main className="flex-grow flex items-center justify-center p-4 relative z-10">
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/program" element={<Program />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/payment-success" element={<PaymentSuccess />} />
-            </Routes>
-          </AnimatePresence>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <PaymentProvider>
+      <Router>
+        <div className={`min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br ${themeClasses[theme]}`}>
+          <BackgroundAnimation />
+          <GlobalPaywallModal />
+          <Navbar />
+          <main className="flex-grow flex items-center justify-center p-4 relative z-10">
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/program" element={<Program />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/payment-success" element={<PaymentSuccess />} />
+                <Route path="/goal-template" element={<GoalTemplate />} />
+              </Routes>
+            </AnimatePresence>
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </PaymentProvider>
   );
 }
 

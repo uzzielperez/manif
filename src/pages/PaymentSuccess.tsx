@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle, Download, ArrowLeft, Mail } from 'lucide-react';
+import { usePayment } from '../context/PaymentContext';
 
 interface PaymentStatus {
   success: boolean;
@@ -15,6 +16,7 @@ const PaymentSuccess: React.FC = () => {
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadReady, setDownloadReady] = useState(false);
+  const { setHasAccess } = usePayment();
 
   const sessionId = searchParams.get('session_id');
 
@@ -33,6 +35,8 @@ const PaymentSuccess: React.FC = () => {
 
         if (statusData.success) {
           setPaymentStatus({ success: true, status: 'paid' });
+          // Grant access to premium features
+          setHasAccess(true);
           
           // Generate the downloadable guide
           const guideResponse = await fetch('/api/generate/manifestation-guide', {
@@ -201,6 +205,12 @@ const PaymentSuccess: React.FC = () => {
                   className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg transition-colors"
                 >
                   Create AI Meditation
+                </Link>
+                <Link
+                  to="/goal-template"
+                  className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
+                >
+                  Set Your Goals
                 </Link>
                 <Link
                   to="/program"
