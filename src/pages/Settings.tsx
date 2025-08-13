@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Volume2, VolumeX, Music, Mic2, Moon, Sun, Gift, Copy, CheckCircle, Award, Star } from 'lucide-react';
-import { useSettingsStore } from '../store/settingsStore';
+import { useSettingsStore } from '../../settingsStore';
 import { 
   getOrCreateUserReferralCode, 
   addDownloadCredits, 
