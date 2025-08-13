@@ -107,7 +107,7 @@ const PaymentSuccess: React.FC = () => {
 
   // Function to create the manifestation guide HTML (simplified version for client-side)
   const createManifestationGuideHTML = () => {
-    return \`<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -136,7 +136,7 @@ const PaymentSuccess: React.FC = () => {
         <p>Your story could inspire others on their journey!</p>
     </div>
 </body>
-</html>\`;
+</html>`;
   };
 
   if (loading) {
