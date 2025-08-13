@@ -86,6 +86,37 @@ const Program: React.FC = () => {
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr className="border-t border-white/10">
+                <td className="p-4 bg-white/5 rounded-bl-lg"></td>
+                {tiers.map((tier, index) => (
+                  <td
+                    key={`${tier.name}-button`}
+                    className={`p-4 text-center bg-white/5 ${
+                      index === tiers.length - 1 ? 'rounded-br-lg' : ''
+                    }`}
+                  >
+                    {tier.name === 'Starter' ? (
+                      <a
+                        href="https://buy.stripe.com/dRm7sK47keiJ5ada3ofjG00"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1"
+                      >
+                        Get Started
+                      </a>
+                    ) : (
+                      <button
+                        disabled
+                        className="inline-block bg-white/20 text-white/80 font-semibold py-2 px-6 rounded-lg cursor-not-allowed"
+                      >
+                        Coming Soon
+                      </button>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>
