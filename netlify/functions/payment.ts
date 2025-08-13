@@ -29,7 +29,7 @@ export const handler: Handler = async (event, context) => {
     switch (event.httpMethod) {
       case 'POST':
         if (action === 'create-checkout' || event.path.includes('create-checkout')) {
-          const { amount, successUrl, cancelUrl, metadata } = JSON.parse(event.body || '{}');
+          const { amount, successUrl, cancelUrl, metadata, couponCode } = JSON.parse(event.body || '{}');
           
           if (!amount || typeof amount !== 'number' || amount <= 0) {
             return {
@@ -39,7 +39,8 @@ export const handler: Handler = async (event, context) => {
             };
           }
 
-          const session = await stripe.checkout.sessions.create({
+          // Prepare session configuration
+          const sessionConfig: any = {
             payment_method_types: ['card'],
             line_items: [
               {
@@ -61,7 +62,54 @@ export const handler: Handler = async (event, context) => {
               product: 'starter_package',
               ...metadata
             },
-          });
+            allow_promotion_codes: true, // Enable promotion codes in checkout
+          };
+
+          // Handle special Magic25M code for free checkout
+          if (couponCode && couponCode.trim().toUpperCase() === 'MAGIC25M') {
+            try {
+              // Create or retrieve the Magic25M coupon (100% off)
+              let magicCoupon;
+              try {
+                magicCoupon = await stripe.coupons.retrieve('MAGIC25M');
+              } catch {
+                // Create the Magic25M coupon if it doesn't exist
+                magicCoupon = await stripe.coupons.create({
+                  id: 'MAGIC25M',
+                  name: 'Magic25M - Free Access',
+                  percent_off: 100,
+                  duration: 'once',
+                  max_redemptions: 1000, // Generous limit
+                });
+              }
+              
+              sessionConfig.discounts = [{
+                coupon: magicCoupon.id
+              }];
+              
+              // Add special metadata for Magic25M users
+              sessionConfig.metadata.magic_code_used = 'true';
+              sessionConfig.metadata.special_access = 'Magic25M';
+              
+            } catch (magicError) {
+              console.error('Error handling Magic25M coupon:', magicError);
+            }
+          }
+          // Add regular coupon if provided (not Magic25M)
+          else if (couponCode && typeof couponCode === 'string' && couponCode.trim()) {
+            try {
+              // Try to retrieve the coupon to validate it exists
+              const coupon = await stripe.coupons.retrieve(couponCode.trim());
+              sessionConfig.discounts = [{
+                coupon: coupon.id
+              }];
+            } catch (couponError) {
+              console.log('Coupon not found or invalid:', couponCode);
+              // Continue without coupon - let Stripe handle invalid promotion codes
+            }
+          }
+
+          const session = await stripe.checkout.sessions.create(sessionConfig);
 
           return {
             statusCode: 200,

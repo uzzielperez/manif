@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import CouponInput from '../components/CouponInput';
 
 const tiers = [
   {
@@ -31,6 +32,7 @@ const featureLabels = [
 
 const Program: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
 
   const handleStarterPayment = async () => {
     setLoading(true);
@@ -44,9 +46,11 @@ const Program: React.FC = () => {
           amount: 19,
           successUrl: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${window.location.origin}/program`,
+          couponCode: couponCode,
           metadata: {
             product: 'starter_package',
-            description: 'Manifestation AI Blueprint - Starter Package'
+            description: 'Manifestation AI Blueprint - Starter Package',
+            coupon_used: couponCode || 'none'
           }
         }),
       });
@@ -113,13 +117,25 @@ const Program: React.FC = () => {
                     }`}
                   >
                     {tier.name === 'Starter' ? (
-                      <button
-                        onClick={handleStarterPayment}
-                        disabled={loading}
-                        className="inline-block bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 disabled:hover:transform-none"
-                      >
-                        {loading ? 'Processing...' : 'Get Started - €19'}
-                      </button>
+                      <div className="space-y-3">
+                        <button
+                          onClick={handleStarterPayment}
+                          disabled={loading}
+                          className={`w-full font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-1 disabled:hover:transform-none ${
+                            couponCode.toUpperCase() === 'MAGIC25M'
+                              ? 'bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white'
+                              : 'bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white'
+                          }`}
+                        >
+                          {loading 
+                            ? 'Processing...' 
+                            : couponCode.toUpperCase() === 'MAGIC25M' 
+                              ? 'Get Free Access ✨' 
+                              : 'Get Started - €19'
+                          }
+                        </button>
+                        <CouponInput onCouponChange={setCouponCode} />
+                      </div>
                     ) : (
                       <button
                         disabled
