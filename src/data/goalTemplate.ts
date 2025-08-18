@@ -115,6 +115,38 @@ export const goalTemplate: GoalCategory[] = [
       "My taxes and finances are organized and managed well",
       "I live in my ideal location surrounded by nature/city life"
     ]
+  },
+  {
+    name: "Enterprise Vision & Strategy",
+    description: "Build a thriving business with clear vision, mission, and financial projections",
+    prompts: [
+      "What is your company's core mission and purpose?",
+      "What is your 5-year vision for your business?",
+      "What revenue goals do you want to achieve in the next 1-3 years?",
+      "What is your target market and ideal customer profile?",
+      "What unique value proposition sets your business apart?",
+      "What are your key performance indicators (KPIs) for success?",
+      "How do you want to scale and grow your operations?",
+      "What partnerships or collaborations do you envision?",
+      "What impact do you want your business to have on the world?",
+      "What financial milestones will mark your business success?",
+      "What team structure and culture do you want to build?",
+      "What market position do you want to achieve in your industry?"
+    ],
+    examples: [
+      "My company generates €1M in annual revenue by 2026",
+      "We serve 10,000+ customers who love our products and services",
+      "Our mission drives positive change in our industry and community",
+      "We achieve 25% profit margins while maintaining excellent quality",
+      "Our team of 50+ passionate employees shares our vision and values",
+      "We are recognized as the market leader in our niche",
+      "Our business operations run efficiently with streamlined processes",
+      "We have strategic partnerships that accelerate our growth",
+      "Our company culture attracts top talent and retains great people",
+      "We expand into 3 new markets while maintaining our core strengths",
+      "Our financial projections show consistent 30% year-over-year growth",
+      "We create sustainable value for customers, employees, and stakeholders"
+    ]
   }
 ];
 

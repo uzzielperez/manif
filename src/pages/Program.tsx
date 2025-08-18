@@ -22,6 +22,15 @@ const tiers = [
       'All templates',
     ],
   },
+  {
+    name: 'Enterprise',
+    price: '€200/pack',
+    features: [
+      'Business strategy tools',
+      'Vision & mission templates',
+      'Financial projections',
+    ],
+  },
 
 ];
 
@@ -166,6 +175,18 @@ const Program: React.FC = () => {
                           }
                         </button>
                         <CouponInput onCouponChange={setCouponCode} initialCoupon={couponCode} />
+                      </div>
+                    ) : tier.name === 'Enterprise' ? (
+                      <div className="space-y-2">
+                        <button
+                          disabled
+                          className="w-full bg-purple-600/50 text-white/80 font-semibold py-2 px-6 rounded-lg cursor-not-allowed"
+                        >
+                          Coming Soon
+                        </button>
+                        <div className="text-xs text-white/60">
+                          €200 Enterprise Package
+                        </div>
                       </div>
                     ) : (
                       <button

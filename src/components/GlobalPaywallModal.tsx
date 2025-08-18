@@ -211,6 +211,13 @@ const GlobalPaywallModal: React.FC = () => {
           >
             €20 for 50 Downloads (Coming Soon)
           </a>
+          <a
+            href="#" // Placeholder for Enterprise pack
+            onClick={(e) => { e.preventDefault(); alert('Enterprise package coming soon! €200 for business strategy tools, vision & mission templates, and financial projections.'); }}
+            className="block w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg text-center text-sm shadow-sm transition-colors mt-3 opacity-70 cursor-not-allowed"
+          >
+            €200 Enterprise Package (Coming Soon)
+          </a>
         </div>
         
         <hr className="my-4"/>

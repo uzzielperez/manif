@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { goalTemplate, manifestationPrompts, visualizationQuestions, type GoalCategory } from '../data/goalTemplate';
-import { Download, Target, Heart, DollarSign, Briefcase, Home, Plus, Minus, Lock, Star } from 'lucide-react';
+import { Download, Target, Heart, DollarSign, Briefcase, Home, Plus, Minus, Lock, Star, Building2 } from 'lucide-react';
 import { usePayment } from '../context/PaymentContext';
 
 const categoryIcons = {
@@ -11,6 +11,7 @@ const categoryIcons = {
   "Health & Vitality": Target,
   "Work & Career": Briefcase,
   "Logistics & Lifestyle": Home,
+  "Enterprise Vision & Strategy": Building2,
 };
 
 const GoalTemplate: React.FC = () => {
@@ -144,6 +145,13 @@ const GoalTemplate: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
+                  <Building2 className="text-purple-400 mt-1" size={20} />
+                  <div>
+                    <h3 className="font-semibold">Enterprise Vision & Strategy</h3>
+                    <p className="text-white/70 text-sm">Business mission, financial projections</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
                   <Download className="text-cyan-400 mt-1" size={20} />
                   <div>
                     <h3 className="font-semibold">Downloadable Worksheet</h3>
@@ -156,9 +164,10 @@ const GoalTemplate: React.FC = () => {
 
           <div className="space-y-4">
             <div className="text-white/70 mb-6">
-              <p className="text-lg">✨ 35+ guided prompts across 5 life areas</p>
+              <p className="text-lg">✨ 45+ guided prompts across 6 life areas</p>
               <p className="text-lg">✨ Example affirmations for each category</p>
               <p className="text-lg">✨ Visualization questions for meditation</p>
+              <p className="text-lg">✨ Enterprise business strategy tools</p>
               <p className="text-lg">✨ Downloadable goal worksheet</p>
             </div>
 
