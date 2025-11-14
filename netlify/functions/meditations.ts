@@ -72,7 +72,7 @@ export const handler: Handler = async (event, context) => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: model || 'gemma-7b-it',
+            model: model || 'llama-3.1-8b-instant',
             messages: [
               {
                 role: 'system',

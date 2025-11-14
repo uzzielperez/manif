@@ -134,7 +134,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         const textResponse = await fetch('/.netlify/functions/meditations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, model: 'gemma2-9b-it' }),
+          body: JSON.stringify({ prompt, model: 'llama-3.1-8b-instant' }),
           signal: controller.signal
         });
         clearTimeout(timeoutId);
