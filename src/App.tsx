@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import Generate from './pages/Generate';
+import FreeMeditations from './pages/FreeMeditations';
+import Timelines from './pages/Timelines';
 import Program from './pages/Program';
 import Settings from './pages/Settings';
 import PaymentSuccess from './pages/PaymentSuccess';
@@ -34,12 +37,15 @@ function App() {
           <main className="flex-grow flex items-center justify-center p-4 relative z-10">
             <AnimatePresence mode="wait">
               <Routes>
-                              <Route path="/" element={<Home />} />
-              <Route path="/program" element={<Program />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/payment-success" element={<PaymentSuccess />} />
-              <Route path="/goal-template" element={<GoalTemplate />} />
-              <Route path="/influencer-dashboard" element={<InfluencerDashboard />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/generate" element={<Generate />} />
+                <Route path="/free-meditations" element={<FreeMeditations />} />
+                <Route path="/timelines" element={<Timelines />} />
+                <Route path="/program" element={<Program />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/payment-success" element={<PaymentSuccess />} />
+                <Route path="/goal-template" element={<GoalTemplate />} />
+                <Route path="/influencer-dashboard" element={<InfluencerDashboard />} />
               </Routes>
             </AnimatePresence>
           </main>
