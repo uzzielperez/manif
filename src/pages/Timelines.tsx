@@ -42,7 +42,7 @@ const Timelines: React.FC = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('/api/timeline/generate', {
+      const response = await fetch('/.netlify/functions/timeline', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: message }),
