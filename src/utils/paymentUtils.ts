@@ -56,4 +56,22 @@ export function getOrCreateUserReferralCode(): string {
   return code;
 }
 
-export const HAS_APPLIED_REFERRAL_KEY = 'hasAppliedReferral'; 
+export const HAS_APPLIED_REFERRAL_KEY = 'hasAppliedReferral';
+
+// --- Timeline Usage Utilities ---
+const TIMELINE_USAGE_KEY = 'timelineUsageCount';
+
+export function getTimelineUsageCount(): number {
+  return parseInt(localStorage.getItem(TIMELINE_USAGE_KEY) || '0', 10);
+}
+
+export function incrementTimelineUsage(): number {
+  const current = getTimelineUsageCount();
+  const next = current + 1;
+  localStorage.setItem(TIMELINE_USAGE_KEY, next.toString());
+  return next;
+}
+
+export function resetTimelineUsage(): void {
+  localStorage.setItem(TIMELINE_USAGE_KEY, '0');
+}

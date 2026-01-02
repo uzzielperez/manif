@@ -14,6 +14,7 @@ const Navbar: React.FC = () => {
     { title: 'Home', path: '/', icon: <Home size={18} /> },
     { title: 'Meditations', path: '/free-meditations', icon: <Sparkles size={18} /> },
     { title: 'Timelines', path: '/timelines', icon: <Clock size={18} /> },
+    { title: 'Blog', path: '/blog', icon: <Sparkles size={18} /> },
     { title: 'Enterprise', path: '/enterprise', icon: <Building2 size={18} /> },
     { title: 'Settings', path: '/settings', icon: <SettingsIcon size={18} /> },
   ];
