@@ -11,6 +11,7 @@ import {
   Edge,
   Node,
   BackgroundVariant,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -29,10 +30,21 @@ export const TimelineGraph: React.FC<TimelineGraphProps> = ({
   onEdgesChange,
   onConnect,
 }) => {
+  const { fitView } = useReactFlow();
+
   const defaultEdgeOptions = {
     animated: true,
     style: { stroke: 'var(--cosmic-primary)', strokeWidth: 2 },
   };
+
+  React.useEffect(() => {
+    // Fit view when nodes are added
+    if (nodes.length > 1) {
+      setTimeout(() => {
+        fitView({ padding: 0.2, duration: 800 });
+      }, 100);
+    }
+  }, [nodes.length, fitView]);
 
   return (
     <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-[var(--cosmic-glass-border)] bg-[var(--cosmic-glass)] backdrop-blur-md">

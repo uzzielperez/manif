@@ -65,7 +65,14 @@ export const handler: Handler = async (event, context) => {
     }
 
     const data = await response.json();
-    const content = data.choices[0]?.message?.content || '{}';
+    let content = data.choices[0]?.message?.content || '{}';
+
+    // Robust JSON cleaning in case the model returns markdown code blocks
+    if (content.includes('```json')) {
+      content = content.split('```json')[1].split('```')[0].trim();
+    } else if (content.includes('```')) {
+      content = content.split('```')[1].split('```')[0].trim();
+    }
 
     return {
       statusCode: 200,

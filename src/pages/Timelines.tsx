@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { useNodesState, useEdgesState, addEdge, Connection, Edge, Node } from '@xyflow/react';
+import { useNodesState, useEdgesState, addEdge, Connection, Edge, Node, ReactFlowProvider } from '@xyflow/react';
 import { TimelineGraph } from '../components/TimelineGraph';
 import { TimelineChat } from '../components/TimelineChat';
 import { Sparkles, Save, Download, RotateCcw } from 'lucide-react';
@@ -60,20 +60,32 @@ const Timelines: React.FC = () => {
       }
       
       // Transform API data into React Flow nodes and edges
-      const newNodes: Node[] = data.nodes.map((n: any, i: number) => ({
-        id: n.id,
-        data: { label: n.label },
-        position: { x: 250 + (Math.random() * 50 - 25), y: (i * 150) + 150 },
-        style: { 
-          background: 'var(--cosmic-glass)', 
-          color: 'white', 
-          border: `1px solid ${n.type === 'crossroad' ? 'var(--cosmic-accent)' : 'var(--cosmic-primary)'}`,
-          borderRadius: '16px',
-          padding: '12px 20px',
-          fontSize: '13px',
-          boxShadow: `0 0 20px rgba(var(--cosmic-${n.type === 'crossroad' ? 'accent' : 'primary'}), 0.1)`,
-        },
-      }));
+      const newNodes: Node[] = data.nodes.map((n: any, i: number) => {
+        // Calculate a more dynamic position
+        const row = Math.floor(i / 2);
+        const col = i % 2;
+        const xOffset = col === 0 ? -150 : 150;
+        
+        return {
+          id: n.id,
+          data: { label: n.label },
+          position: { 
+            x: 250 + (data.nodes.length > 1 ? xOffset : 0), 
+            y: (row * 180) + 200 
+          },
+          style: { 
+            background: 'var(--cosmic-glass)', 
+            color: 'white', 
+            border: `1px solid ${n.type === 'crossroad' ? 'var(--cosmic-accent)' : 'var(--cosmic-primary)'}`,
+            borderRadius: '16px',
+            padding: '12px 20px',
+            fontSize: '13px',
+            width: 200,
+            textAlign: 'center' as const,
+            boxShadow: `0 0 20px rgba(var(--cosmic-${n.type === 'crossroad' ? 'accent' : 'primary'}), 0.1)`,
+          },
+        };
+      });
 
       const newEdges: Edge[] = (data.edges || []).map((e: any) => ({
         id: `edge-${e.source}-${e.target}`,
@@ -105,7 +117,7 @@ const Timelines: React.FC = () => {
       setEdges(finalEdges);
     } catch (error) {
       console.error('Error generating timeline:', error);
-      // Fallback or error message could be added here
+      throw error; // Re-throw to show error in chat
     } finally {
       setIsLoading(false);
     }
@@ -153,13 +165,15 @@ const Timelines: React.FC = () => {
       <div className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
         {/* Graph Area */}
         <div className="lg:col-span-8 relative h-full">
-          <TimelineGraph 
-            nodes={nodes} 
-            edges={edges} 
-            onNodesChange={onNodesChange} 
-            onEdgesChange={onEdgesChange} 
-            onConnect={onConnect} 
-          />
+          <ReactFlowProvider>
+            <TimelineGraph 
+              nodes={nodes} 
+              edges={edges} 
+              onNodesChange={onNodesChange} 
+              onEdgesChange={onEdgesChange} 
+              onConnect={onConnect} 
+            />
+          </ReactFlowProvider>
           
           {/* Legend Overlay */}
           <div className="absolute bottom-6 left-6 p-4 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl text-[10px] text-white/50 space-y-3 pointer-events-none uppercase tracking-[0.2em] font-bold">
