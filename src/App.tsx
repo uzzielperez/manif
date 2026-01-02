@@ -10,6 +10,7 @@ import Program from './pages/Program';
 import Settings from './pages/Settings';
 import EnterpriseDashboard from './pages/EnterpriseDashboard';
 import Blog from './pages/Blog';
+import InfluencerDashboard from './pages/InfluencerDashboard';
 import PaymentSuccess from './pages/PaymentSuccess';
 import GoalTemplate from './pages/GoalTemplate';
 import InfluencerDashboard from './pages/InfluencerDashboard';
@@ -62,6 +63,7 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/enterprise" element={<EnterpriseDashboard />} />
                 <Route path="/blog" element={<Blog />} />
+                <Route path="/influencer-dashboard" element={<InfluencerDashboard />} />
                 <Route path="/payment-success" element={<PaymentSuccess />} />
                 <Route path="/goal-template" element={<GoalTemplate />} />
                 <Route path="/influencer-dashboard" element={<InfluencerDashboard />} />

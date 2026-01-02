@@ -52,6 +52,29 @@ export async function setupDatabase() {
         console.log('Model column already exists');
       }
     }
+
+    // Now check for influencer_events table
+    const influencerTableCheck = await sql`
+      SELECT EXISTS (
+        SELECT 1 
+        FROM information_schema.tables 
+        WHERE table_name = 'influencer_events'
+      );
+    `;
+    
+    if (!influencerTableCheck[0].exists) {
+      console.log('Creating influencer_events table');
+      await sql`
+        CREATE TABLE influencer_events (
+          id SERIAL PRIMARY KEY,
+          influencer_id TEXT NOT NULL,
+          event_type TEXT NOT NULL,
+          amount INTEGER DEFAULT 0,
+          timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `;
+      console.log('influencer_events table created successfully');
+    }
     
     return true;
   } catch (error) {

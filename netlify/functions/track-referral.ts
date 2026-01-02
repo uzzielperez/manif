@@ -1,6 +1,9 @@
 import { Handler } from '@netlify/functions';
+import { setupDatabase } from '../../db-setup.js';
+import { db } from '../../server/db';
+import { influencerEvents } from '../../shared/schema';
 
-export const handler: Handler = async (event, context) => {
+export const handler: Handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -8,61 +11,43 @@ export const handler: Handler = async (event, context) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: ''
-    };
+    return { statusCode: 200, headers, body: '' };
   }
 
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
+    return { statusCode: 405, headers, body: 'Method Not Allowed' };
   }
 
   try {
-    const { referral_code, referral_url, user_agent, timestamp } = JSON.parse(event.body || '{}');
+    const { influencerId, eventType, amount } = JSON.parse(event.body || '{}');
 
-    // For now, just log the referral data
-    // In production, you'd save this to your database
-    console.log('Referral Click Tracked:', {
-      referral_code,
-      referral_url,
-      user_agent,
-      timestamp,
-      ip: event.headers['client-ip'] || event.headers['x-forwarded-for']
+    if (!influencerId || !eventType) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'Missing required fields' })
+      };
+    }
+
+    await setupDatabase();
+
+    await db.insert(influencerEvents).values({
+      influencerId,
+      eventType,
+      amount: amount || 0,
     });
-
-    // TODO: Save to database when you set up the influencer tracking DB
-    // await saveReferralClick({
-    //   referral_code,
-    //   referral_url,
-    //   user_agent,
-    //   ip_address: event.headers['client-ip'] || event.headers['x-forwarded-for'],
-    //   clicked_at: new Date(timestamp)
-    // });
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({
-        success: true,
-        message: 'Referral tracked successfully'
-      })
+      body: JSON.stringify({ success: true })
     };
-
   } catch (error) {
-    console.error('Referral tracking error:', error);
+    console.error('Track referral error:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({
-        error: 'Failed to track referral',
-        details: error instanceof Error ? error.message : String(error)
-      })
+      body: JSON.stringify({ error: 'Internal Server Error' })
     };
   }
 };

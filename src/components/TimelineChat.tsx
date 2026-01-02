@@ -47,7 +47,7 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
 
   const isLocked = usageCount >= MAX_FREE_USES && !isUnlocked;
 
-  const handleUnlock = (e: React.FormEvent) => {
+  const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
     const influencer = getInfluencerByCode(unlockCodeInput);
     if (influencer) {
@@ -57,6 +57,20 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
       localStorage.setItem('attributed_influencer', influencer.id);
       setUnlockCodeInput('');
       setShowCodeInput(false);
+
+      // Backend tracking (discreet)
+      try {
+        await fetch('/.netlify/functions/track-referral', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            influencerId: influencer.id, 
+            eventType: 'unlock' 
+          }),
+        });
+      } catch (err) {
+        console.error('Failed to track unlock:', err);
+      }
     } else {
       alert('Invalid unlock code.');
     }

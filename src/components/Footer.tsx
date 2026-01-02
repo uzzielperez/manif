@@ -11,6 +11,7 @@ const Footer: React.FC = () => {
           <span>Manifestation Blog</span>
         </Link>
         <Link to="/enterprise" className="hover:text-white transition-colors">Enterprise</Link>
+        <Link to="/influencer-dashboard" className="hover:text-white transition-colors">Partner Portal</Link>
         <a 
           href="https://www.buymeacoffee.com/manifesto" 
           target="_blank" 
