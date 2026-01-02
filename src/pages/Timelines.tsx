@@ -1,74 +1,82 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, CheckCircle2, Circle, ArrowRight } from 'lucide-react';
+import { useNodesState, useEdgesState, addEdge, Connection, Edge, Node } from '@xyflow/react';
+import { TimelineGraph } from '../components/TimelineGraph';
+import { TimelineChat } from '../components/TimelineChat';
+import { Sparkles, Save, Download, HelpCircle } from 'lucide-react';
 
-interface TimelineEvent {
-  id: number;
-  date: string;
-  title: string;
-  description: string;
-  status: 'completed' | 'current' | 'upcoming';
-}
+const initialNodes: Node[] = [
+  {
+    id: 'start',
+    type: 'input',
+    data: { label: 'Current Reality' },
+    position: { x: 250, y: 0 },
+    style: { 
+      background: 'var(--cosmic-glass)', 
+      color: 'white', 
+      border: '2px solid var(--cosmic-primary)',
+      borderRadius: '12px',
+      padding: '10px',
+      fontSize: '14px',
+      fontWeight: '600'
+    },
+  },
+];
+
+const initialEdges: Edge[] = [];
 
 const Timelines: React.FC = () => {
-  const sampleTimeline: TimelineEvent[] = [
-    {
-      id: 1,
-      date: 'Week 1',
-      title: 'Set Your Intention',
-      description: 'Define what you want to manifest and create your first personalized meditation.',
-      status: 'completed',
-    },
-    {
-      id: 2,
-      date: 'Week 2',
-      title: 'Daily Practice Begins',
-      description: 'Establish a consistent meditation routine with guided sessions tailored to your goals.',
-      status: 'completed',
-    },
-    {
-      id: 3,
-      date: 'Week 3',
-      title: 'Deepening Your Practice',
-      description: 'Explore advanced techniques and longer meditation sessions to strengthen your manifestation.',
-      status: 'current',
-    },
-    {
-      id: 4,
-      date: 'Week 4',
-      title: 'Integration & Reflection',
-      description: 'Reflect on your progress and integrate your manifestations into daily life.',
-      status: 'upcoming',
-    },
-    {
-      id: 5,
-      date: 'Month 2',
-      title: 'Advanced Manifestation',
-      description: 'Take your practice to the next level with specialized meditations for specific areas of life.',
-      status: 'upcoming',
-    },
-  ];
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle2 className="text-emerald-400" size={24} />;
-      case 'current':
-        return <Clock className="text-amber-400" size={24} />;
-      default:
-        return <Circle className="text-white/30" size={24} />;
+  const onConnect = useCallback(
+    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
+
+  const handleSendMessage = async (message: string) => {
+    setIsLoading(true);
+    
+    // Simulate AI processing delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Mock logic to add nodes based on message
+    const newNodeId = `node-${Date.now()}`;
+    const newNode: Node = {
+      id: newNodeId,
+      data: { label: message.length > 20 ? message.substring(0, 20) + '...' : message },
+      position: { x: Math.random() * 500, y: (nodes.length * 100) + 50 },
+      style: { 
+        background: 'var(--cosmic-glass)', 
+        color: 'white', 
+        border: '1px solid var(--cosmic-accent)',
+        borderRadius: '8px',
+        padding: '8px',
+      },
+    };
+
+    setNodes((nds) => [...nds, newNode]);
+    
+    // Auto-connect to the last node
+    if (nodes.length > 0) {
+      const lastNodeId = nodes[nodes.length - 1].id;
+      const newEdge: Edge = {
+        id: `edge-${lastNodeId}-${newNodeId}`,
+        source: lastNodeId,
+        target: newNodeId,
+        animated: true,
+        style: { stroke: 'var(--cosmic-accent)', strokeWidth: 2 },
+      };
+      setEdges((eds) => [...eds, newEdge]);
     }
+
+    setIsLoading(false);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'border-emerald-400 bg-emerald-400/10';
-      case 'current':
-        return 'border-amber-400 bg-amber-400/10';
-      default:
-        return 'border-white/20 bg-white/5';
-    }
+  const handleReset = () => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
   };
 
   return (
@@ -76,148 +84,64 @@ const Timelines: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="w-full max-w-4xl mx-auto pb-10"
+      className="w-full max-w-7xl mx-auto h-[calc(100vh-160px)] flex flex-col"
     >
-      <div className="text-center mb-12">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="inline-block mb-6"
-        >
-          <Clock size={64} className="text-amber-400" />
-        </motion.div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          Your Manifestation Timeline
-        </h1>
-        <p className="text-white/70 text-lg md:text-xl max-w-2xl mx-auto">
-          Track your journey and see your progress unfold
-        </p>
-      </div>
-
-      <div className="relative">
-        {/* Timeline line */}
-        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-400 via-amber-400 to-white/20" />
-
-        <div className="space-y-8">
-          {sampleTimeline.map((event, index) => (
-            <motion.div
-              key={event.id}
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="relative pl-20"
-            >
-              {/* Timeline dot */}
-              <div className="absolute left-6 top-2 z-10">
-                <div
-                  className={`w-4 h-4 rounded-full border-2 ${getStatusColor(event.status)} transition-all duration-300`}
-                />
-                {event.status === 'current' && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full bg-amber-400"
-                    animate={{
-                      scale: [1, 1.5, 1],
-                      opacity: [0.8, 0, 0.8],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Event card */}
-              <motion.div
-                whileHover={{ scale: 1.02, x: 10 }}
-                className={`bg-white/10 backdrop-blur-lg rounded-2xl p-6 border-2 ${getStatusColor(event.status)} shadow-xl transition-all duration-300`}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    {getStatusIcon(event.status)}
-                    <span className="text-sm font-semibold text-white/60 uppercase tracking-wider">
-                      {event.date}
-                    </span>
-                  </div>
-                  {event.status === 'current' && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="px-3 py-1 bg-amber-400/20 text-amber-300 rounded-full text-xs font-semibold border border-amber-400/30"
-                    >
-                      Current
-                    </motion.span>
-                  )}
-                </div>
-
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-                  {event.title}
-                </h3>
-                <p className="text-white/70 text-base leading-relaxed">
-                  {event.description}
-                </p>
-
-                {event.status === 'completed' && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="mt-4 flex items-center gap-2 text-emerald-400 text-sm font-medium"
-                  >
-                    <CheckCircle2 size={16} />
-                    <span>Completed</span>
-                  </motion.div>
-                )}
-
-                {event.status === 'upcoming' && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="mt-4 flex items-center gap-2 text-white/40 text-sm"
-                  >
-                    <ArrowRight size={16} />
-                    <span>Coming soon</span>
-                  </motion.div>
-                )}
-              </motion.div>
-            </motion.div>
-          ))}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-white flex items-center gap-2">
+            <Sparkles className="text-[var(--cosmic-accent)]" />
+            Cosmic Timeline
+          </h1>
+          <p className="text-white/60 text-sm">Visualize and manifest your future paths</p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/80 transition-all">
+            <Download size={18} />
+            <span className="hidden sm:inline">Export</span>
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 bg-[var(--cosmic-primary)] hover:opacity-90 rounded-xl text-white font-medium transition-all shadow-[0_0_15px_rgba(var(--cosmic-primary),0.3)]">
+            <Save size={18} />
+            <span className="hidden sm:inline">Save Timeline</span>
+          </button>
         </div>
       </div>
 
-      {/* Summary card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="mt-12 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 backdrop-blur-lg rounded-2xl p-6 border border-amber-400/30 shadow-xl"
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-xl font-bold text-white mb-2">Your Progress</h3>
-            <p className="text-white/70">
-              You've completed <span className="text-emerald-400 font-semibold">2 milestones</span> and are currently working on{' '}
-              <span className="text-amber-400 font-semibold">1 active goal</span>
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="text-3xl font-bold text-white mb-1">40%</div>
-            <div className="text-sm text-white/60">Complete</div>
+      <div className="flex-grow grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-0">
+        {/* Graph Area */}
+        <div className="lg:col-span-3 relative h-full">
+          <TimelineGraph 
+            nodes={nodes} 
+            edges={edges} 
+            onNodesChange={onNodesChange} 
+            onEdgesChange={onEdgesChange} 
+            onConnect={onConnect} 
+          />
+          
+          {/* Legend/Info Overlay */}
+          <div className="absolute bottom-4 left-4 p-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl text-xs text-white/70 space-y-2 pointer-events-none">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full border-2 border-[var(--cosmic-primary)]" />
+              <span>Current Reality</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full border border-[var(--cosmic-accent)]" />
+              <span>Possible Path</span>
+            </div>
           </div>
         </div>
-        <div className="mt-4 h-2 bg-white/10 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: '40%' }}
-            transition={{ delay: 0.8, duration: 1 }}
-            className="h-full bg-gradient-to-r from-emerald-400 to-amber-400 rounded-full"
+
+        {/* Chat Area */}
+        <div className="lg:col-span-1 h-full min-h-[400px]">
+          <TimelineChat 
+            onSendMessage={handleSendMessage} 
+            isLoading={isLoading} 
+            onReset={handleReset} 
           />
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 };
 
 export default Timelines;
-

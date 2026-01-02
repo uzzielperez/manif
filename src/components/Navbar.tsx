@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Home, Briefcase, Settings as SettingsIcon, Target } from 'lucide-react';
+import { Menu, X, Home, Briefcase, Settings as SettingsIcon, Target, Sparkles, Clock, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePayment } from '../context/PaymentContext';
 import Logo from './Logo';
@@ -12,7 +12,9 @@ const Navbar: React.FC = () => {
 
   const baseNavItems = [
     { title: 'Home', path: '/', icon: <Home size={18} /> },
-    { title: 'Program', path: '/program', icon: <Briefcase size={18} /> },
+    { title: 'Meditations', path: '/free-meditations', icon: <Sparkles size={18} /> },
+    { title: 'Timelines', path: '/timelines', icon: <Clock size={18} /> },
+    { title: 'Enterprise', path: '/enterprise', icon: <Building2 size={18} /> },
     { title: 'Settings', path: '/settings', icon: <SettingsIcon size={18} /> },
   ];
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Volume2, VolumeX, Music, Mic2, Moon, Sun, Gift, Copy, CheckCircle, Award, Star } from 'lucide-react';
+import { Volume2, VolumeX, Music, Mic2, Moon, Sun, Gift, Copy, CheckCircle, Award, Star, Palette } from 'lucide-react';
 import { useSettingsStore } from '../../settingsStore';
+import { ThemeSelector } from '../components/ThemeSelector';
 import { 
   getOrCreateUserReferralCode, 
   addDownloadCredits, 
@@ -152,15 +153,24 @@ const Settings: React.FC = () => {
                 </div>
             </div>
             {/* Theme Settings */}
-            <div className="space-y-4">
+            <div className="space-y-4 pt-4 border-t border-white/10">
+                <div className="flex items-center">
+                    <Palette className="text-white mr-3" size={24} />
+                    <h3 className="text-xl text-white">Interface Design</h3>
+                </div>
+                <ThemeSelector />
+            </div>
+
+            {/* Legacy Theme Settings (Hidden or simplified) */}
+            <div className="space-y-4 pt-4 border-t border-white/10 opacity-50">
                 <div className="flex items-center">
                 {theme === 'dark' ? <Moon className="text-white mr-3" size={24} /> : <Sun className="text-white mr-3" size={24} />}
-                <h3 className="text-xl text-white">Theme</h3>
+                <h3 className="text-lg text-white">Legacy Mode</h3>
                 </div>
                 <div className="flex items-center gap-4">
-                <button onClick={() => setTheme('dark')} className={`px-4 py-2 rounded-lg ${theme === 'dark' ? 'bg-indigo-500 text-white' : 'bg-white/20 text-white/70'}`}>Dark</button>
-                <button onClick={() => setTheme('light')} className={`px-4 py-2 rounded-lg ${theme === 'light' ? 'bg-indigo-500 text-white' : 'bg-white/20 text-white/70'}`}>Light</button>
-                <button onClick={() => setTheme('gold')} className={`px-4 py-2 rounded-lg ${theme === 'gold' ? 'bg-gold-accent text-dark-bg' : 'bg-white/20 text-white/70'}`}>Gold</button>
+                <button onClick={() => setTheme('dark')} className={`px-3 py-1 text-sm rounded-lg ${theme === 'dark' ? 'bg-indigo-500 text-white' : 'bg-white/20 text-white/70'}`}>Dark</button>
+                <button onClick={() => setTheme('light')} className={`px-3 py-1 text-sm rounded-lg ${theme === 'light' ? 'bg-indigo-500 text-white' : 'bg-white/20 text-white/70'}`}>Light</button>
+                <button onClick={() => setTheme('gold')} className={`px-3 py-1 text-sm rounded-lg ${theme === 'gold' ? 'bg-gold-accent text-dark-bg' : 'bg-white/20 text-white/70'}`}>Gold</button>
                 </div>
             </div>
           </div>

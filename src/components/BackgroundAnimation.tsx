@@ -1,7 +1,11 @@
 import React, { useRef, useEffect } from 'react';
+import { useUIStore } from '../store/uiStore';
+import { COSMIC_THEMES } from '../styles/themes/cosmic';
 
 export const BackgroundAnimation: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cosmicThemeId = useUIStore((state) => state.cosmicTheme);
+  const theme = COSMIC_THEMES[cosmicThemeId];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,10 +34,10 @@ export const BackgroundAnimation: React.FC = () => {
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.radius = Math.random() * 1.5 + 0.5;
-        this.speed = Math.random() * 0.2 + 0.05;
+        this.radius = Math.random() * (theme.particles.maxSize - theme.particles.minSize) + theme.particles.minSize;
+        this.speed = Math.random() * (theme.particles.maxSpeed - theme.particles.minSpeed) + theme.particles.minSpeed;
         this.angle = Math.random() * Math.PI * 2;
-        this.color = `hsl(${Math.random() * 40 + 240}, 70%, 70%)`;
+        this.color = theme.particles.colors[Math.floor(Math.random() * theme.particles.colors.length)];
         this.opacity = Math.random() * 0.5 + 0.2;
       }
 
@@ -61,7 +65,7 @@ export const BackgroundAnimation: React.FC = () => {
     }
 
     const particles: Particle[] = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < theme.particles.count; i++) {
       particles.push(new Particle());
     }
 
@@ -83,13 +87,26 @@ export const BackgroundAnimation: React.FC = () => {
     return () => {
       window.removeEventListener('resize', setCanvasSize);
     };
-  }, []);
+  }, [theme]); // Re-run effect when theme changes
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 z-0"
-      style={{ background: 'transparent' }}
-    />
+    <div 
+      className="fixed inset-0 z-0 transition-colors duration-1000"
+      style={{ backgroundColor: theme.colors.background }}
+    >
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0"
+        style={{ background: 'transparent' }}
+      />
+      {/* Dynamic gradients for nebula effect */}
+      <div 
+        className="absolute inset-0 opacity-30 pointer-events-none transition-opacity duration-1000"
+        style={{
+          background: `radial-gradient(circle at 20% 30%, ${theme.colors.primary}44 0%, transparent 50%),
+                       radial-gradient(circle at 80% 70%, ${theme.colors.secondary}44 0%, transparent 50%)`
+        }}
+      />
+    </div>
   );
 };

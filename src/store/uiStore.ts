@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { CosmicThemeId } from '../styles/themes/cosmic';
 
 export interface PaywallContext {
   meditationId?: string;
@@ -15,11 +16,13 @@ interface UIState {
   couponCodeInModal: string;
   couponErrorInModal: string;
   isProcessingPaymentInModal: boolean;
+  cosmicTheme: CosmicThemeId;
   openPaywallModal: (context: PaywallContext) => void;
   closePaywallModal: () => void;
   setCouponCodeInModal: (code: string) => void;
   setCouponErrorInModal: (error: string) => void;
   setIsProcessingPaymentInModal: (isLoading: boolean) => void;
+  setCosmicTheme: (theme: CosmicThemeId) => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -28,9 +31,11 @@ export const useUIStore = create<UIState>((set) => ({
   couponCodeInModal: '',
   couponErrorInModal: '',
   isProcessingPaymentInModal: false,
+  cosmicTheme: 'deep-space',
   openPaywallModal: (context) => set({ isPaywallModalOpen: true, paywallContext: context, couponCodeInModal: '', couponErrorInModal: '' }),
   closePaywallModal: () => set({ isPaywallModalOpen: false, paywallContext: null }),
   setCouponCodeInModal: (code) => set({ couponCodeInModal: code }),
   setCouponErrorInModal: (error) => set({ couponErrorInModal: error }),
   setIsProcessingPaymentInModal: (isLoading) => set({ isProcessingPaymentInModal: isLoading }),
-})); 
+  setCosmicTheme: (theme) => set({ cosmicTheme: theme }),
+}));
