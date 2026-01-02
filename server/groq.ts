@@ -117,24 +117,16 @@ export async function generateTimeline(prompt: string, model: string = "llama3-7
             Your goal is to take a user's goal or situation and output a structured timeline of events and milestones.
             
             FORMATTING RULES:
-            1. Output ONLY a JSON object.
-            2. The JSON should have two keys: "nodes" and "edges".
+            1. Output ONLY a valid JSON object.
+            2. The JSON MUST have two keys: "nodes" and "edges".
             3. "nodes" is an array of objects: { id: string, label: string, description: string, type: 'milestone' | 'crossroad' | 'achievement' }
             4. "edges" is an array of objects: { source: string, target: string, label?: string }
             5. Keep labels short (1-4 words).
-            6. Provide at least 4-6 nodes representing a logical progression.
-            7. Include at least one "crossroad" representing a choice or a branch in the path.
+            6. Provide at least 5-8 nodes representing a logical progression.
+            7. The first node should logically follow from the "Current Reality".
             
-            Example output structure:
-            {
-              "nodes": [
-                { "id": "1", "label": "Initial Intention", "description": "Setting the clear goal", "type": "milestone" },
-                { "id": "2", "label": "First Step", "description": "Taking consistent action", "type": "milestone" }
-              ],
-              "edges": [
-                { "source": "1", "target": "2" }
-              ]
-            }`
+            IMPORTANT: Ensure the JSON is flat and correctly formatted. Do not include any text outside the JSON object.
+`
           },
           {
             role: "user",

@@ -53,12 +53,17 @@ const Timelines: React.FC = () => {
       }
 
       const data = await response.json();
+      console.log('Timeline data received:', data);
+
+      if (!data.nodes || !Array.isArray(data.nodes)) {
+        throw new Error('Invalid timeline data: nodes missing or not an array');
+      }
       
       // Transform API data into React Flow nodes and edges
       const newNodes: Node[] = data.nodes.map((n: any, i: number) => ({
         id: n.id,
         data: { label: n.label },
-        position: { x: 250 + (Math.random() * 50 - 25), y: (i * 150) + 100 },
+        position: { x: 250 + (Math.random() * 50 - 25), y: (i * 150) + 150 },
         style: { 
           background: 'var(--cosmic-glass)', 
           color: 'white', 
@@ -70,7 +75,7 @@ const Timelines: React.FC = () => {
         },
       }));
 
-      const newEdges: Edge[] = data.edges.map((e: any) => ({
+      const newEdges: Edge[] = (data.edges || []).map((e: any) => ({
         id: `edge-${e.source}-${e.target}`,
         source: e.source,
         target: e.target,
@@ -80,8 +85,24 @@ const Timelines: React.FC = () => {
         labelStyle: { fill: 'white', fontSize: 10, fontWeight: 300 },
       }));
 
-      setNodes(newNodes);
-      setEdges(newEdges);
+      // Combine with initial node if it's the first generation
+      const finalNodes = nodes.length <= 1 ? [...initialNodes, ...newNodes] : [...nodes, ...newNodes];
+      
+      // If first generation, connect initial node to the first new node
+      let finalEdges = [...edges, ...newEdges];
+      if (nodes.length <= 1 && newNodes.length > 0) {
+        const startToFirstEdge: Edge = {
+          id: `edge-start-${newNodes[0].id}`,
+          source: 'start',
+          target: newNodes[0].id,
+          animated: true,
+          style: { stroke: 'var(--cosmic-primary)', strokeWidth: 1.5, opacity: 0.8 },
+        };
+        finalEdges = [startToFirstEdge, ...finalEdges];
+      }
+
+      setNodes(finalNodes);
+      setEdges(finalEdges);
     } catch (error) {
       console.error('Error generating timeline:', error);
       // Fallback or error message could be added here

@@ -52,8 +52,11 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
     setInput('');
 
     try {
+      console.log('Sending message to Temporal Architect...');
       await onSendMessage(input);
+      console.log('Message sent successfully, incrementing usage...');
       const newCount = incrementTimelineUsage();
+      console.log('New usage count:', newCount);
       setUsageCount(newCount);
 
       const assistantMessage: Message = {
@@ -63,10 +66,11 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
+      console.error('Temporal Architect Error:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I encountered an error while manifesting your timeline. Please try again.',
+        content: 'I encountered an error while manifesting your timeline. Please check your connection or try again.',
       };
       setMessages((prev) => [...prev, errorMessage]);
     }
