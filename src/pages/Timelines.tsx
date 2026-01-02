@@ -28,14 +28,6 @@ const initialNodes: Node[] = [
 
 const initialEdges: Edge[] = [];
 
-const Timelines: React.FC = () => {
-  return (
-    <ReactFlowProvider>
-      <TimelinesContent />
-    </ReactFlowProvider>
-  );
-};
-
 const TimelinesContent: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -129,7 +121,7 @@ const TimelinesContent: React.FC = () => {
 
       // Combine with initial node and connect all 3 path starts to origin
       const finalNodes = [...initialNodes, ...newNodes];
-      let finalEdges = [...edges, ...newEdges];
+      let finalEdges = [...newEdges];
 
       // Connect start of each path to origin
       ['steady', 'warp', 'quantum'].forEach(pId => {
@@ -165,6 +157,11 @@ const TimelinesContent: React.FC = () => {
       }
       return next;
     });
+  };
+
+  const handleReset = () => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
   };
 
   // Filter nodes and edges based on active paths
@@ -262,6 +259,14 @@ const TimelinesContent: React.FC = () => {
         </div>
       </div>
     </motion.div>
+  );
+};
+
+const Timelines: React.FC = () => {
+  return (
+    <ReactFlowProvider>
+      <TimelinesContent />
+    </ReactFlowProvider>
   );
 };
 
