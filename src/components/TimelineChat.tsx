@@ -16,6 +16,7 @@ interface TimelineChatProps {
 }
 
 const MAX_FREE_USES = 3;
+const UNLOCK_CODE = "Magic25M";
 
 export const TimelineChat: React.FC<TimelineChatProps> = ({ 
   onSendMessage, 
@@ -24,6 +25,9 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
 }) => {
   const [input, setInput] = useState('');
   const [usageCount, setUsageCount] = useState(0);
+  const [unlockCodeInput, setUnlockCodeInput] = useState('');
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [showCodeInput, setShowCodeInput] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -34,9 +38,23 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
 
   useEffect(() => {
     setUsageCount(getTimelineUsageCount());
+    const unlocked = localStorage.getItem('timeline_unlocked') === 'true';
+    setIsUnlocked(unlocked);
   }, []);
 
-  const isLocked = usageCount >= MAX_FREE_USES;
+  const isLocked = usageCount >= MAX_FREE_USES && !isUnlocked;
+
+  const handleUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (unlockCodeInput === UNLOCK_CODE) {
+      setIsUnlocked(true);
+      localStorage.setItem('timeline_unlocked', 'true');
+      setUnlockCodeInput('');
+      setShowCodeInput(false);
+    } else {
+      alert('Invalid unlock code.');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,15 +158,55 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
             </div>
             <h4 className="text-xl font-medium text-white mb-2 text-center">Temporal Limit Reached</h4>
             <p className="text-[var(--cosmic-text-muted)] text-sm text-center font-light mb-8 leading-relaxed">
-              You have used your 3 free timeline manifestations. Upgrade to **Stellar Path** to continue charting your destiny.
+              You have used your 3 free timeline manifestations. Upgrade to **Stellar Path** or enter your access code.
             </p>
-            <button className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all shadow-xl shadow-white/5">
-              Upgrade Access
-            </button>
+            
+            {showCodeInput ? (
+              <form onSubmit={handleUnlock} className="w-full space-y-4">
+                <input
+                  type="text"
+                  value={unlockCodeInput}
+                  onChange={(e) => setUnlockCodeInput(e.target.value)}
+                  placeholder="Enter access code..."
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white font-light focus:outline-none focus:border-[var(--cosmic-accent)] transition-all"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button 
+                    type="button"
+                    onClick={() => setShowCodeInput(false)}
+                    className="flex-1 py-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-all"
+                  >
+                    Back
+                  </button>
+                  <button 
+                    type="submit"
+                    className="flex-[2] py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all"
+                  >
+                    Unlock
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="w-full space-y-3">
+                <button className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all shadow-xl shadow-white/5">
+                  Upgrade Access
+                </button>
+                <button 
+                  onClick={() => setShowCodeInput(true)}
+                  className="w-full py-4 bg-white/5 text-white border border-white/10 rounded-2xl font-bold hover:bg-white/10 transition-all"
+                >
+                  Enter Code
+                </button>
+              </div>
+            )}
+
             <button 
               onClick={() => {
                 localStorage.setItem('timelineUsageCount', '0');
+                localStorage.removeItem('timeline_unlocked');
                 setUsageCount(0);
+                setIsUnlocked(false);
               }}
               className="mt-6 text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white transition-colors"
             >
