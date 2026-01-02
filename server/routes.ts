@@ -1,7 +1,7 @@
 import express, { type Express, type Request, type Response, type Router, type RequestHandler } from "express";
 import { createServer } from "http";
 import { storage } from "./storage.ts";
-import { generateMeditation, listModels } from "./groq.ts";
+import { generateMeditation, generateTimeline, listModels } from "./groq.ts";
 import { synthesizeSpeech, listVoices } from "./elevenlabs.ts";
 import { createPaymentIntent, confirmPaymentIntent, createCheckoutSession, retrieveCheckoutSession } from "./stripe.ts";
 import { insertMeditationSchema, updateMeditationSchema } from "../shared/schema.ts";
@@ -406,6 +406,30 @@ export async function registerRoutes(app: Express) {
   // Create a new meditation
   console.log('  POST /api/meditations');
   router.post("/meditations", async (req, res) => {
+    // ... existing meditation route code ...
+  });
+
+  // Generate a timeline
+  console.log('  POST /api/timeline/generate');
+  router.post("/timeline/generate", async (req, res) => {
+    try {
+      const { prompt, model } = req.body;
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+
+      console.log('Generating timeline for:', prompt);
+      const timelineData = await generateTimeline(prompt, model);
+      
+      res.json(timelineData);
+    } catch (error: any) {
+      console.error('Timeline generation route error:', error);
+      res.status(500).json({ 
+        error: "Failed to generate timeline", 
+        details: error?.message || "Unknown error" 
+      });
+    }
+  });
     try {
       const { prompt, model } = req.body;
       console.log('Received meditation prompt:', prompt, 'with model:', model);

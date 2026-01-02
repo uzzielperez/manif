@@ -98,4 +98,66 @@ export async function generateMeditation(prompt: string, model: string = "llama3
   }
 }
 
+export async function generateTimeline(prompt: string, model: string = "llama3-70b-8192") {
+  try {
+    console.log(`Starting timeline generation for prompt: "${prompt}" using model: ${model}`);
+    
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          {
+            role: "system",
+            content: `You are a Temporal Architect, an AI designed to map out life paths and manifestation roadmaps.
+            Your goal is to take a user's goal or situation and output a structured timeline of events and milestones.
+            
+            FORMATTING RULES:
+            1. Output ONLY a JSON object.
+            2. The JSON should have two keys: "nodes" and "edges".
+            3. "nodes" is an array of objects: { id: string, label: string, description: string, type: 'milestone' | 'crossroad' | 'achievement' }
+            4. "edges" is an array of objects: { source: string, target: string, label?: string }
+            5. Keep labels short (1-4 words).
+            6. Provide at least 4-6 nodes representing a logical progression.
+            7. Include at least one "crossroad" representing a choice or a branch in the path.
+            
+            Example output structure:
+            {
+              "nodes": [
+                { "id": "1", "label": "Initial Intention", "description": "Setting the clear goal", "type": "milestone" },
+                { "id": "2", "label": "First Step", "description": "Taking consistent action", "type": "milestone" }
+              ],
+              "edges": [
+                { "source": "1", "target": "2" }
+              ]
+            }`
+          },
+          {
+            role: "user",
+            content: `Generate a timeline for this goal/situation: ${prompt}`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 2048,
+        response_format: { type: "json_object" }
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content || "{}";
+    return JSON.parse(content);
+  } catch (error: any) {
+    console.error('Timeline generation error:', error);
+    throw new Error(`Failed to generate timeline: ${error.message || 'Unknown error'}`);
+  }
+}
+
 console.log("Database URL:", process.env.DATABASE_URL ? "Set" : "Not set");

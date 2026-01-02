@@ -41,42 +41,53 @@ const Timelines: React.FC = () => {
   const handleSendMessage = async (message: string) => {
     setIsLoading(true);
     
-    // Simulate AI processing delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const response = await fetch('/api/timeline/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: message }),
+      });
 
-    // Mock logic to add nodes based on message
-    const newNodeId = `node-${Date.now()}`;
-    const newNode: Node = {
-      id: newNodeId,
-      data: { label: message.length > 25 ? message.substring(0, 25) + '...' : message },
-      position: { x: Math.random() * 500, y: (nodes.length * 120) + 50 },
-      style: { 
-        background: 'var(--cosmic-glass)', 
-        color: 'white', 
-        border: '1px solid var(--cosmic-accent)',
-        borderRadius: '16px',
-        padding: '12px 20px',
-        fontSize: '13px',
-        fontWeight: '400',
-      },
-    };
+      if (!response.ok) {
+        throw new Error('Failed to generate timeline from API');
+      }
 
-    setNodes((nds) => [...nds, newNode]);
-    
-    // Auto-connect to the last node
-    if (nodes.length > 0) {
-      const lastNodeId = nodes[nodes.length - 1].id;
-      const newEdge: Edge = {
-        id: `edge-${lastNodeId}-${newNodeId}`,
-        source: lastNodeId,
-        target: newNodeId,
+      const data = await response.json();
+      
+      // Transform API data into React Flow nodes and edges
+      const newNodes: Node[] = data.nodes.map((n: any, i: number) => ({
+        id: n.id,
+        data: { label: n.label },
+        position: { x: 250 + (Math.random() * 50 - 25), y: (i * 150) + 100 },
+        style: { 
+          background: 'var(--cosmic-glass)', 
+          color: 'white', 
+          border: `1px solid ${n.type === 'crossroad' ? 'var(--cosmic-accent)' : 'var(--cosmic-primary)'}`,
+          borderRadius: '16px',
+          padding: '12px 20px',
+          fontSize: '13px',
+          boxShadow: `0 0 20px rgba(var(--cosmic-${n.type === 'crossroad' ? 'accent' : 'primary'}), 0.1)`,
+        },
+      }));
+
+      const newEdges: Edge[] = data.edges.map((e: any) => ({
+        id: `edge-${e.source}-${e.target}`,
+        source: e.source,
+        target: e.target,
+        label: e.label,
         animated: true,
         style: { stroke: 'var(--cosmic-accent)', strokeWidth: 1.5, opacity: 0.6 },
-      };
-      setEdges((eds) => [...eds, newEdge]);
-    }
+        labelStyle: { fill: 'white', fontSize: 10, fontWeight: 300 },
+      }));
 
-    setIsLoading(false);
+      setNodes(newNodes);
+      setEdges(newEdges);
+    } catch (error) {
+      console.error('Error generating timeline:', error);
+      // Fallback or error message could be added here
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {
