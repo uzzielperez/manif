@@ -32,6 +32,8 @@
 | 2026-01-03 | Paywall & Monetization | Completed | 3-use limit and access code unlock for Chat |
 | 2026-01-03 | Starfleet Enterprise | Completed | Mission Directives and Star Trek branding |
 | 2026-01-03 | Production Fixes | Completed | Deployed Timeline as Netlify Function |
+| 2026-01-03 | Hybrid Logic | Completed | AI now generates 3 distinct parallel paths |
+| 2026-01-03 | Influencer System | Completed | Unique code mapping and attribution tracking |
 
 ## Instructions for Completing Tasks
 
@@ -63,3 +65,11 @@
   - [x] 5.1 Set up the blog routing and dynamic post rendering
   - [x] 5.2 Add the first post: "What It Means to Manifest: A Guide to Cosmic Alignment"
   - [x] 5.3 Ensure responsive and themed typography for long-form reading
+- [x] 6.0 Expand Temporal Architect for Hybrid Goal Logic
+  - [x] 6.1 Update AI prompt to specifically generate 3 distinct "Hybrid Paths" (e.g., Conservative, Balanced, Aggressive)
+  - [x] 6.2 Refactor Graph UI to color-code and separate these 3 paths visually
+  - [x] 6.3 Implement a "Toggle Path" UI to focus on specific hybrid trajectories
+- [x] 7.0 Multi-Influencer Referral & Payout System
+  - [x] 7.1 Create an `influencers.ts` config to map unique codes (e.g., MAGIC25M, STARS10) to specific profiles
+  - [x] 7.2 Implement tracking logic to attribute unlocks/payments to specific influencer IDs
+  - [ ] 7.3 Build a simple "Influencer Payout" report logic based on conversion percentage

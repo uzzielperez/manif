@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Sparkles, Loader2, RotateCcw, Lock } from 'lucide-react';
 import { getTimelineUsageCount, incrementTimelineUsage } from '../utils/paymentUtils';
+import { getInfluencerByCode } from '../data/influencers';
 
 interface Message {
   id: string;
@@ -16,7 +17,6 @@ interface TimelineChatProps {
 }
 
 const MAX_FREE_USES = 3;
-const UNLOCK_CODE = "Magic25M";
 
 export const TimelineChat: React.FC<TimelineChatProps> = ({ 
   onSendMessage, 
@@ -28,6 +28,7 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
   const [unlockCodeInput, setUnlockCodeInput] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showCodeInput, setShowCodeInput] = useState(false);
+  const [activeInfluencer, setActiveInfluencer] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -39,16 +40,21 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
   useEffect(() => {
     setUsageCount(getTimelineUsageCount());
     const unlocked = localStorage.getItem('timeline_unlocked') === 'true';
+    const attributed = localStorage.getItem('attributed_influencer');
     setIsUnlocked(unlocked);
+    setActiveInfluencer(attributed);
   }, []);
 
   const isLocked = usageCount >= MAX_FREE_USES && !isUnlocked;
 
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
-    if (unlockCodeInput === UNLOCK_CODE) {
+    const influencer = getInfluencerByCode(unlockCodeInput);
+    if (influencer) {
       setIsUnlocked(true);
+      setActiveInfluencer(influencer.id);
       localStorage.setItem('timeline_unlocked', 'true');
+      localStorage.setItem('attributed_influencer', influencer.id);
       setUnlockCodeInput('');
       setShowCodeInput(false);
     } else {
@@ -205,8 +211,10 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
               onClick={() => {
                 localStorage.setItem('timelineUsageCount', '0');
                 localStorage.removeItem('timeline_unlocked');
+                localStorage.removeItem('attributed_influencer');
                 setUsageCount(0);
                 setIsUnlocked(false);
+                setActiveInfluencer(null);
               }}
               className="mt-6 text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white transition-colors"
             >

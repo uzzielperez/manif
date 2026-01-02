@@ -39,22 +39,35 @@ export const handler: Handler = async (event, context) => {
         messages: [
           {
             role: 'system',
-            content: `You are a Temporal Architect. Output ONLY a valid JSON object representing a life path roadmap.
+            content: `You are a Temporal Architect. Output ONLY a valid JSON object representing 3 distinct hybrid manifestation paths for a user's goal.
+            
+            THE 3 PATHS:
+            1. "The Steady Orbit" (Conservative/Low Risk): Focused on gradual, consistent growth.
+            2. "The Warp Drive" (Balanced/Medium Risk): Focused on efficiency and moderate expansion.
+            3. "The Quantum Leap" (Aggressive/High Risk): Focused on rapid, exponential breakthrough.
             
             STRUCTURE:
             {
-              "nodes": [{ "id": "1", "label": "Text", "type": "milestone" | "crossroad" }],
-              "edges": [{ "source": "1", "target": "2" }]
+              "nodes": [
+                { "id": "path1-1", "label": "Text", "type": "milestone", "pathId": "steady" },
+                { "id": "path2-1", "label": "Text", "type": "crossroad", "pathId": "warp" },
+                { "id": "path3-1", "label": "Text", "type": "achievement", "pathId": "quantum" }
+              ],
+              "edges": [
+                { "source": "path1-1", "target": "path1-2" }
+              ]
             }
             
             RULES:
-            1. No text before or after JSON.
-            2. Minimum 5 nodes.
-            3. Must be valid JSON.`
+            1. Each path should have 3-5 unique nodes.
+            2. The "pathId" field is MANDATORY for each node (values: "steady", "warp", "quantum").
+            3. All paths should originate from the concept of the user's "Current Reality".
+            4. Use distinct IDs for nodes in different paths.
+            5. Return ONLY valid JSON.`
           },
           {
             role: 'user',
-            content: `Generate a JSON timeline for: ${prompt}`
+            content: `Generate 3 hybrid manifestation paths for: ${prompt}`
           }
         ],
         temperature: 0.7,

@@ -32,6 +32,7 @@ const Timelines: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [isLoading, setIsLoading] = useState(false);
+  const [activePaths, setActiveTab] = useState<Set<string>>(new Set(['steady', 'warp', 'quantum']));
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -54,80 +55,116 @@ const Timelines: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log('Timeline data received:', data);
+      console.log('Hybrid Timeline data received:', data);
 
       if (!data.nodes || !Array.isArray(data.nodes)) {
         throw new Error('Invalid timeline data: nodes missing or not an array');
       }
       
+      const pathColors = {
+        steady: 'var(--cosmic-primary)',
+        warp: 'var(--cosmic-accent)',
+        quantum: '#f472b6', // pink-400
+      };
+
       // Transform API data into React Flow nodes and edges
       const newNodes: Node[] = data.nodes.map((n: any, i: number) => {
-        // Calculate a more dynamic position
-        const row = Math.floor(i / 2);
-        const col = i % 2;
-        const xOffset = col === 0 ? -150 : 150;
+        const pathId = n.pathId || 'steady';
+        const color = pathColors[pathId as keyof typeof pathColors] || 'var(--cosmic-primary)';
         
+        // Position paths in 3 distinct horizontal zones
+        let xPos = 250;
+        if (pathId === 'steady') xPos = -100;
+        if (pathId === 'warp') xPos = 250;
+        if (pathId === 'quantum') xPos = 600;
+
+        // Vertical spacing based on node index within its path
+        const nodesInPath = data.nodes.filter((node: any) => node.pathId === pathId);
+        const indexInPath = nodesInPath.indexOf(n);
+
         return {
           id: n.id,
-          data: { label: n.label },
+          data: { label: n.label, pathId },
           position: { 
-            x: 250 + (data.nodes.length > 1 ? xOffset : 0), 
-            y: (row * 180) + 200 
+            x: xPos + (Math.random() * 20 - 10), 
+            y: (indexInPath * 150) + 200 
           },
           style: { 
             background: 'var(--cosmic-glass)', 
             color: 'white', 
-            border: `1px solid ${n.type === 'crossroad' ? 'var(--cosmic-accent)' : 'var(--cosmic-primary)'}`,
+            border: `1px solid ${color}`,
             borderRadius: '16px',
             padding: '12px 20px',
             fontSize: '13px',
-            width: 200,
+            width: 180,
             textAlign: 'center' as const,
-            boxShadow: `0 0 20px rgba(var(--cosmic-${n.type === 'crossroad' ? 'accent' : 'primary'}), 0.1)`,
+            boxShadow: `0 0 20px ${color}22`,
           },
         };
       });
 
-      const newEdges: Edge[] = (data.edges || []).map((e: any) => ({
-        id: `edge-${e.source}-${e.target}`,
-        source: e.source,
-        target: e.target,
-        label: e.label,
-        animated: true,
-        style: { stroke: 'var(--cosmic-accent)', strokeWidth: 1.5, opacity: 0.6 },
-        labelStyle: { fill: 'white', fontSize: 10, fontWeight: 300 },
-      }));
+      const newEdges: Edge[] = (data.edges || []).map((e: any) => {
+        const sourceNode = data.nodes.find((n: any) => n.id === e.source);
+        const pathId = sourceNode?.pathId || 'steady';
+        const color = pathColors[pathId as keyof typeof pathColors] || 'var(--cosmic-primary)';
 
-      // Combine with initial node if it's the first generation
-      const finalNodes = nodes.length <= 1 ? [...initialNodes, ...newNodes] : [...nodes, ...newNodes];
-      
-      // If first generation, connect initial node to the first new node
-      let finalEdges = [...edges, ...newEdges];
-      if (nodes.length <= 1 && newNodes.length > 0) {
-        const startToFirstEdge: Edge = {
-          id: `edge-start-${newNodes[0].id}`,
-          source: 'start',
-          target: newNodes[0].id,
+        return {
+          id: `edge-${e.source}-${e.target}`,
+          source: e.source,
+          target: e.target,
+          label: e.label,
           animated: true,
-          style: { stroke: 'var(--cosmic-primary)', strokeWidth: 1.5, opacity: 0.8 },
+          style: { stroke: color, strokeWidth: 1.5, opacity: 0.6 },
+          labelStyle: { fill: 'white', fontSize: 10, fontWeight: 300 },
         };
-        finalEdges = [startToFirstEdge, ...finalEdges];
-      }
+      });
+
+      // Combine with initial node and connect all 3 path starts to origin
+      const finalNodes = [...initialNodes, ...newNodes];
+      let finalEdges = [...newEdges];
+
+      // Connect start of each path to origin
+      ['steady', 'warp', 'quantum'].forEach(pId => {
+        const firstInPath = data.nodes.find((n: any) => n.pathId === pId);
+        if (firstInPath) {
+          finalEdges.push({
+            id: `edge-start-${firstInPath.id}`,
+            source: 'start',
+            target: firstInPath.id,
+            animated: true,
+            style: { stroke: 'var(--cosmic-text-muted)', strokeWidth: 1, opacity: 0.4 },
+          });
+        }
+      });
 
       setNodes(finalNodes);
       setEdges(finalEdges);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating timeline:', error);
-      throw error; // Re-throw to show error in chat
+      throw error; 
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleReset = () => {
-    setNodes(initialNodes);
-    setEdges(initialEdges);
+  const togglePath = (pathId: string) => {
+    setActiveTab(prev => {
+      const next = new Set(prev);
+      if (next.has(pathId)) {
+        if (next.size > 1) next.delete(pathId);
+      } else {
+        next.add(pathId);
+      }
+      return next;
+    });
   };
+
+  // Filter nodes and edges based on active paths
+  const filteredNodes = nodes.filter(n => n.id === 'start' || activePaths.has((n.data as any).pathId));
+  const filteredEdges = edges.filter(e => {
+    const targetNode = nodes.find(n => n.id === e.target);
+    return e.source === 'start' || (targetNode && activePaths.has((targetNode.data as any).pathId));
+  });
 
   return (
     <motion.div
@@ -141,6 +178,26 @@ const Timelines: React.FC = () => {
           <h1 className="text-4xl md:text-6xl font-light text-white mb-4 tracking-tight">
             Timeline <span className="font-medium italic text-[var(--cosmic-accent)]">Architect</span>
           </h1>
+          <div className="flex gap-3 mb-4">
+            {[
+              { id: 'steady', label: 'Steady Orbit', color: 'var(--cosmic-primary)' },
+              { id: 'warp', label: 'Warp Drive', color: 'var(--cosmic-accent)' },
+              { id: 'quantum', label: 'Quantum Leap', color: '#f472b6' },
+            ].map(p => (
+              <button
+                key={p.id}
+                onClick={() => togglePath(p.id)}
+                className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all ${
+                  activePaths.has(p.id) 
+                    ? 'bg-white text-black border-white' 
+                    : 'bg-white/5 text-white/40 border-white/10 hover:border-white/30'
+                }`}
+                style={activePaths.has(p.id) ? { boxShadow: `0 0 15px ${p.color}44` } : {}}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
           <p className="text-[var(--cosmic-text-muted)] text-lg font-light">Map the unfolding of your destiny across the stars.</p>
         </div>
         
@@ -168,8 +225,8 @@ const Timelines: React.FC = () => {
         <div className="lg:col-span-8 relative h-full">
           <ReactFlowProvider>
             <TimelineGraph 
-              nodes={nodes} 
-              edges={edges} 
+              nodes={filteredNodes} 
+              edges={filteredEdges} 
               onNodesChange={onNodesChange} 
               onEdgesChange={onEdgesChange} 
               onConnect={onConnect} 
