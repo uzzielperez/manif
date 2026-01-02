@@ -23,44 +23,53 @@ const Navbar: React.FC = () => {
   ];
 
   const navItems = hasAccess 
-    ? [...baseNavItems.slice(0, 2), ...premiumNavItems, ...baseNavItems.slice(2)]
+    ? [...baseNavItems.slice(0, 3), ...premiumNavItems, ...baseNavItems.slice(3)]
     : baseNavItems;
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <nav className="relative z-20 py-4 px-6 md:px-8">
-      <div className="flex justify-between items-center">
-        <Link to="/" className="flex items-center">
-          <Logo />
-          <span className="ml-3 text-xl font-semibold tracking-tight text-white">Manifesto</span>
+    <nav className="fixed top-0 left-0 right-0 z-50 py-6 px-6 md:px-12 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <Link to="/" className="flex items-center group">
+          <div className="relative">
+            <Logo />
+            <motion.div 
+              className="absolute inset-0 bg-[var(--cosmic-primary)] blur-lg opacity-0 group-hover:opacity-20 transition-opacity"
+            />
+          </div>
+          <span className="ml-4 text-2xl font-light tracking-widest text-white uppercase">Manifesto</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-1">
+        <div className="hidden md:flex items-center gap-2">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 location.pathname === item.path
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
+                  ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]'
+                  : 'text-white/40 hover:text-white hover:bg-white/5'
               }`}
             >
-              <span className="mr-2">{item.icon}</span>
-              {item.title}
+              <div className="flex items-center gap-2">
+                <span className={location.pathname === item.path ? 'text-[var(--cosmic-accent)]' : ''}>
+                  {React.cloneElement(item.icon as React.ReactElement, { size: 16 })}
+                </span>
+                {item.title}
+              </div>
             </Link>
           ))}
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+          className="md:hidden text-white/70 p-2 rounded-xl hover:bg-white/5 transition-colors"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
@@ -68,26 +77,28 @@ const Navbar: React.FC = () => {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden overflow-hidden"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="md:hidden absolute top-full left-0 right-0 p-4"
           >
-            <div className="mt-4 py-2 bg-white/10 backdrop-blur-lg rounded-xl">
+            <div className="bg-[var(--cosmic-glass)] backdrop-blur-2xl border border-[var(--cosmic-glass-border)] rounded-3xl p-4 shadow-2xl">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center px-4 py-3 ${
+                  className={`flex items-center px-6 py-4 rounded-2xl mb-2 transition-all ${
                     location.pathname === item.path
                       ? 'bg-white/10 text-white'
-                      : 'text-white/80 hover:bg-white/5'
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <span className="mr-3">{item.icon}</span>
-                  {item.title}
+                  <span className={`mr-4 ${location.pathname === item.path ? 'text-[var(--cosmic-accent)]' : ''}`}>
+                    {item.icon}
+                  </span>
+                  <span className="text-lg font-light">{item.title}</span>
                 </Link>
               ))}
             </div>

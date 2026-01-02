@@ -1,45 +1,35 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Gift, Clock } from 'lucide-react';
+import { Sparkles, Gift, Clock, ArrowRight } from 'lucide-react';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
-  const gems = [
+  const paths = [
     {
       id: 1,
-      title: 'Generate your own Meditations',
-      subtitle: 'Create your dream',
+      title: 'AI Meditation Engine',
+      subtitle: 'Forge personalized audio journeys through your subconscious desires.',
       icon: Sparkles,
-      // Premium purple-pink-violet gradient
-      gradient: 'from-violet-600 via-purple-600 via-fuchsia-600 to-pink-500',
-      glowColor: 'rgba(168, 85, 247, 0.6)',
-      innerGlow: 'rgba(236, 72, 153, 0.4)',
       onClick: () => navigate('/generate'),
+      color: 'var(--cosmic-primary)',
     },
     {
       id: 2,
-      title: 'Some free meditations',
-      subtitle: 'Explore our collection',
+      title: 'Curated Gallery',
+      subtitle: 'Experience our collection of timeless, free-to-access guided sessions.',
       icon: Gift,
-      // Premium emerald-teal-cyan gradient
-      gradient: 'from-emerald-600 via-teal-500 via-cyan-500 to-sky-500',
-      glowColor: 'rgba(16, 185, 129, 0.6)',
-      innerGlow: 'rgba(6, 182, 212, 0.4)',
       onClick: () => navigate('/free-meditations'),
+      color: 'var(--cosmic-accent)',
     },
     {
       id: 3,
-      title: 'Timelines',
-      subtitle: 'Track your journey',
+      title: 'Timeline Architect',
+      subtitle: 'Visualize your future milestones and chart the path to your highest self.',
       icon: Clock,
-      // Premium amber-orange-rose gradient
-      gradient: 'from-amber-500 via-orange-500 via-rose-500 to-pink-500',
-      glowColor: 'rgba(245, 158, 11, 0.6)',
-      innerGlow: 'rgba(251, 113, 133, 0.4)',
       onClick: () => navigate('/timelines'),
-      disabled: false,
+      color: 'var(--cosmic-primary)',
     },
   ];
 
@@ -48,205 +38,95 @@ const Home: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="w-full max-w-6xl mx-auto pb-10"
+      className="w-full max-w-7xl mx-auto px-6 py-12 md:py-24"
     >
-      <div className="text-center mb-12">
-        <motion.h1
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-bold text-white mb-4"
+      <div className="text-center mb-20 md:mb-32">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          className="inline-block"
         >
-          Manifesto
-        </motion.h1>
+          <h1 className="text-5xl md:text-8xl font-light text-white mb-6 tracking-tight">
+            Manifesto
+          </h1>
+          <div className="h-px w-24 bg-gradient-to-r from-transparent via-[var(--cosmic-primary)] to-transparent mx-auto mb-8" />
+        </motion.div>
+        
         <motion.p
-          initial={{ y: -20, opacity: 0 }}
+          initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-white/70 text-lg md:text-xl max-w-2xl mx-auto"
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="text-[var(--cosmic-text-muted)] text-xl md:text-2xl font-light max-w-3xl mx-auto leading-relaxed"
         >
-          Choose your path to inner peace and manifestation
+          An elevated platform for conscious creation and inner transformation.
         </motion.p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 px-4">
-        {gems.map((gem, index) => {
-          const Icon = gem.icon;
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {paths.map((path, index) => {
+          const Icon = path.icon;
           return (
             <motion.div
-              key={gem.id}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              key={path.id}
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
               transition={{
-                duration: 0.6,
-                delay: index * 0.15,
-                type: 'spring',
-                stiffness: 150,
-                damping: 12,
+                duration: 0.8,
+                delay: 0.6 + index * 0.1,
+                ease: [0.22, 1, 0.36, 1],
               }}
-              whileHover={!gem.disabled ? { scale: 1.08, y: -12 } : {}}
-              whileTap={!gem.disabled ? { scale: 0.96 } : {}}
-              className="relative"
+              whileHover={{ y: -8 }}
+              className="group"
             >
-              {/* Outer glow ring */}
-              <motion.div
-                className="absolute inset-0 rounded-full blur-2xl opacity-60"
-                style={{
-                  background: `radial-gradient(circle, ${gem.glowColor}, transparent 70%)`,
-                }}
-                animate={{
-                  opacity: gem.disabled ? 0.3 : [0.5, 0.7, 0.5],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              />
-              
-              <motion.button
-                onClick={gem.onClick}
-                disabled={gem.disabled}
-                className={`relative w-full aspect-square rounded-full overflow-hidden ${
-                  gem.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-                }`}
-                style={{
-                  filter: gem.disabled ? 'grayscale(0.3)' : 'none',
-                }}
+              <button
+                onClick={path.onClick}
+                className="relative w-full h-full text-left p-10 rounded-[2rem] bg-[var(--cosmic-glass)] border border-[var(--cosmic-glass-border)] backdrop-blur-xl overflow-hidden transition-all duration-500 hover:bg-white/[0.03] hover:border-[var(--cosmic-primary)]/40"
               >
-                {/* Main gradient background */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${gem.gradient} rounded-full`}
+                {/* Subtle background glow */}
+                <div 
+                  className="absolute -right-20 -top-20 w-64 h-64 blur-[100px] opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none"
+                  style={{ backgroundColor: path.color }}
                 />
-                
-                {/* Animated inner glow */}
-                {!gem.disabled && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      background: `radial-gradient(circle at 30% 30%, ${gem.innerGlow}, transparent 60%)`,
-                    }}
-                    animate={{
-                      x: [0, 20, 0],
-                      y: [0, 20, 0],
-                    }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                )}
-                
-                {/* Glassmorphism overlay */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 via-white/10 to-transparent backdrop-blur-sm" />
-                
-                {/* Inner content container */}
-                <div className="relative w-full h-full rounded-full flex flex-col items-center justify-center p-8 z-10">
-                  {/* Top highlight reflection */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/3 bg-gradient-to-b from-white/30 to-transparent rounded-full blur-sm" />
-                  
-                  {/* Icon with enhanced glow */}
-                  <motion.div
-                    animate={{ 
-                      rotate: [0, 5, -5, 0],
-                      scale: [1, 1.05, 1]
-                    }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                    className="mb-6 relative"
+
+                <div className="relative z-10 flex flex-col h-full">
+                  <div 
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 bg-white/5 border border-white/10 group-hover:border-[var(--cosmic-primary)]/50 group-hover:scale-110 transition-all duration-500"
+                    style={{ color: path.color }}
                   >
-                    <div 
-                      className="absolute inset-0 blur-xl"
-                      style={{
-                        background: gem.innerGlow,
-                        opacity: 0.6,
-                      }}
-                    />
-                    <Icon
-                      size={72}
-                      className={`relative text-white drop-shadow-2xl ${
-                        gem.disabled ? 'opacity-50' : ''
-                      }`}
-                      strokeWidth={1.5}
-                    />
-                  </motion.div>
+                    <Icon size={32} strokeWidth={1.5} />
+                  </div>
                   
-                  <h2 className="text-xl md:text-2xl font-bold text-white mb-2 text-center drop-shadow-lg">
-                    {gem.title}
+                  <h2 className="text-2xl font-medium text-white mb-4 tracking-tight group-hover:text-[var(--cosmic-primary)] transition-colors">
+                    {path.title}
                   </h2>
-                  <p className="text-white/90 text-sm md:text-base text-center font-medium drop-shadow-md">
-                    {gem.subtitle}
+                  
+                  <p className="text-[var(--cosmic-text-muted)] text-lg font-light leading-relaxed mb-10 flex-grow">
+                    {path.subtitle}
                   </p>
                   
-                  {gem.disabled && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="mt-4 px-5 py-1.5 bg-white/25 backdrop-blur-md rounded-full text-white text-xs font-semibold border border-white/30 shadow-lg"
-                    >
-                      Coming Soon
-                    </motion.div>
-                  )}
+                  <div className="flex items-center gap-2 text-white/40 group-hover:text-white transition-colors">
+                    <span className="text-sm font-medium tracking-widest uppercase">Explore</span>
+                    <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-                
-                {/* Premium shimmer effect */}
-                {!gem.disabled && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full overflow-hidden"
-                    style={{
-                      background: `linear-gradient(135deg, transparent 0%, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%, transparent 100%)`,
-                      backgroundSize: '200% 200%',
-                    }}
-                    animate={{
-                      backgroundPosition: ['0% 0%', '200% 200%'],
-                    }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: 'linear',
-                    }}
-                  />
-                )}
-                
-                {/* Animated border glow */}
-                {!gem.disabled && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      boxShadow: `0 0 30px ${gem.glowColor}, inset 0 0 20px ${gem.innerGlow}`,
-                    }}
-                    animate={{
-                      boxShadow: [
-                        `0 0 30px ${gem.glowColor}, inset 0 0 20px ${gem.innerGlow}`,
-                        `0 0 50px ${gem.glowColor}, inset 0 0 30px ${gem.innerGlow}`,
-                        `0 0 30px ${gem.glowColor}, inset 0 0 20px ${gem.innerGlow}`,
-                      ],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                )}
-              </motion.button>
-              
-              {/* Bottom shadow for depth */}
-              <div 
-                className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-8 rounded-full blur-xl opacity-50"
-                style={{
-                  background: gem.glowColor,
-                }}
-              />
+              </button>
             </motion.div>
           );
         })}
       </div>
+
+      {/* Aesthetic flourish */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.3 }}
+        transition={{ delay: 1.5, duration: 2 }}
+        className="mt-32 text-center"
+      >
+        <p className="text-[var(--cosmic-text-muted)] text-xs uppercase tracking-[0.5em] font-light">
+          Your journey to center begins here
+        </p>
+      </motion.div>
     </motion.div>
   );
 };

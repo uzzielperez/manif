@@ -26,69 +26,68 @@ export interface CosmicTheme {
 export const COSMIC_THEMES: Record<CosmicThemeId, CosmicTheme> = {
   'deep-space': {
     id: 'deep-space',
-    name: 'Deep Space',
+    name: 'Midnight Ethereal',
     colors: {
-      background: '#020617', // slate-950
-      primary: '#3b82f6',    // blue-500
-      secondary: '#1e40af',  // blue-800
-      accent: '#60a5fa',     // blue-400
-      text: '#f8fafc',       // slate-50
-      textMuted: '#94a3b8',  // slate-400
-      glass: 'rgba(15, 23, 42, 0.7)',
-      glassBorder: 'rgba(59, 130, 246, 0.3)',
+      background: '#05050a', // Almost black
+      primary: '#c0a080',    // Muted gold/champagne
+      secondary: '#1a1a2e',  // Very deep navy
+      accent: '#d4af37',     // Metallic gold
+      text: '#f8f8f8',       // Off-white
+      textMuted: '#94a3b8',  // Slate
+      glass: 'rgba(10, 10, 20, 0.4)',
+      glassBorder: 'rgba(192, 160, 128, 0.2)',
     },
     particles: {
-      count: 150,
-      colors: ['#ffffff', '#bfdbfe', '#3b82f6'],
-      minSize: 0.5,
-      maxSize: 1.5,
-      minSpeed: 0.05,
-      maxSpeed: 0.15,
+      count: 100,
+      colors: ['#ffffff', '#c0a080', '#5c5c5c'],
+      minSize: 0.3,
+      maxSize: 1.2,
+      minSpeed: 0.02,
+      maxSpeed: 0.08,
     },
   },
   'nebula-glow': {
     id: 'nebula-glow',
-    name: 'Nebula Glow',
+    name: 'Royal Velvet',
     colors: {
-      background: '#0f0714', // custom deep purple
-      primary: '#d946ef',    // fuchsia-500
-      secondary: '#701a75',  // fuchsia-900
-      accent: '#f0abfc',     // fuchsia-300
-      text: '#fdf4ff',       // fuchsia-50
-      textMuted: '#d8b4fe',  // purple-300
-      glass: 'rgba(24, 12, 36, 0.7)',
-      glassBorder: 'rgba(217, 70, 239, 0.3)',
+      background: '#0a050f', // Deepest plum
+      primary: '#9b6b9b',    // Muted amethyst
+      secondary: '#2e1a3e',  // Deep violet
+      accent: '#e0aaff',     // Soft lavender
+      text: '#faf5ff',       // Soft white
+      textMuted: '#b794f4',  // Muted purple
+      glass: 'rgba(15, 5, 25, 0.4)',
+      glassBorder: 'rgba(155, 107, 155, 0.2)',
     },
     particles: {
-      count: 200,
-      colors: ['#ffffff', '#f5d0fe', '#d946ef', '#a855f7'],
-      minSize: 0.5,
-      maxSize: 2.0,
-      minSpeed: 0.08,
-      maxSpeed: 0.2,
+      count: 120,
+      colors: ['#ffffff', '#e0aaff', '#9b6b9b'],
+      minSize: 0.4,
+      maxSize: 1.5,
+      minSpeed: 0.03,
+      maxSpeed: 0.1,
     },
   },
   'stellar-dawn': {
     id: 'stellar-dawn',
-    name: 'Stellar Dawn',
+    name: 'Celestial Dawn',
     colors: {
-      background: '#0c0a09', // stone-950
-      primary: '#f59e0b',    // amber-500
-      secondary: '#78350f',  // amber-900
-      accent: '#fbbf24',     // amber-400
-      text: '#fffbeb',       // amber-50
-      textMuted: '#d6d3d1',  // stone-300
-      glass: 'rgba(28, 25, 23, 0.7)',
-      glassBorder: 'rgba(245, 158, 11, 0.3)',
+      background: '#0f0c05', // Deep copper/charcoal
+      primary: '#d49a6a',    // Muted bronze
+      secondary: '#3e2c1a',  // Deep mahogany
+      accent: '#ffcc33',     // Warm gold
+      text: '#fffaf0',       // Ivory
+      textMuted: '#d4d4d8',  // Zinc
+      glass: 'rgba(20, 15, 5, 0.4)',
+      glassBorder: 'rgba(212, 154, 106, 0.2)',
     },
     particles: {
-      count: 120,
-      colors: ['#ffffff', '#fef3c7', '#f59e0b', '#ea580c'],
-      minSize: 0.8,
-      maxSize: 1.8,
-      minSpeed: 0.04,
-      maxSpeed: 0.12,
+      count: 80,
+      colors: ['#ffffff', '#ffcc33', '#d49a6a'],
+      minSize: 0.5,
+      maxSize: 1.4,
+      minSpeed: 0.02,
+      maxSpeed: 0.07,
     },
   },
 };
-

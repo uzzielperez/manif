@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useNodesState, useEdgesState, addEdge, Connection, Edge, Node } from '@xyflow/react';
 import { TimelineGraph } from '../components/TimelineGraph';
 import { TimelineChat } from '../components/TimelineChat';
-import { Sparkles, Save, Download, HelpCircle } from 'lucide-react';
+import { Sparkles, Save, Download, RotateCcw } from 'lucide-react';
 
 const initialNodes: Node[] = [
   {
@@ -14,11 +14,14 @@ const initialNodes: Node[] = [
     style: { 
       background: 'var(--cosmic-glass)', 
       color: 'white', 
-      border: '2px solid var(--cosmic-primary)',
-      borderRadius: '12px',
-      padding: '10px',
-      fontSize: '14px',
-      fontWeight: '600'
+      border: '1px solid var(--cosmic-primary)',
+      borderRadius: '16px',
+      padding: '12px 20px',
+      fontSize: '13px',
+      fontWeight: '500',
+      letterSpacing: '0.1em',
+      textTransform: 'uppercase',
+      boxShadow: '0 0 20px rgba(var(--cosmic-primary), 0.1)',
     },
   },
 ];
@@ -45,14 +48,16 @@ const Timelines: React.FC = () => {
     const newNodeId = `node-${Date.now()}`;
     const newNode: Node = {
       id: newNodeId,
-      data: { label: message.length > 20 ? message.substring(0, 20) + '...' : message },
-      position: { x: Math.random() * 500, y: (nodes.length * 100) + 50 },
+      data: { label: message.length > 25 ? message.substring(0, 25) + '...' : message },
+      position: { x: Math.random() * 500, y: (nodes.length * 120) + 50 },
       style: { 
         background: 'var(--cosmic-glass)', 
         color: 'white', 
         border: '1px solid var(--cosmic-accent)',
-        borderRadius: '8px',
-        padding: '8px',
+        borderRadius: '16px',
+        padding: '12px 20px',
+        fontSize: '13px',
+        fontWeight: '400',
       },
     };
 
@@ -66,7 +71,7 @@ const Timelines: React.FC = () => {
         source: lastNodeId,
         target: newNodeId,
         animated: true,
-        style: { stroke: 'var(--cosmic-accent)', strokeWidth: 2 },
+        style: { stroke: 'var(--cosmic-accent)', strokeWidth: 1.5, opacity: 0.6 },
       };
       setEdges((eds) => [...eds, newEdge]);
     }
@@ -84,32 +89,38 @@ const Timelines: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="w-full max-w-7xl mx-auto h-[calc(100vh-160px)] flex flex-col"
+      className="w-full max-w-7xl mx-auto h-[calc(100vh-220px)] flex flex-col px-6"
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-            <Sparkles className="text-[var(--cosmic-accent)]" />
-            Cosmic Timeline
+          <h1 className="text-4xl md:text-6xl font-light text-white mb-4 tracking-tight">
+            Timeline <span className="font-medium italic text-[var(--cosmic-accent)]">Architect</span>
           </h1>
-          <p className="text-white/60 text-sm">Visualize and manifest your future paths</p>
+          <p className="text-[var(--cosmic-text-muted)] text-lg font-light">Map the unfolding of your destiny across the stars.</p>
         </div>
         
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/80 transition-all">
-            <Download size={18} />
-            <span className="hidden sm:inline">Export</span>
+          <button 
+            onClick={handleReset}
+            className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white/60 hover:text-white transition-all"
+            title="Reset Timeline"
+          >
+            <RotateCcw size={20} />
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-[var(--cosmic-primary)] hover:opacity-90 rounded-xl text-white font-medium transition-all shadow-[0_0_15px_rgba(var(--cosmic-primary),0.3)]">
+          <button className="flex items-center gap-3 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-white/80 font-medium transition-all">
+            <Download size={18} />
+            <span>Export</span>
+          </button>
+          <button className="flex items-center gap-3 px-8 py-3 bg-[var(--cosmic-primary)] hover:opacity-90 rounded-2xl text-white font-bold transition-all shadow-xl shadow-[var(--cosmic-primary)]/10">
             <Save size={18} />
-            <span className="hidden sm:inline">Save Timeline</span>
+            <span>Save Blueprint</span>
           </button>
         </div>
       </div>
 
-      <div className="flex-grow grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-0">
+      <div className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
         {/* Graph Area */}
-        <div className="lg:col-span-3 relative h-full">
+        <div className="lg:col-span-8 relative h-full">
           <TimelineGraph 
             nodes={nodes} 
             edges={edges} 
@@ -118,21 +129,21 @@ const Timelines: React.FC = () => {
             onConnect={onConnect} 
           />
           
-          {/* Legend/Info Overlay */}
-          <div className="absolute bottom-4 left-4 p-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl text-xs text-white/70 space-y-2 pointer-events-none">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full border-2 border-[var(--cosmic-primary)]" />
-              <span>Current Reality</span>
+          {/* Legend Overlay */}
+          <div className="absolute bottom-6 left-6 p-4 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl text-[10px] text-white/50 space-y-3 pointer-events-none uppercase tracking-[0.2em] font-bold">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full border border-[var(--cosmic-primary)] bg-[var(--cosmic-primary)]/20 shadow-[0_0_10px_var(--cosmic-primary)]" />
+              <span>Origin Point</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full border border-[var(--cosmic-accent)]" />
-              <span>Possible Path</span>
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full border border-[var(--cosmic-accent)] bg-[var(--cosmic-accent)]/20 shadow-[0_0_10px_var(--cosmic-accent)]" />
+              <span>Projected Node</span>
             </div>
           </div>
         </div>
 
         {/* Chat Area */}
-        <div className="lg:col-span-1 h-full min-h-[400px]">
+        <div className="lg:col-span-4 h-full min-h-[400px]">
           <TimelineChat 
             onSendMessage={handleSendMessage} 
             isLoading={isLoading} 

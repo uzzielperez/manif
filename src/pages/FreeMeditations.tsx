@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Gift, Sparkles, Search, Filter } from 'lucide-react';
+import { Gift, Sparkles, Search, Play } from 'lucide-react';
 import { MeditationCard } from '../components/MeditationCard';
 
 const MOCK_MEDITATIONS = [
@@ -62,101 +62,137 @@ const FreeMeditations: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="w-full max-w-6xl mx-auto pb-20"
+      className="w-full max-w-7xl mx-auto px-6 py-12"
     >
-      <div className="text-center mb-16">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="inline-block mb-6 p-4 rounded-full bg-[var(--cosmic-accent)]/10"
-        >
-          <Sparkles size={48} className="text-[var(--cosmic-accent)]" />
-        </motion.div>
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">
-          Cosmic Meditations
-        </h1>
-        <p className="text-[var(--cosmic-text-muted)] text-lg md:text-xl max-w-2xl mx-auto font-light">
-          Free guided journeys through the manifesting universe
-        </p>
+      <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-20">
+        <div className="max-w-2xl">
+          <motion.h1 
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="text-4xl md:text-7xl font-light text-white mb-6 tracking-tight"
+          >
+            Cosmic <span className="font-medium italic">Meditations</span>
+          </motion.h1>
+          <motion.p 
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-[var(--cosmic-text-muted)] text-xl font-light leading-relaxed"
+          >
+            A curated sanctuary of free guided journeys to align your energy with the universe.
+          </motion.p>
+        </div>
+        
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Find your practice..."
+            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white font-light placeholder:text-white/20 focus:outline-none focus:border-[var(--cosmic-primary)]/40 transition-all"
+          />
+        </div>
       </div>
 
       {/* Featured Daily */}
       {dailyMeditation && (
-        <div className="mb-16">
-          <h2 className="text-sm font-bold text-white/40 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-            <span className="w-8 h-px bg-white/20" />
-            Daily Feature
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 rounded-3xl p-8 border border-white/10 relative overflow-hidden">
-             <div className="relative z-10">
-                <span className="px-3 py-1 bg-[var(--cosmic-accent)] text-black text-[10px] font-bold rounded-full uppercase tracking-wider mb-4 inline-block">
-                  Featured Meditation
-                </span>
-                <h3 className="text-3xl font-bold text-white mb-4">{dailyMeditation.title}</h3>
-                <p className="text-[var(--cosmic-text-muted)] mb-8 max-w-md">
-                  A cosmic grounding practice to align your energy with the center of the galaxy. Perfect for starting your manifestation session.
+        <motion.div 
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mb-24"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-[var(--cosmic-glass)] rounded-[2.5rem] border border-[var(--cosmic-glass-border)] overflow-hidden backdrop-blur-2xl shadow-2xl">
+             <div className="lg:col-span-7 p-10 md:p-16 flex flex-col justify-center">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--cosmic-accent)] animate-pulse" />
+                  <span className="text-xs font-bold text-[var(--cosmic-accent)] uppercase tracking-[0.3em]">
+                    Daily Offering
+                  </span>
+                </div>
+                
+                <h3 className="text-3xl md:text-5xl font-medium text-white mb-6 tracking-tight">
+                  {dailyMeditation.title}
+                </h3>
+                
+                <p className="text-[var(--cosmic-text-muted)] text-lg font-light leading-relaxed mb-10 max-w-lg">
+                  Rebalance your internal frequency with this foundational practice designed for deep cosmic alignment.
                 </p>
-                <button className="px-8 py-3 bg-white text-black font-bold rounded-xl hover:bg-[var(--cosmic-accent)] transition-all">
-                  Play Now
-                </button>
-             </div>
-             <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center bg-black/40">
-                <Sparkles size={100} className="text-white/10 absolute animate-pulse" />
-                <div className="relative z-10 text-center">
-                  <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4 border border-white/20">
-                    <Gift className="text-white" />
-                  </div>
-                  <span className="text-white/40 text-sm">Visualizer Active</span>
+                
+                <div className="flex flex-wrap gap-4">
+                  <button className="px-10 py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all flex items-center gap-3 shadow-lg shadow-white/5">
+                    <Play size={20} fill="currentColor" />
+                    Start Session
+                  </button>
+                  <button className="px-8 py-4 bg-white/5 text-white border border-white/10 rounded-2xl font-medium hover:bg-white/10 transition-all">
+                    View Details
+                  </button>
                 </div>
              </div>
-             {/* Background glow */}
-             <div className="absolute top-0 right-0 w-1/2 h-full bg-[var(--cosmic-primary)]/10 blur-[100px] -z-0" />
+             
+             <div className="lg:col-span-5 relative min-h-[300px] bg-gradient-to-br from-white/[0.02] to-transparent flex items-center justify-center border-l border-white/10">
+                <div className="absolute inset-0 overflow-hidden">
+                   <motion.div 
+                     animate={{ 
+                       scale: [1, 1.2, 1],
+                       rotate: [0, 90, 180, 270, 360]
+                     }}
+                     transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+                     className="absolute -right-20 -bottom-20 w-80 h-80 bg-[var(--cosmic-primary)]/10 blur-[100px] rounded-full" 
+                   />
+                </div>
+                
+                <div className="relative z-10 text-center">
+                  <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6 border border-white/10 backdrop-blur-md">
+                    <Sparkles className="text-white/40" size={32} />
+                  </div>
+                  <span className="text-white/20 text-xs uppercase tracking-[0.4em] font-light">
+                    Sonic Visualizer Active
+                  </span>
+                </div>
+             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Gallery Section */}
-      <div className="space-y-8">
-        <div className="flex flex-col md:flex-row gap-6 items-center justify-between border-b border-white/10 pb-8">
-          <div className="flex items-center gap-4 flex-wrap justify-center md:justify-start">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeCategory === cat
-                    ? 'bg-white text-black'
-                    : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-          
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={18} />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-white focus:outline-none focus:border-[var(--cosmic-accent)]"
-            />
-          </div>
+      <div className="space-y-12">
+        <div className="flex items-center gap-6 overflow-x-auto pb-4 scrollbar-hide">
+          {categories.map((cat, i) => (
+            <motion.button
+              key={cat}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 + i * 0.05 }}
+              onClick={() => setActiveCategory(cat)}
+              className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-medium tracking-wide transition-all ${
+                activeCategory === cat
+                  ? 'bg-white text-black shadow-lg shadow-white/10'
+                  : 'bg-white/5 text-white/40 hover:text-white hover:bg-white/10 border border-white/5'
+              }`}
+            >
+              {cat}
+            </motion.button>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredMeditations.map((med) => (
-            <MeditationCard
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredMeditations.map((med, index) => (
+            <motion.div
               key={med.id}
-              title={med.title}
-              duration={med.duration}
-              category={med.category}
-              isDaily={med.isDaily}
-              onPlay={() => console.log('Play', med.id)}
-            />
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 + index * 0.1 }}
+            >
+              <MeditationCard
+                title={med.title}
+                duration={med.duration}
+                category={med.category}
+                isDaily={med.isDaily}
+                onPlay={() => console.log('Play', med.id)}
+              />
+            </motion.div>
           ))}
         </div>
       </div>

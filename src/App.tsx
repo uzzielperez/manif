@@ -51,7 +51,7 @@ function App() {
           <GlobalPaywallModal />
           <Navbar />
           
-          <main className="flex-grow flex items-center justify-center p-4 relative z-10">
+          <main className="flex-grow flex items-center justify-center p-4 pt-32 md:pt-40 relative z-10">
             <AnimatePresence mode="wait">
               <Routes>
                 <Route path="/" element={<Home />} />
