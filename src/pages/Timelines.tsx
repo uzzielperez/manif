@@ -29,10 +29,18 @@ const initialNodes: Node[] = [
 const initialEdges: Edge[] = [];
 
 const Timelines: React.FC = () => {
+  return (
+    <ReactFlowProvider>
+      <TimelinesContent />
+    </ReactFlowProvider>
+  );
+};
+
+const TimelinesContent: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [isLoading, setIsLoading] = useState(false);
-  const [activePaths, setActiveTab] = useState<Set<string>>(new Set(['steady', 'warp', 'quantum']));
+  const [activePaths, setActivePaths] = useState<Set<string>>(new Set(['steady', 'warp', 'quantum']));
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -121,7 +129,7 @@ const Timelines: React.FC = () => {
 
       // Combine with initial node and connect all 3 path starts to origin
       const finalNodes = [...initialNodes, ...newNodes];
-      let finalEdges = [...newEdges];
+      let finalEdges = [...edges, ...newEdges];
 
       // Connect start of each path to origin
       ['steady', 'warp', 'quantum'].forEach(pId => {
@@ -148,7 +156,7 @@ const Timelines: React.FC = () => {
   };
 
   const togglePath = (pathId: string) => {
-    setActiveTab(prev => {
+    setActivePaths(prev => {
       const next = new Set(prev);
       if (next.has(pathId)) {
         if (next.size > 1) next.delete(pathId);
@@ -223,15 +231,13 @@ const Timelines: React.FC = () => {
       <div className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
         {/* Graph Area */}
         <div className="lg:col-span-8 relative h-full">
-          <ReactFlowProvider>
-            <TimelineGraph 
-              nodes={filteredNodes} 
-              edges={filteredEdges} 
-              onNodesChange={onNodesChange} 
-              onEdgesChange={onEdgesChange} 
-              onConnect={onConnect} 
-            />
-          </ReactFlowProvider>
+          <TimelineGraph 
+            nodes={filteredNodes} 
+            edges={filteredEdges} 
+            onNodesChange={onNodesChange} 
+            onEdgesChange={onEdgesChange} 
+            onConnect={onConnect} 
+          />
           
           {/* Legend Overlay */}
           <div className="absolute bottom-6 left-6 p-4 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl text-[10px] text-white/50 space-y-3 pointer-events-none uppercase tracking-[0.2em] font-bold">
