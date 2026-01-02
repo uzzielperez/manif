@@ -83,12 +83,12 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
         content: 'I have updated your timeline based on your input. You can see the new paths and nodes in the visualization.',
       };
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Temporal Architect Error:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I encountered an error while manifesting your timeline. Please check your connection or try again.',
+        content: `Error: ${error.message || 'I encountered an error while manifesting your timeline. Please try again.'}`,
       };
       setMessages((prev) => [...prev, errorMessage]);
     }

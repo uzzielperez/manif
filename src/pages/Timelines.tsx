@@ -49,7 +49,8 @@ const Timelines: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate timeline from API');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || errorData.error || 'Failed to generate timeline');
       }
 
       const data = await response.json();

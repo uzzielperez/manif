@@ -16,11 +16,16 @@ export const handler: Handler = async (event, context) => {
   }
 
   try {
-    const { prompt, model } = JSON.parse(event.body || '{}');
+    const body = event.body ? JSON.parse(event.body) : {};
+    const { prompt, model } = body;
     const groqApiKey = process.env.GROQ_API_KEY;
 
     if (!groqApiKey) {
-      throw new Error('GROQ_API_KEY is not set');
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'Configuration Error', details: 'GROQ_API_KEY is not set in Netlify environment variables.' })
+      };
     }
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -30,54 +35,47 @@ export const handler: Handler = async (event, context) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: model || 'llama3-70b-8192',
+        model: model || 'llama-3.3-70b-versatile',
         messages: [
           {
             role: 'system',
-            content: `You are a Temporal Architect, an AI designed to map out life paths and manifestation roadmaps.
-            Your goal is to take a user's goal or situation and output a structured timeline of events and milestones.
+            content: `You are a Temporal Architect. Output ONLY a valid JSON object representing a life path roadmap.
             
-            FORMATTING RULES:
-            1. Output ONLY a valid JSON object.
-            2. The JSON MUST have two keys: "nodes" and "edges".
-            3. "nodes" is an array of objects: { id: string, label: string, description: string, type: 'milestone' | 'crossroad' | 'achievement' }
-            4. "edges" is an array of objects: { source: string, target: string, label?: string }
-            5. Keep labels short (1-4 words).
-            6. Provide at least 5-8 nodes representing a logical progression.
-            7. The first node should logically follow from the "Current Reality".
+            STRUCTURE:
+            {
+              "nodes": [{ "id": "1", "label": "Text", "type": "milestone" | "crossroad" }],
+              "edges": [{ "source": "1", "target": "2" }]
+            }
             
-            IMPORTANT: Ensure the JSON is flat and correctly formatted. Do not include any text outside the JSON object.`
+            RULES:
+            1. No text before or after JSON.
+            2. Minimum 5 nodes.
+            3. Must be valid JSON.`
           },
           {
             role: 'user',
-            content: `Generate a timeline for this goal/situation: ${prompt}`
+            content: `Generate a JSON timeline for: ${prompt}`
           }
         ],
         temperature: 0.7,
-        max_tokens: 2048,
         response_format: { type: "json_object" }
       })
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Groq API error: ${response.status} ${errorText}`);
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        statusCode: response.status,
+        headers,
+        body: JSON.stringify({ error: 'Groq API Error', details: errorData.error?.message || response.statusText })
+      };
     }
 
     const data = await response.json();
-    let content = data.choices[0]?.message?.content || '{}';
-
-    // Robust JSON cleaning in case the model returns markdown code blocks
-    if (content.includes('```json')) {
-      content = content.split('```json')[1].split('```')[0].trim();
-    } else if (content.includes('```')) {
-      content = content.split('```')[1].split('```')[0].trim();
-    }
-
     return {
       statusCode: 200,
       headers,
-      body: content
+      body: data.choices[0]?.message?.content || '{}'
     };
   } catch (error) {
     console.error('Timeline function error:', error);
