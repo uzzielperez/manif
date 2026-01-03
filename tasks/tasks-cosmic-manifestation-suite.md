@@ -34,6 +34,7 @@
 | 2026-01-03 | Production Fixes | Completed | Deployed Timeline as Netlify Function |
 | 2026-01-03 | Hybrid Logic | Completed | AI now generates 3 distinct parallel paths |
 | 2026-01-03 | Influencer System | Completed | Unique code mapping and attribution tracking |
+| 2026-01-03 | Chat Debugging | In Progress | Refined component structure and JSON parsing |
 
 ## Instructions for Completing Tasks
 
@@ -73,3 +74,12 @@
   - [x] 7.1 Create an `influencers.ts` config to map unique codes (e.g., MAGIC25M, STARS10) to specific profiles
   - [x] 7.2 Implement tracking logic to attribute unlocks/payments to specific influencer IDs
   - [ ] 7.3 Build a simple "Influencer Payout" report logic based on conversion percentage
+- [ ] 8.0 Debug & Stabilize Temporal Architect Chat
+  - [ ] 8.1 Investigation: Confirm why nodes are not manifesting in production despite successful API response
+  - [ ] 8.2 Fix: Refine React Flow state synchronization between Chat and Graph
+  - [ ] 8.3 Optimization: Add loading skeletons and retry logic for slow AI responses
+- [ ] 9.0 Enhance Landing Page with Deep Scroll Content
+  - [ ] 9.1 Implement "Editorial Preview" section for recent blog posts
+  - [ ] 9.2 Create "Meditation of the Month" spotlight with quick-play access
+  - [ ] 9.3 Add "Partnership & Ecosystem" section detailing influencer benefits and fleet command
+  - [ ] 9.4 Refine landing page scroll animations and snapping for a premium feel

@@ -45,6 +45,12 @@ The goal is to move from a static interface to a dynamic, visual, and AI-support
 5.1. A blog section must be added to the platform.
 5.2. The first entry must be a featured post titled "What It Means to Manifest: A Guide to Cosmic Alignment."
 
+### 6. Landing Page Deep Scroll
+6.1. The landing page must be expanded to include deep-scroll content.
+6.2. **Blog Preview**: A section showcasing snippets of the latest blog posts.
+6.3. **Meditation of the Month**: A high-impact visual spotlight on a curated meditation.
+6.4. **Partnership Details**: A section explaining the Influencer/Partner portal and the value of the Startup Package.
+
 ## Non-Goals (Out of Scope)
 - VR/AR implementation for meditations.
 - Direct social media networking between users (beyond Enterprise team views).
