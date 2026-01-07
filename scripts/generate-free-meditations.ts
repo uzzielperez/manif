@@ -57,8 +57,12 @@ const FREE_MEDITATIONS = [
   },
 ];
 
-// Voice ID for ElevenLabs (Rachel - calm, soothing voice)
-const VOICE_ID = '21m00Tcm4TlvDq8ikWAM';
+// Voice ID for ElevenLabs
+// Options: 
+// - Serena: pMsXgVXv3BLzUgSXRplE (gentle, calm - best for meditation)
+// - Charlotte: XB0fDUnXU5powFXDhCwa (warm, soothing)
+// - Lily: pFZP5JQG7iQjIQuC4Bku (soft, nurturing)
+const VOICE_ID = 'pMsXgVXv3BLzUgSXRplE'; // Serena
 
 // Audio output directory
 const AUDIO_DIR = path.join(process.cwd(), 'audio', 'free-meditations');
