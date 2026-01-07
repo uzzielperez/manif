@@ -70,7 +70,7 @@ const VOICES = {
 };
 
 // Select voice here:
-const VOICE_ID = VOICES.uzi; // Your voice!
+const VOICE_ID = VOICES.jameson; // Jameson - Guided Meditation (default)
 
 // Audio output directory
 const AUDIO_DIR = path.join(process.cwd(), 'audio', 'free-meditations');
