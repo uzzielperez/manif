@@ -144,20 +144,37 @@ Return ONLY the meditation script text, no titles or metadata.`;
   }
 }
 
-async function generateAllMeditations() {
+async function generateAllMeditations(specificId?: string) {
   console.log('\n🌌 COSMIC MEDITATION GENERATOR 🌌');
-  console.log('Generating all free meditations...\n');
+  
+  // Filter meditations if a specific ID is requested
+  const meditationsToGenerate = specificId 
+    ? FREE_MEDITATIONS.filter(m => m.id === specificId)
+    : FREE_MEDITATIONS;
+  
+  if (meditationsToGenerate.length === 0) {
+    console.error(`❌ No meditation found with ID: ${specificId}`);
+    console.log('\nAvailable meditation IDs:');
+    FREE_MEDITATIONS.forEach(m => console.log(`  ${m.id} - ${m.title}`));
+    return;
+  }
+  
+  if (specificId) {
+    console.log(`Generating meditation #${specificId}: ${meditationsToGenerate[0].title}...\n`);
+  } else {
+    console.log('Generating all free meditations...\n');
+  }
   
   const startTime = Date.now();
   const results: GenerationResult[] = [];
   
   // Generate meditations sequentially to avoid rate limits
-  for (const meditation of FREE_MEDITATIONS) {
+  for (const meditation of meditationsToGenerate) {
     const result = await generateSingleMeditation(meditation);
     results.push(result);
     
     // Add a small delay between generations to be respectful to API rate limits
-    if (meditation.id !== FREE_MEDITATIONS[FREE_MEDITATIONS.length - 1].id) {
+    if (meditation.id !== meditationsToGenerate[meditationsToGenerate.length - 1].id) {
       console.log('\n⏳ Waiting 2 seconds before next generation...');
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
@@ -171,8 +188,8 @@ async function generateAllMeditations() {
   console.log('\n' + '='.repeat(60));
   console.log('📊 GENERATION SUMMARY');
   console.log('='.repeat(60));
-  console.log(`✅ Successful: ${successful}/${FREE_MEDITATIONS.length}`);
-  console.log(`❌ Failed: ${failed}/${FREE_MEDITATIONS.length}`);
+  console.log(`✅ Successful: ${successful}/${meditationsToGenerate.length}`);
+  console.log(`❌ Failed: ${failed}/${meditationsToGenerate.length}`);
   console.log(`⏱️  Total time: ${duration}s`);
   console.log(`📁 Audio files saved to: ${AUDIO_DIR}`);
   
@@ -190,5 +207,23 @@ async function generateAllMeditations() {
   console.log('\n✨ Done!\n');
 }
 
+// Parse command line arguments
+const args = process.argv.slice(2);
+const meditationId = args[0];
+
+// Show help if requested
+if (args.includes('--help') || args.includes('-h')) {
+  console.log('\n🌌 COSMIC MEDITATION GENERATOR 🌌\n');
+  console.log('Usage:');
+  console.log('  npm run generate-meditations           # Generate all 7 meditations');
+  console.log('  npm run generate-meditations [ID]      # Generate a specific meditation\n');
+  console.log('Available Meditations:');
+  FREE_MEDITATIONS.forEach(m => {
+    console.log(`  ${m.id} - ${m.title} (${m.category})`);
+  });
+  console.log('');
+  process.exit(0);
+}
+
 // Run the generator
-generateAllMeditations().catch(console.error);
+generateAllMeditations(meditationId).catch(console.error);

@@ -12,10 +12,21 @@ Make sure you have the following environment variables set:
 
 ### Usage
 
-Run the batch generation script:
-
+**Generate all meditations:**
 ```bash
 npm run generate-meditations
+```
+
+**Generate a specific meditation (recommended for testing):**
+```bash
+npm run generate-meditations 7    # Loving Kindness Meditation
+npm run generate-meditations 1    # Cosmic Grounding
+npm run generate-meditations 2    # Nebula Relaxation
+```
+
+**See available meditations:**
+```bash
+npm run generate-meditations --help
 ```
 
 ### What it does
