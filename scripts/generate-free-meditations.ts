@@ -58,11 +58,16 @@ const FREE_MEDITATIONS = [
 ];
 
 // Voice ID for ElevenLabs
-// Options: 
-// - Lily: pFZP5JQG7iQjIQuC4Bku (soft, nurturing, gentle)
-// - Charlotte: XB0fDUnXU5powFXDhCwa (warm, soothing)
-// - Serena: pMsXgVXv3BLzUgSXRplE (gentle, calm)
-const VOICE_ID = 'pFZP5JQG7iQjIQuC4Bku'; // Lily
+// Available voices:
+const VOICES = {
+  lily: 'pFZP5JQG7iQjIQuC4Bku',      // Soft, nurturing, gentle
+  charlotte: 'XB0fDUnXU5powFXDhCwa',  // Warm, soothing
+  serena: 'pMsXgVXv3BLzUgSXRplE',    // Gentle, calm
+  uzi: process.env.UZI_VOICE_ID || 'pFZP5JQG7iQjIQuC4Bku' // Your cloned voice (falls back to Lily)
+};
+
+// Select voice here:
+const VOICE_ID = VOICES.uzi; // Change to VOICES.lily, VOICES.charlotte, etc.
 
 // Audio output directory
 const AUDIO_DIR = path.join(process.cwd(), 'audio', 'free-meditations');
