@@ -109,31 +109,78 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
           ctx.save();
           ctx.translate(fcx, fcy);
           const breathe = Math.sin(t * 1.4) * 0.02 + 1;
-          ctx.scale(breathe * 0.45, breathe * 0.45); // Scale of the SVG path
-          
-          ctx.fillStyle = 'rgba(5, 5, 12, 0.98)';
-          
-          // Professional Human Yoga Silhouette Path
-          const p = new Path2D("M256,108.6c19.1,0,34.5-15.4,34.5-34.5S275.1,39.6,256,39.6s-34.5,15.4-34.5,34.5S236.9,108.6,256,108.6z M428.4,263.8c-12.7-18.7-32.5-30.8-54.8-33.6c-18.8-2.3-37.5-6.7-55.8-13.1c-14.6-5.1-29.9-7.7-45.3-7.7c-5.1,0-10.2,0.3-15.3,0.9c-1.8,0.2-3.7,0.3-5.5,0.4c-1.8-0.1-3.7-0.2-5.5-0.4c-5.1-0.6-10.2-0.9-15.3-0.9c-15.4,0-30.7,2.6-45.3,7.7c-18.3,6.4-37,10.8-55.8,13.1c-22.3,2.8-42.1,14.9-54.8,33.6C107.5,283.5,96,306,96,330.1v34.3c0,42.5,34.5,77.1,77.1,77.1h165.8c42.5,0,77.1-34.5,77.1-77.1v-34.3C416,306,404.5,283.5,428.4,263.8z");
-          
-          // Center the Path2D (the path is based on a 512x512 grid)
-          ctx.translate(-256, -256);
-          ctx.fill(p);
+          ctx.scale(breathe * 2.0, breathe * 2.0);
 
-          // Subtle Rim Light highlight
+          // A more “human” silhouette: use a single vector outline + negative-space cutouts
+          // so the arms/legs read immediately as a seated meditator (not a blob).
+          const silhouette = new Path2D();
+
+          // ---- Outer head + body + lotus base ----
+          // Head
+          silhouette.ellipse(0, -72, 14, 18, 0, 0, Math.PI * 2);
+
+          // Neck
+          silhouette.moveTo(-5, -56);
+          silhouette.quadraticCurveTo(0, -52, 5, -56);
+          silhouette.lineTo(6, -46);
+          silhouette.quadraticCurveTo(0, -44, -6, -46);
+          silhouette.closePath();
+
+          // Torso + shoulders (rounded, natural slopes)
+          silhouette.moveTo(-42, -44);
+          silhouette.bezierCurveTo(-58, -38, -70, -18, -62, 6); // left shoulder → left rib
+          silhouette.bezierCurveTo(-56, 26, -42, 38, -24, 44);  // left waist → left hip
+          silhouette.quadraticCurveTo(0, 52, 24, 44);           // belly curve
+          silhouette.bezierCurveTo(42, 38, 56, 26, 62, 6);      // right hip → right rib
+          silhouette.bezierCurveTo(70, -18, 58, -38, 42, -44);  // right rib → right shoulder
+          silhouette.quadraticCurveTo(0, -54, -42, -44);        // collar line
+          silhouette.closePath();
+
+          // Lotus base (wide, clearly seated)
+          silhouette.moveTo(-28, 46);
+          silhouette.bezierCurveTo(-70, 44, -122, 64, -132, 96); // left knee
+          silhouette.quadraticCurveTo(-134, 112, -106, 114);     // left foot outer
+          silhouette.quadraticCurveTo(-62, 116, -22, 104);       // left foot → center
+          silhouette.quadraticCurveTo(0, 98, 22, 104);           // center → right foot
+          silhouette.quadraticCurveTo(62, 116, 106, 114);        // right foot outer
+          silhouette.quadraticCurveTo(134, 112, 132, 96);        // right knee
+          silhouette.bezierCurveTo(122, 64, 70, 44, 28, 46);     // back to start
+          silhouette.closePath();
+
+          // ---- Negative space cutouts (arms + leg separation) ----
+          // Under-arm / lap opening (gives “hands in lap” without drawing hands)
+          silhouette.moveTo(-36, 0);
+          silhouette.quadraticCurveTo(-24, 30, 0, 34);
+          silhouette.quadraticCurveTo(24, 30, 36, 0);
+          silhouette.quadraticCurveTo(18, 10, 0, 10);
+          silhouette.quadraticCurveTo(-18, 10, -36, 0);
+          silhouette.closePath();
+
+          // Leg split (so it’s clearly crossed, not one big base)
+          silhouette.ellipse(-34, 92, 34, 18, 0.05, 0, Math.PI * 2);
+          silhouette.ellipse(34, 92, 34, 18, -0.05, 0, Math.PI * 2);
+
+          // A small “gap” at the center for the crossed ankles
+          silhouette.ellipse(0, 106, 18, 10, 0, 0, Math.PI * 2);
+
+          // Fill with even-odd rule so the “cutout” subpaths become holes.
+          ctx.fillStyle = 'rgba(5, 5, 12, 0.98)';
+          ctx.fill(silhouette, 'evenodd');
+
+          // Premium rim light along outer contour
           ctx.globalCompositeOperation = 'screen';
-          ctx.strokeStyle = `hsla(45, 100%, 80%, ${0.1 + (Math.sin(t * 2) * 0.05)})`;
-          ctx.lineWidth = 1.5;
-          ctx.stroke(p);
+          ctx.strokeStyle = `hsla(45, 100%, 85%, ${0.14 + Math.sin(t * 2) * 0.04})`;
+          ctx.lineWidth = 1.25;
+          ctx.stroke(silhouette);
           ctx.globalCompositeOperation = 'source-over';
 
           ctx.restore();
         };
 
-        drawNebula(cx, cy);
+        drawNebula(cx, cy * 0.97);
         drawStars();
-        drawMontblancAura(cx, cy - 20);
-        drawSilhouette(cx, cy + 10);
+        drawMontblancAura(cx, cy - 50); // Moved up
+        drawSilhouette(cx, cy - 10);    // Moved up significantly from center
       } else if (type === 'chakra') {
         t += 0.05;
         const cols = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
