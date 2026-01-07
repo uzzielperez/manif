@@ -159,13 +159,18 @@ Return ONLY the meditation script text, no titles or metadata.`;
   }
 }
 
-async function generateAllMeditations(specificId?: string, voiceId: string = VOICE_ID) {
+async function generateAllMeditations(specificId?: string, voiceId: string = VOICE_ID, excludedIds: string[] = []) {
   console.log('\n🌌 COSMIC MEDITATION GENERATOR 🌌');
   
-  // Filter meditations if a specific ID is requested
-  const meditationsToGenerate = specificId 
+  // Filter meditations if a specific ID is requested, or exclude specific IDs
+  let meditationsToGenerate = specificId 
     ? FREE_MEDITATIONS.filter(m => m.id === specificId)
     : FREE_MEDITATIONS;
+  
+  // Exclude specified meditations
+  if (excludedIds.length > 0) {
+    meditationsToGenerate = meditationsToGenerate.filter(m => !excludedIds.includes(m.id));
+  }
   
   if (meditationsToGenerate.length === 0) {
     console.error(`❌ No meditation found with ID: ${specificId}`);
@@ -224,8 +229,26 @@ async function generateAllMeditations(specificId?: string, voiceId: string = VOI
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const meditationId = args[0];
-const voiceName = args[1]; // Optional voice parameter
+
+// Check for exclude flag
+const excludeIndex = args.findIndex(arg => arg === '--exclude' || arg === '--skip');
+let excludedIds: string[] = [];
+let meditationId: string | undefined;
+let voiceName: string | undefined;
+
+if (excludeIndex !== -1) {
+  // Get comma-separated IDs after --exclude flag
+  const excludeArg = args[excludeIndex + 1];
+  if (excludeArg) {
+    excludedIds = excludeArg.split(',').map(id => id.trim());
+    console.log(`\n⏭️  Excluding meditations: ${excludedIds.join(', ')}`);
+  }
+  // Remove exclude args from processing
+  args.splice(excludeIndex, 2);
+}
+
+meditationId = args[0];
+voiceName = args[1]; // Optional voice parameter
 
 // Override voice if specified
 let selectedVoice = VOICE_ID;
@@ -238,9 +261,10 @@ if (voiceName && VOICES[voiceName.toLowerCase() as keyof typeof VOICES]) {
 if (args.includes('--help') || args.includes('-h')) {
   console.log('\n🌌 COSMIC MEDITATION GENERATOR 🌌\n');
   console.log('Usage:');
-  console.log('  npm run generate-meditations                    # Generate all 7 meditations');
-  console.log('  npm run generate-meditations [ID]               # Generate a specific meditation');
-  console.log('  npm run generate-meditations [ID] [voice]       # Use a specific voice\n');
+  console.log('  npm run generate-meditations                         # Generate all 7 meditations');
+  console.log('  npm run generate-meditations [ID]                    # Generate a specific meditation');
+  console.log('  npm run generate-meditations [ID] [voice]            # Use a specific voice');
+  console.log('  npm run generate-meditations --exclude [IDs]         # Generate all except specified IDs\n');
   console.log('Available Meditations:');
   FREE_MEDITATIONS.forEach(m => {
     console.log(`  ${m.id} - ${m.title} (${m.category})`);
@@ -250,12 +274,13 @@ if (args.includes('--help') || args.includes('-h')) {
     console.log(`  ${voice}`);
   });
   console.log('\nExamples:');
-  console.log('  npm run generate-meditations 7 jameson');
-  console.log('  npm run generate-meditations 7 sarah');
-  console.log('  npm run generate-meditations 1 uzi');
+  console.log('  npm run generate-meditations 7 jameson              # Generate #7 with Jameson');
+  console.log('  npm run generate-meditations --exclude 7            # Generate all except #7');
+  console.log('  npm run generate-meditations --exclude 1,3,5        # Generate all except #1, #3, #5');
+  console.log('  npm run generate-meditations --exclude 7 jameson    # All except #7, with Jameson voice');
   console.log('');
   process.exit(0);
 }
 
 // Run the generator
-generateAllMeditations(meditationId, selectedVoice).catch(console.error);
+generateAllMeditations(meditationId, selectedVoice, excludedIds).catch(console.error);

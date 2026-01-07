@@ -30,9 +30,16 @@ const VOICE_ID = VOICES.alison;  // Alison
 npm run generate-meditations
 ```
 
+**Generate all EXCEPT certain meditations:**
+```bash
+npm run generate-meditations --exclude 7           # All except #7
+npm run generate-meditations --exclude 1,3,5       # All except #1, #3, #5
+npm run generate-meditations --exclude 7 jameson   # All except #7, with Jameson voice
+```
+
 **Generate a specific meditation:**
 ```bash
-npm run generate-meditations 7              # Loving Kindness (default: Uzi's voice)
+npm run generate-meditations 7              # Loving Kindness (default: Jameson)
 npm run generate-meditations 7 jameson      # With Jameson's voice
 npm run generate-meditations 7 sarah        # With Sarah's voice
 npm run generate-meditations 7 alison       # With Alison's voice
