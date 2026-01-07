@@ -84,7 +84,7 @@ const FreeMeditations: React.FC = () => {
 
   const dailyMeditation = MOCK_MEDITATIONS.find((m) => m.isDaily);
 
-  const handlePlay = (meditation: typeof MOCK_MEDITATIONS[0]) => {
+  const handlePlay = (meditation: typeof MOCK_MEDITATIONS[0], voiceUrl?: string) => {
     // Stop current audio if playing
     if (currentAudio) {
       currentAudio.pause();
@@ -98,8 +98,11 @@ const FreeMeditations: React.FC = () => {
       return;
     }
 
+    // Use selected voice URL or default audioUrl
+    const audioSrc = voiceUrl || meditation.audioUrl;
+    
     // Play new audio
-    const audio = new Audio(meditation.audioUrl);
+    const audio = new Audio(audioSrc);
     audio.play();
     setCurrentAudio(audio);
     setPlayingId(meditation.id);
@@ -176,7 +179,7 @@ const FreeMeditations: React.FC = () => {
                 
                 <div className="flex flex-wrap gap-4">
                   <button 
-                    onClick={() => dailyMeditation && handlePlay(dailyMeditation)}
+                    onClick={() => dailyMeditation && handlePlay(dailyMeditation, undefined)}
                     className="px-10 py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all flex items-center gap-3 shadow-lg shadow-white/5"
                   >
                     <Play size={20} fill="currentColor" />
@@ -251,7 +254,8 @@ const FreeMeditations: React.FC = () => {
                 duration={med.duration}
                 category={med.category}
                 isDaily={med.isDaily}
-                onPlay={() => handlePlay(med)}
+                voices={med.voices}
+                onPlay={(voiceUrl) => handlePlay(med, voiceUrl)}
               />
             </motion.div>
           ))}

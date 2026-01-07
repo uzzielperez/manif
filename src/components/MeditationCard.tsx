@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Clock, Star, Headphones, ArrowUpRight } from 'lucide-react';
+import { Play, Clock, Star, Headphones, ArrowUpRight, Mic } from 'lucide-react';
+
+interface Voice {
+  name: string;
+  url: string;
+}
 
 interface MeditationCardProps {
   title: string;
@@ -8,7 +13,8 @@ interface MeditationCardProps {
   category: string;
   imageUrl?: string;
   isDaily?: boolean;
-  onPlay: () => void;
+  voices?: Voice[];
+  onPlay: (voiceUrl?: string) => void;
 }
 
 export const MeditationCard: React.FC<MeditationCardProps> = ({
@@ -17,8 +23,15 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
   category,
   imageUrl,
   isDaily,
+  voices,
   onPlay,
 }) => {
+  const [selectedVoice, setSelectedVoice] = useState<Voice | undefined>(voices?.[0]);
+
+  const handlePlay = () => {
+    onPlay(selectedVoice?.url);
+  };
+
   return (
     <motion.div
       whileHover={{ y: -8 }}
@@ -60,8 +73,32 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
           </div>
         </div>
 
+        {/* Voice Selector Dropdown */}
+        {voices && voices.length > 1 && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Mic size={12} className="text-[var(--cosmic-accent)]" />
+              <span className="text-[10px] uppercase tracking-[0.3em] text-white/40">Choose Voice</span>
+            </div>
+            <select
+              value={selectedVoice?.name || ''}
+              onChange={(e) => {
+                const voice = voices.find(v => v.name === e.target.value);
+                setSelectedVoice(voice);
+              }}
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[var(--cosmic-accent)] hover:bg-white/10 transition-all cursor-pointer"
+            >
+              {voices.map((voice) => (
+                <option key={voice.name} value={voice.name} className="bg-black">
+                  {voice.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <button
-          onClick={onPlay}
+          onClick={handlePlay}
           className="w-full py-4 bg-white/5 hover:bg-white text-white hover:text-black rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 font-bold border border-white/10 hover:border-white"
         >
           <Play size={18} fill="currentColor" />
