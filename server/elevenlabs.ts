@@ -165,7 +165,7 @@ async function synthesizeWithElevenLabs(text: string, voiceId: string): Promise<
     
     // Create abort controller for timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout per chunk
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout for higher quality model
     
     try {
       const response = await fetch(url, {
