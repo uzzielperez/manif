@@ -10,48 +10,69 @@ const MOCK_MEDITATIONS = [
     duration: '5 min',
     category: 'Foundational',
     isDaily: true,
+    audioUrl: '/audio/free-meditations/1-cosmic-grounding.mp3',
+    description: 'Connect with the earth while channeling cosmic energy for stability and presence.',
   },
   {
     id: '2',
     title: 'Nebula Relaxation',
     duration: '5 min',
     category: 'Sleep',
+    audioUrl: '/audio/free-meditations/2-nebula-relaxation.mp3',
+    description: 'Float through colorful nebulas as you release tension and prepare for deep rest.',
   },
   {
     id: '3',
     title: 'Solar Energy Breath',
     duration: '5 min',
     category: 'Energy',
+    audioUrl: '/audio/free-meditations/3-solar-energy-breath.mp3',
+    description: 'Harness the power of solar energy through breathwork to invigorate body and mind.',
   },
   {
     id: '4',
     title: 'Stellar Abundance',
     duration: '5 min',
     category: 'Manifestation',
+    audioUrl: '/audio/free-meditations/4-stellar-abundance.mp3',
+    description: 'Align with the infinite abundance of the universe to manifest your desires.',
   },
   {
     id: '5',
     title: 'Void Silence',
     duration: '5 min',
     category: 'Deep Zen',
+    audioUrl: '/audio/free-meditations/5-void-silence.mp3',
+    description: 'Experience the profound peace of the cosmic void in deep meditation.',
   },
   {
     id: '6',
     title: 'Galactic Gratitude',
     duration: '5 min',
     category: 'Gratitude',
+    audioUrl: '/audio/free-meditations/6-galactic-gratitude.mp3',
+    description: 'Expand your heart with cosmic gratitude for all that exists.',
   },
   {
     id: '7',
     title: 'Loving Kindness Meditation',
     duration: '5 min',
     category: 'Compassion',
+    audioUrl: '/audio/free-meditations/7-loving-kindness-meditation-jameson-v2.mp3',
+    description: 'Send waves of loving kindness to yourself, others, and the entire cosmos.',
+    voices: [
+      { name: 'Jameson', url: '/audio/free-meditations/7-loving-kindness-meditation-jameson-v2.mp3' },
+      { name: 'Sarah', url: '/audio/free-meditations/7-loving-kindness-meditation-sarah.mp3' },
+      { name: 'Uzi', url: '/audio/free-meditations/7-loving-kindness-meditation-uzi.mp3' },
+    ],
   },
 ];
 
 const FreeMeditations: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+  const [playingId, setPlayingId] = useState<string | null>(null);
 
   const categories = ['All', ...new Set(MOCK_MEDITATIONS.map((m) => m.category))];
 
@@ -62,6 +83,33 @@ const FreeMeditations: React.FC = () => {
   });
 
   const dailyMeditation = MOCK_MEDITATIONS.find((m) => m.isDaily);
+
+  const handlePlay = (meditation: typeof MOCK_MEDITATIONS[0]) => {
+    // Stop current audio if playing
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+
+    // If clicking the same meditation, just stop
+    if (playingId === meditation.id) {
+      setPlayingId(null);
+      setCurrentAudio(null);
+      return;
+    }
+
+    // Play new audio
+    const audio = new Audio(meditation.audioUrl);
+    audio.play();
+    setCurrentAudio(audio);
+    setPlayingId(meditation.id);
+
+    // Reset when done
+    audio.onended = () => {
+      setPlayingId(null);
+      setCurrentAudio(null);
+    };
+  };
 
   return (
     <motion.div
@@ -127,13 +175,20 @@ const FreeMeditations: React.FC = () => {
                 </p>
                 
                 <div className="flex flex-wrap gap-4">
-                  <button className="px-10 py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all flex items-center gap-3 shadow-lg shadow-white/5">
+                  <button 
+                    onClick={() => dailyMeditation && handlePlay(dailyMeditation)}
+                    className="px-10 py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all flex items-center gap-3 shadow-lg shadow-white/5"
+                  >
                     <Play size={20} fill="currentColor" />
-                    Start Session
+                    {playingId === dailyMeditation?.id ? 'Stop' : 'Start Session'}
                   </button>
-                  <button className="px-8 py-4 bg-white/5 text-white border border-white/10 rounded-2xl font-medium hover:bg-white/10 transition-all">
-                    View Details
-                  </button>
+                  <a 
+                    href={dailyMeditation?.audioUrl} 
+                    download 
+                    className="px-8 py-4 bg-white/5 text-white border border-white/10 rounded-2xl font-medium hover:bg-white/10 transition-all inline-block text-center"
+                  >
+                    Download
+                  </a>
                 </div>
              </div>
              
@@ -196,7 +251,7 @@ const FreeMeditations: React.FC = () => {
                 duration={med.duration}
                 category={med.category}
                 isDaily={med.isDaily}
-                onPlay={() => console.log('Play', med.id)}
+                onPlay={() => handlePlay(med)}
               />
             </motion.div>
           ))}
