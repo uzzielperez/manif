@@ -112,72 +112,56 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
           ctx.save();
           ctx.translate(fcx, fcy);
           const breathe = Math.sin(t * 1.4) * 0.02 + 1;
-          ctx.scale(breathe * 2.5, breathe * 2.5); // Slightly larger
+          ctx.scale(breathe * 1.4, breathe * 1.4);
           
-          ctx.fillStyle = 'rgba(5, 5, 12, 0.98)';
+          ctx.fillStyle = 'rgba(2, 2, 8, 0.98)';
           
-          // --- Head (Elegant, natural oval) ---
+          // --- High-Fidelity Silhouette Path ---
           ctx.beginPath();
-          ctx.ellipse(0, -75, 11, 15, 0, 0, Math.PI * 2);
+          
+          // Head (Natural oval)
+          ctx.ellipse(0, -85, 14, 18, 0, 0, Math.PI * 2);
           ctx.fill();
 
-          // --- Hair/Detail (Subtle curve for natural look) ---
+          // Neck
+          ctx.fillRect(-4, -68, 8, 12);
+
+          // Body & Shoulders (Natural curves)
           ctx.beginPath();
-          ctx.arc(0, -78, 11, Math.PI, 0);
+          ctx.moveTo(-5, -67);
+          ctx.bezierCurveTo(-20, -65, -35, -55, -45, -30); // Left shoulder
+          ctx.bezierCurveTo(-55, -10, -50, 20, -35, 35); // Left arm
+          ctx.quadraticCurveTo(-20, 48, 0, 50); // Hands in lap
+          ctx.quadraticCurveTo(20, 48, 35, 35); // Right arm back
+          ctx.bezierCurveTo(50, 20, 55, -10, 45, -30); // Right arm
+          ctx.bezierCurveTo(35, -55, 20, -65, 5, -67); // Right shoulder
           ctx.fill();
 
-          // --- Neck (Properly tapered) ---
+          // --- Seated Lotus Legs (Artistic wide base) ---
           ctx.beginPath();
-          ctx.moveTo(-4, -61);
-          ctx.quadraticCurveTo(-4, -55, -4, -53);
-          ctx.lineTo(4, -53);
-          ctx.quadraticCurveTo(4, -55, 4, -61);
+          ctx.moveTo(-25, 35);
+          ctx.bezierCurveTo(-65, 35, -110, 55, -120, 85); // Left knee
+          ctx.quadraticCurveTo(-120, 105, -60, 105); // Left base
+          ctx.lineTo(60, 105); // Bottom
+          ctx.quadraticCurveTo(120, 105, 120, 85); // Right knee
+          ctx.bezierCurveTo(110, 55, 65, 35, 25, 35);
           ctx.closePath();
           ctx.fill();
 
-          // --- Torso & Shoulders (Graceful slope) ---
-          ctx.beginPath();
-          ctx.moveTo(-4, -54);
-          // Shoulder slope
-          ctx.bezierCurveTo(-15, -53, -28, -48, -34, -33);
-          // Outer arms
-          ctx.quadraticCurveTo(-42, -5, -32, 20);
-          // Hands joined in lap
-          ctx.quadraticCurveTo(-15, 33, 0, 35);
-          ctx.quadraticCurveTo(15, 33, 32, 20);
-          ctx.quadraticCurveTo(42, -5, 34, -33);
-          // Right shoulder back
-          ctx.bezierCurveTo(28, -48, 15, -53, 4, -54);
-          ctx.fill();
-
-          // --- Lotus Legs (Fluid & Grounded) ---
-          ctx.beginPath();
-          ctx.moveTo(-22, 28);
-          // Left knee curve
-          ctx.bezierCurveTo(-45, 28, -75, 45, -78, 55);
-          ctx.quadraticCurveTo(-78, 67, -40, 67);
-          // Base
-          ctx.lineTo(40, 67);
-          // Right knee curve
-          ctx.quadraticCurveTo(78, 67, 78, 55);
-          ctx.bezierCurveTo(75, 45, 45, 28, 22, 28);
-          ctx.closePath();
-          ctx.fill();
-
-          // Subtle Rim Light highlight
+          // --- Rim Light (Subtle gold highlight) ---
           ctx.globalCompositeOperation = 'screen';
-          ctx.strokeStyle = `hsla(45, 100%, 80%, ${0.1 + (Math.sin(t * 2) * 0.04)})`;
-          ctx.lineWidth = 0.4;
+          ctx.strokeStyle = `hsla(45, 100%, 85%, ${0.12 + Math.sin(t*2)*0.05})`;
+          ctx.lineWidth = 1.2;
           ctx.stroke();
           ctx.globalCompositeOperation = 'source-over';
 
           ctx.restore();
         };
 
-        drawNebula(cx, cy * 0.97);
+        drawNebula(cx, cy * 0.85);
         drawStars();
-        drawMontblancAura(cx, cy - 65); // Moved up significantly
-        drawSilhouette(cx, cy - 25);    // Moved up significantly
+        drawMontblancAura(cx, cy - 180); // Move everything much higher
+        drawSilhouette(cx, cy - 140);    // Move everything much higher
       } else if (type === 'chakra') {
         t += 0.05;
         const cols = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
