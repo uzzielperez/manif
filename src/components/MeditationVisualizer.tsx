@@ -53,7 +53,7 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
       const w = canvas.width;
       const h = canvas.height;
       const cx = w >> 1;
-      const cy = h * 0.57;
+      const cy = h * 0.65;
 
       if (type === 'aura') {
         t += 0.02;
@@ -67,99 +67,110 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
         ctx.fillStyle = `rgba(80,${g},255,0.8)`;
         ctx.fill();
       } else if (type === 'loving-kindness') {
-        t += 0.007;
+        t += 0.008;
 
-        // Very soft breathing background
-        const grad = ctx.createRadialGradient(
-          cx, cy * 1.4, w * 0.05,
-          cx, cy * 0.4, w * 1.1
-        );
-
-        const breath = softPulse(t * 0.4, 0.4) * 0.25;
-        grad.addColorStop(0.00, `hsla(40, 90%, 72%, ${0.38 + breath})`);
-        grad.addColorStop(0.35, `hsla(60, 85%, 65%, ${0.22 + breath * 0.6})`);
-        grad.addColorStop(0.70, `hsla(190, 70%, 28%, 0.12)`);
-        grad.addColorStop(1.00, `hsla(220, 60%, 8%, 1.00)`);
-
-        ctx.fillStyle = grad;
+        // Dark cosmic background
+        ctx.fillStyle = '#000416';
         ctx.fillRect(0, 0, w, h);
 
-        // Gentle mouse following glow
-        const glowX = cx + (mouseRef.current.x - cx) * 0.06;
-        const glowY = cy + (mouseRef.current.y - cy) * 0.08;
+        // drawNebula
+        const drawNebula = (ncx: number, ncy: number) => {
+          const grad = ctx.createRadialGradient(ncx, ncy, 0, ncx, ncy, Math.max(w, h));
+          const pulse = Math.sin(t * 0.8) * 0.5 + 0.5;
+          grad.addColorStop(0, `hsla(45, 100%, 70%, ${0.4 + pulse * 0.2})`);
+          grad.addColorStop(0.3, `hsla(200, 80%, 50%, ${0.15 + pulse * 0.1})`);
+          grad.addColorStop(0.6, `hsla(280, 70%, 40%, ${0.12})`);
+          grad.addColorStop(1, `hsla(220, 90%, 5%, 1)`);
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, w, h);
+        };
 
-        ctx.globalCompositeOperation = 'screen';
-        ctx.beginPath();
-        ctx.arc(glowX, glowY, 180 + Math.sin(t * 0.7) * 40, 0, Math.PI * 2);
-        ctx.fillStyle = 'hsla(45,100%,78%,0.07)';
-        ctx.fill();
+        // drawStars
+        const drawStars = () => {
+          ctx.fillStyle = '#fff';
+          for (let i = 0; i < 300; i++) {
+            const sx = (i * 137.5) % w;
+            const sy = (i * 213.7) % h;
+            const size = (i % 3 + 1) * 0.8;
+            const alpha = 0.3 + Math.sin(t + i) * 0.2;
+            ctx.globalAlpha = alpha;
+            ctx.fillRect(sx, sy, size, size);
+          }
+          ctx.globalAlpha = 1;
+        };
 
-        ctx.beginPath();
-        ctx.arc(cx, cy, 140 + softPulse(t * 0.9) * 60, 0, Math.PI * 2);
-        ctx.fillStyle = 'hsla(50,100%,82%,0.09)';
-        ctx.fill();
+        // drawHeartGlow
+        const drawHeartGlow = (hcx: number, hcy: number) => {
+          const heartPulse = Math.sin(t * 2) * 20 + 60;
+          const intensity = Math.sin(t * 1.5) * 0.5 + 0.8;
 
-        ctx.globalCompositeOperation = 'source-over';
+          // Bright core
+          const coreGrad = ctx.createRadialGradient(hcx, hcy + 10, 0, hcx, hcy + 10, heartPulse);
+          coreGrad.addColorStop(0, `hsla(45, 100%, 90%, 1)`);
+          coreGrad.addColorStop(0.3, `hsla(45, 100%, 70%, ${intensity})`);
+          coreGrad.addColorStop(1, `hsla(45, 100%, 50%, 0)`);
+          ctx.fillStyle = coreGrad;
+          ctx.fillRect(hcx - heartPulse * 2, hcy - heartPulse + 10, heartPulse * 4, heartPulse * 2);
 
-        // Main meditative figure
-        ctx.save();
-        ctx.translate(cx, cy);
-        const scale = 1.75 + Math.sin(t * 0.6) * 0.04;
-        ctx.scale(scale, scale);
+          // Radiating rays
+          ctx.globalCompositeOperation = 'screen';
+          for (let i = 0; i < 24; i++) {
+            const angle = (i / 24) * Math.PI * 2 + t * 0.5;
+            const len = 300 + Math.sin(t * 3 + i) * 100;
+            ctx.strokeStyle = `hsla(45, 100%, 65%, ${0.15 - i * 0.004})`;
+            ctx.lineWidth = 4 + i * 0.5;
+            ctx.beginPath();
+            ctx.moveTo(hcx, hcy + 10);
+            ctx.lineTo(hcx + Math.cos(angle) * len, hcy + 10 + Math.sin(angle) * len);
+            ctx.stroke();
+          }
+          ctx.globalCompositeOperation = 'source-over';
+        };
 
-        // Halo
-        ctx.beginPath();
-        ctx.arc(0, -25, 85, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,220,140,0.07)';
-        ctx.fill();
+        // drawFigure
+        const drawFigure = (fcx: number, fcy: number) => {
+          ctx.save();
+          ctx.translate(fcx, fcy);
+          const breathe = Math.sin(t * 1.2) * 0.05 + 1;
+          ctx.scale(breathe, breathe);
 
-        // Head
-        ctx.beginPath();
-        ctx.ellipse(0, -68, 26, 32, 0, 0, Math.PI * 2);
-        ctx.fillStyle = '#111122';
-        ctx.fill();
-
-        // Neck & shoulders
-        ctx.beginPath();
-        ctx.moveTo(-38, -38);
-        ctx.quadraticCurveTo(-55, -10, -68, 35);
-        ctx.lineTo(68, 35);
-        ctx.quadraticCurveTo(55, -10, 38, -38);
-        ctx.closePath();
-        ctx.fillStyle = '#0a0a18';
-        ctx.fill();
-
-        // Hands
-        ctx.beginPath();
-        ctx.moveTo(-32, -8);
-        ctx.quadraticCurveTo(-18, 38, 0, 52);
-        ctx.quadraticCurveTo(18, 38, 32, -8);
-        ctx.quadraticCurveTo(0, 12, -32, -8);
-        ctx.fillStyle = '#111122';
-        ctx.fill();
-
-        // Glowing heart
-        ctx.globalCompositeOperation = 'screen';
-        const heartPulseValue = softPulse(t * 1.6, 1.2) * 12;
-        ctx.beginPath();
-        heartShape(0, 18, 0.9 + heartPulseValue * 0.03);
-        ctx.fillStyle = `hsla(${42 + heartPulseValue * 8}, 100%, 78%, ${0.7 + heartPulseValue * 0.2})`;
-        ctx.fill();
-
-        ctx.restore();
-
-        // Ripples
-        ctx.globalCompositeOperation = 'screen';
-        for (let i = 0; i < 7; i++) {
-          const radius = 110 + i * 42 + Math.sin(t * 1.3 + i * 1.4) * (18 - i * 2);
-          const alpha = 0.12 - i * 0.016;
+          ctx.fillStyle = '#000';
+          // Legs crossed
           ctx.beginPath();
-          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-          ctx.strokeStyle = `hsla(${38 + i * 12}, 100%, ${72 + i * 3}%, ${alpha})`;
-          ctx.lineWidth = 2.8 + i * 0.4;
-          ctx.stroke();
-        }
-        ctx.globalCompositeOperation = 'source-over';
+          ctx.moveTo(-40, 60);
+          ctx.quadraticCurveTo(0, 20, 40, 60);
+          ctx.quadraticCurveTo(30, 80, 0, 85);
+          ctx.quadraticCurveTo(-30, 80, -40, 60);
+          ctx.fill();
+
+          // Torso
+          ctx.beginPath();
+          ctx.moveTo(-35, 55);
+          ctx.lineTo(-25, -20);
+          ctx.lineTo(25, -20);
+          ctx.lineTo(35, 55);
+          ctx.closePath();
+          ctx.fill();
+
+          // Arms / mudra
+          ctx.beginPath();
+          ctx.arc(-20, 25, 25, Math.PI * 0.8, Math.PI * 2.2);
+          ctx.arc(20, 25, 25, Math.PI * 0.8, Math.PI * 2.2, true);
+          ctx.closePath();
+          ctx.fill();
+
+          // Head
+          ctx.beginPath();
+          ctx.arc(0, -45, 28, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
+        };
+
+        drawNebula(cx, cy - 100);
+        drawStars();
+        drawHeartGlow(cx, cy - 20);
+        drawFigure(cx, cy);
       } else if (type === 'chakra') {
         t += 0.05;
         const cols = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
