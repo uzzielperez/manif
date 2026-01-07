@@ -41,6 +41,12 @@ const MOCK_MEDITATIONS = [
     duration: '8 min',
     category: 'Gratitude',
   },
+  {
+    id: '7',
+    title: 'Loving Kindness Meditation',
+    duration: '15 min',
+    category: 'Compassion',
+  },
 ];
 
 const FreeMeditations: React.FC = () => {
