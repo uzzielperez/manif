@@ -84,7 +84,7 @@ interface GenerationResult {
   error?: string;
 }
 
-async function generateSingleMeditation(meditation: typeof FREE_MEDITATIONS[0]): Promise<GenerationResult> {
+async function generateSingleMeditation(meditation: typeof FREE_MEDITATIONS[0], voiceId: string): Promise<GenerationResult> {
   console.log(`\n${'='.repeat(60)}`);
   console.log(`🌟 Generating: ${meditation.title}`);
   console.log(`${'='.repeat(60)}`);
@@ -115,7 +115,7 @@ Return ONLY the meditation script text, no titles or metadata.`;
     
     // Step 2: Synthesize speech using ElevenLabs
     console.log(`🎙️  Step 2/3: Synthesizing audio with ElevenLabs...`);
-    const audioBuffer = await synthesizeSpeech(script, VOICE_ID);
+    const audioBuffer = await synthesizeSpeech(script, voiceId);
     
     console.log(`✅ Audio synthesized (${(audioBuffer.length / 1024).toFixed(2)} KB)`);
     
@@ -159,7 +159,7 @@ Return ONLY the meditation script text, no titles or metadata.`;
   }
 }
 
-async function generateAllMeditations(specificId?: string) {
+async function generateAllMeditations(specificId?: string, voiceId: string = VOICE_ID) {
   console.log('\n🌌 COSMIC MEDITATION GENERATOR 🌌');
   
   // Filter meditations if a specific ID is requested
@@ -185,7 +185,7 @@ async function generateAllMeditations(specificId?: string) {
   
   // Generate meditations sequentially to avoid rate limits
   for (const meditation of meditationsToGenerate) {
-    const result = await generateSingleMeditation(meditation);
+    const result = await generateSingleMeditation(meditation, voiceId);
     results.push(result);
     
     // Add a small delay between generations to be respectful to API rate limits
@@ -225,20 +225,37 @@ async function generateAllMeditations(specificId?: string) {
 // Parse command line arguments
 const args = process.argv.slice(2);
 const meditationId = args[0];
+const voiceName = args[1]; // Optional voice parameter
+
+// Override voice if specified
+let selectedVoice = VOICE_ID;
+if (voiceName && VOICES[voiceName.toLowerCase() as keyof typeof VOICES]) {
+  selectedVoice = VOICES[voiceName.toLowerCase() as keyof typeof VOICES];
+  console.log(`\n🎙️  Using voice: ${voiceName}`);
+}
 
 // Show help if requested
 if (args.includes('--help') || args.includes('-h')) {
   console.log('\n🌌 COSMIC MEDITATION GENERATOR 🌌\n');
   console.log('Usage:');
-  console.log('  npm run generate-meditations           # Generate all 7 meditations');
-  console.log('  npm run generate-meditations [ID]      # Generate a specific meditation\n');
+  console.log('  npm run generate-meditations                    # Generate all 7 meditations');
+  console.log('  npm run generate-meditations [ID]               # Generate a specific meditation');
+  console.log('  npm run generate-meditations [ID] [voice]       # Use a specific voice\n');
   console.log('Available Meditations:');
   FREE_MEDITATIONS.forEach(m => {
     console.log(`  ${m.id} - ${m.title} (${m.category})`);
   });
+  console.log('\nAvailable Voices:');
+  Object.keys(VOICES).forEach(voice => {
+    console.log(`  ${voice}`);
+  });
+  console.log('\nExamples:');
+  console.log('  npm run generate-meditations 7 jameson');
+  console.log('  npm run generate-meditations 7 sarah');
+  console.log('  npm run generate-meditations 1 uzi');
   console.log('');
   process.exit(0);
 }
 
 // Run the generator
-generateAllMeditations(meditationId).catch(console.error);
+generateAllMeditations(meditationId, selectedVoice).catch(console.error);

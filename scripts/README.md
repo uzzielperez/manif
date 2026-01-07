@@ -30,14 +30,22 @@ const VOICE_ID = VOICES.alison;  // Alison
 npm run generate-meditations
 ```
 
-**Generate a specific meditation (recommended for testing):**
+**Generate a specific meditation:**
 ```bash
-npm run generate-meditations 7    # Loving Kindness Meditation
-npm run generate-meditations 1    # Cosmic Grounding
-npm run generate-meditations 2    # Nebula Relaxation
+npm run generate-meditations 7              # Loving Kindness (default: Uzi's voice)
+npm run generate-meditations 7 jameson      # With Jameson's voice
+npm run generate-meditations 7 sarah        # With Sarah's voice
+npm run generate-meditations 7 alison       # With Alison's voice
 ```
 
-**See available meditations:**
+**Available voices:**
+- `uzi` - Your voice (default)
+- `jameson` - Guided Meditation specialist
+- `sarah` - Soothing
+- `alison` - Gentle
+- `lauren` - Warm
+
+**See all options:**
 ```bash
 npm run generate-meditations --help
 ```
