@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Gift, Sparkles, Search, Play } from 'lucide-react';
 import { MeditationCard } from '../components/MeditationCard';
+import { MeditationSessionModal } from '../components/MeditationSessionModal';
 
 const MOCK_MEDITATIONS = [
   {
@@ -72,8 +73,9 @@ const MOCK_MEDITATIONS = [
 const FreeMeditations: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
-  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
-  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMeditation, setSelectedMeditation] = useState<typeof MOCK_MEDITATIONS[0] | null>(null);
+  const [selectedVoiceUrl, setSelectedVoiceUrl] = useState<string | undefined>(undefined);
 
   const categories = ['All', ...new Set(MOCK_MEDITATIONS.map((m) => m.category))];
 
@@ -86,54 +88,9 @@ const FreeMeditations: React.FC = () => {
   const dailyMeditation = MOCK_MEDITATIONS.find((m) => m.isDaily);
 
   const handlePlay = (meditation: typeof MOCK_MEDITATIONS[0], voiceUrl?: string) => {
-    // Stop current audio if playing
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-    }
-
-    // If clicking the same meditation, just stop
-    if (playingId === meditation.id) {
-      setPlayingId(null);
-      setCurrentAudio(null);
-      return;
-    }
-
-    // Use selected voice URL or default audioUrl
-    const audioSrc = voiceUrl || meditation.audioUrl;
-    console.log('🎵 Playing audio:', audioSrc);
-    
-    // Play new audio
-    const audio = new Audio(audioSrc);
-    
-    // Add error handling
-    audio.onerror = (e) => {
-      console.error('❌ Audio error:', e);
-      console.error('Failed to load:', audioSrc);
-      alert(`Failed to load audio: ${audioSrc}\nCheck console for details.`);
-    };
-    
-    audio.onloadeddata = () => {
-      console.log('✅ Audio loaded successfully');
-    };
-    
-    audio.play()
-      .then(() => {
-        console.log('▶️ Playing audio');
-        setCurrentAudio(audio);
-        setPlayingId(meditation.id);
-      })
-      .catch((error) => {
-        console.error('❌ Play failed:', error);
-        alert(`Play failed: ${error.message}`);
-      });
-
-    // Reset when done
-    audio.onended = () => {
-      console.log('⏹️ Audio ended');
-      setPlayingId(null);
-      setCurrentAudio(null);
-    };
+    setSelectedMeditation(meditation);
+    setSelectedVoiceUrl(voiceUrl);
+    setIsModalOpen(true);
   };
 
   return (
@@ -205,7 +162,7 @@ const FreeMeditations: React.FC = () => {
                     className="px-10 py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all flex items-center gap-3 shadow-lg shadow-white/5"
                   >
                     <Play size={20} fill="currentColor" />
-                    {playingId === dailyMeditation?.id ? 'Stop' : 'Start Session'}
+                    Start Session
                   </button>
                   <a 
                     href={dailyMeditation?.audioUrl} 
@@ -283,6 +240,13 @@ const FreeMeditations: React.FC = () => {
           ))}
         </div>
       </div>
+
+      <MeditationSessionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        meditation={selectedMeditation}
+        voiceUrl={selectedVoiceUrl}
+      />
     </motion.div>
   );
 };
