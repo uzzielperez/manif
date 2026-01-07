@@ -109,58 +109,22 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
           ctx.save();
           ctx.translate(fcx, fcy);
           const breathe = Math.sin(t * 1.4) * 0.02 + 1;
-          ctx.scale(breathe * 1.6, breathe * 1.6);
+          ctx.scale(breathe * 0.45, breathe * 0.45); // Scale of the SVG path
           
-          ctx.fillStyle = 'rgba(2, 2, 8, 0.98)';
+          ctx.fillStyle = 'rgba(5, 5, 12, 0.98)';
           
-          // --- Sophisticated Sculpted Path ---
-          ctx.beginPath();
+          // Professional Human Yoga Silhouette Path
+          const p = new Path2D("M256,108.6c19.1,0,34.5-15.4,34.5-34.5S275.1,39.6,256,39.6s-34.5,15.4-34.5,34.5S236.9,108.6,256,108.6z M428.4,263.8c-12.7-18.7-32.5-30.8-54.8-33.6c-18.8-2.3-37.5-6.7-55.8-13.1c-14.6-5.1-29.9-7.7-45.3-7.7c-5.1,0-10.2,0.3-15.3,0.9c-1.8,0.2-3.7,0.3-5.5,0.4c-1.8-0.1-3.7-0.2-5.5-0.4c-5.1-0.6-10.2-0.9-15.3-0.9c-15.4,0-30.7,2.6-45.3,7.7c-18.3,6.4-37,10.8-55.8,13.1c-22.3,2.8-42.1,14.9-54.8,33.6C107.5,283.5,96,306,96,330.1v34.3c0,42.5,34.5,77.1,77.1,77.1h165.8c42.5,0,77.1-34.5,77.1-77.1v-34.3C416,306,404.5,283.5,428.4,263.8z");
           
-          // Head (Natural oval)
-          ctx.ellipse(0, -85, 13, 17, 0, 0, Math.PI * 2);
-          ctx.fill();
+          // Center the Path2D (the path is based on a 512x512 grid)
+          ctx.translate(-256, -256);
+          ctx.fill(p);
 
-          // Neck detail
-          ctx.beginPath();
-          ctx.moveTo(-4, -68);
-          ctx.quadraticCurveTo(0, -65, 4, -68);
-          ctx.lineTo(3, -72);
-          ctx.lineTo(-3, -72);
-          ctx.fill();
-
-          // Body (Elegant, non-cartoonish posture)
-          ctx.beginPath();
-          ctx.moveTo(-3, -70);
-          // Shoulder line
-          ctx.bezierCurveTo(-15, -68, -32, -58, -38, -35);
-          // Outer arms
-          ctx.quadraticCurveTo(-48, 0, -38, 28);
-          // Hands joined softly
-          ctx.quadraticCurveTo(-15, 42, 0, 42);
-          ctx.quadraticCurveTo(15, 42, 38, 28);
-          ctx.quadraticCurveTo(48, 0, 38, -35);
-          // Back to shoulder
-          ctx.bezierCurveTo(32, -58, 15, -68, 3, -70);
-          ctx.fill();
-
-          // --- Seated Lotus Legs (Artistic & Grounded) ---
-          ctx.beginPath();
-          ctx.moveTo(-25, 32);
-          // Left knee
-          ctx.bezierCurveTo(-60, 32, -105, 50, -115, 78);
-          ctx.quadraticCurveTo(-115, 95, -55, 95);
-          ctx.lineTo(55, 95);
-          // Right knee
-          ctx.quadraticCurveTo(115, 95, 115, 78);
-          ctx.bezierCurveTo(105, 50, 60, 32, 25, 32);
-          ctx.closePath();
-          ctx.fill();
-
-          // High-end Rim Light (Gold highlight on edges)
+          // Subtle Rim Light highlight
           ctx.globalCompositeOperation = 'screen';
-          ctx.strokeStyle = `hsla(45, 100%, 85%, ${0.12 + Math.sin(t*2)*0.04})`;
-          ctx.lineWidth = 1.0;
-          ctx.stroke();
+          ctx.strokeStyle = `hsla(45, 100%, 80%, ${0.1 + (Math.sin(t * 2) * 0.05)})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke(p);
           ctx.globalCompositeOperation = 'source-over';
 
           ctx.restore();
