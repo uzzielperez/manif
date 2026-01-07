@@ -125,7 +125,7 @@ export const MeditationSessionModal: React.FC<MeditationSessionModalProps> = ({
             </div>
 
             {/* Bottom Controls */}
-            <div className="max-w-2xl mx-auto w-full space-y-8 bg-black/20 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/5 mb-10">
+            <div className="max-w-2xl mx-auto w-full space-y-8 bg-black/20 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/5 mb-20 shadow-2xl">
               <div className="space-y-4">
                 <div className="flex justify-between text-white/40 text-xs tracking-widest uppercase font-medium px-1">
                   <span>{formatTime(progress)}</span>
