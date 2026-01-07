@@ -15,7 +15,7 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
     if (type === 'loving-kindness') {
       const img = new Image();
       img.crossOrigin = "anonymous";
-      img.src = 'https://www.shutterstock.com/image-vector/silhouette-person-meditating-lotus-pose-260nw-2702309933.jpg';
+      img.src = 'https://pngimg.com/uploads/yoga/yoga_PNG40992.png';
       silhouetteRef.current = img;
     }
   }, [type]);
@@ -61,7 +61,7 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
         ctx.fillStyle = `rgba(80,${g},255,0.8)`;
         ctx.fill();
       } else if (type === 'loving-kindness') {
-        t += 0.009;
+        t += 0.008;
 
         // Dark cosmic background
         ctx.fillStyle = '#000416';
@@ -69,81 +69,78 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
 
         // drawNebula
         const drawNebula = (ncx: number, ncy: number) => {
-          const grad = ctx.createRadialGradient(ncx, ncy - 150, 0, ncx, ncy, Math.max(w, h) * 0.8);
           const pulse = Math.sin(t * 0.6) * 0.5 + 0.5;
-          grad.addColorStop(0, `hsla(40, 100%, 70%, ${0.5 + pulse * 0.3})`);
-          grad.addColorStop(0.25, `hsla(180, 70%, 40%, ${0.2 + pulse * 0.15})`);
-          grad.addColorStop(0.5, `hsla(270, 80%, 30%, 0.18)`);
-          grad.addColorStop(1, `hsla(220, 90%, 6%, 1)`);
-          ctx.fillStyle = grad;
+          const g = ctx.createRadialGradient(ncx, ncy, 0, ncx, ncy, w);
+
+          g.addColorStop(0, `hsla(220, 90%, 70%, ${0.4 + pulse * 0.35})`);
+          g.addColorStop(0.3, `hsla(210, 65%, 40%, ${0.28 + pulse * 0.15})`);
+          g.addColorStop(0.65, `hsla(200, 50%, 20%, 0.2)`);
+          g.addColorStop(1, `hsla(220, 90%, 6%, 1)`);
+
+          ctx.fillStyle = g;
           ctx.fillRect(0, 0, w, h);
         };
 
         // drawStars
         const drawStars = () => {
-          ctx.fillStyle = '#ffffff';
+          ctx.fillStyle = "#ffffff";
           for (let i = 0; i < 400; i++) {
             const sx = (i * 137.5) % w;
             const sy = (i * 213.7) % h;
-            const size = 0.8 + (i % 4) * 0.5;
-            const twinkle = 0.3 + Math.sin(t * 3 + i) * 0.3;
-            ctx.globalAlpha = twinkle;
-            ctx.fillRect(sx, sy, size, size);
+            const tw = 0.3 + Math.sin(t * 3 + i) * 0.3;
+            ctx.globalAlpha = tw;
+            ctx.fillRect(sx, sy, 1.3, 1.3);
           }
           ctx.globalAlpha = 1;
         };
 
-        // drawVibratingGlow
-        const drawVibratingGlow = (hcx: number, hcy: number) => {
-          const basePulse = Math.sin(t * 1.8) * 30 + 80; // Main breathing
-          const vibe = Math.sin(t * 12) * 8; // High-frequency vibration
-          const intensity = 0.7 + Math.sin(t * 2.2) * 0.3;
+        // drawMontblancAura
+        const drawMontblancAura = (hcx: number, hcy: number) => {
+          const breathe = Math.sin(t * 1.4) * 40 + 120; // Breathing core
+          const pulse = Math.sin(t * 3) * 10; // micro shimmer
+          const intensity = 0.65 + Math.sin(t * 2.2) * 0.25;
 
-          // Multiple layered glows for depth
-          for (let i = 3; i >= 0; i--) {
-            const radius = basePulse + vibe + i * 60;
-            const alpha = (0.25 - i * 0.06) * intensity;
-            const grad = ctx.createRadialGradient(hcx, hcy, 0, hcx, hcy, radius);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-            grad.addColorStop(0.4, `hsla(45, 100%, 75%, ${alpha + 0.3})`);
-            grad.addColorStop(1, 'hsla(45, 100%, 50%, 0)');
+          for (let i = 0; i < 5; i++) {
+            const r = breathe + pulse + i * 40;
+            const alpha = (0.2 - i * 0.03) * intensity;
+
+            const grad = ctx.createRadialGradient(hcx, hcy, 0, hcx, hcy, r);
+            // Core bright white
+            grad.addColorStop(0, "rgba(255,255,255,1)");
+            // Soft golden Montblanc inner glow
+            grad.addColorStop(0.35, `hsla(45, 100%, 75%, ${alpha + 0.25})`);
+            // Fades into dark sapphire blue
+            grad.addColorStop(1, `hsla(215, 80%, 20%, 0)`);
+
             ctx.fillStyle = grad;
-            ctx.fillRect(hcx - radius * 1.5, hcy - radius, radius * 3, radius * 2);
+            ctx.fillRect(hcx - r, hcy - r * 0.8, r * 2, r * 1.6);
           }
-
-          // Vibrating rays
-          ctx.globalCompositeOperation = 'screen';
-          for (let i = 0; i < 32; i++) {
-            const angle = (i / 32) * Math.PI * 2 + t * 0.3;
-            const length = 400 + Math.sin(t * 4 + i * 1.5) * 150 + vibe * 5;
-            const width = 3 + i * 0.3 + vibe * 0.5;
-            const alpha = 0.18 + Math.sin(t * 5 + i) * 0.08;
-            ctx.strokeStyle = `hsla(45, 100%, 70%, ${alpha})`;
-            ctx.lineWidth = width;
-            ctx.beginPath();
-            ctx.moveTo(hcx, hcy);
-            ctx.lineTo(hcx + Math.cos(angle) * length, hcy + Math.sin(angle) * length);
-            ctx.stroke();
-          }
-          ctx.globalCompositeOperation = 'source-over';
         };
 
         // drawSilhouette
         const drawSilhouette = (fcx: number, fcy: number) => {
           const silhouette = silhouetteRef.current;
           if (silhouette && silhouette.complete) {
-            const scale = Math.min(h * 0.6 / silhouette.height, w * 0.6 / silhouette.width);
-            const sw = silhouette.width * scale * 1.1;
-            const sh = silhouette.height * scale * 1.1;
-            const breathe = 1 + Math.sin(t * 1.5) * 0.03;
-            ctx.globalAlpha = 1;
-            ctx.drawImage(silhouette, fcx - sw/2, fcy - sh/2 + 20, sw * breathe, sh * breathe);
+            const scale = Math.min(
+              h * 0.6 / silhouette.height,
+              w * 0.5 / silhouette.width
+            );
+            const sw = silhouette.width * scale;
+            const sh = silhouette.height * scale;
+            const b = 1 + Math.sin(t * 1.6) * 0.03;
+            ctx.drawImage(
+              silhouette,
+              fcx - (sw * b) / 2,
+              fcy - (sh * b) / 2 + 30,
+              sw * b,
+              sh * b
+            );
           }
         };
 
-        drawNebula(cx, cy);
+        drawNebula(cx, cy * 0.97); // slight cy adjustment for cx, cy based on w,h
         drawStars();
-        drawVibratingGlow(cx, cy - 30);
+        drawMontblancAura(cx, cy - 40);
         drawSilhouette(cx, cy);
       } else if (type === 'chakra') {
         t += 0.05;
