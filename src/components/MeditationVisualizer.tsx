@@ -112,39 +112,44 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
           ctx.save();
           ctx.translate(fcx, fcy);
           const breathe = Math.sin(t * 1.4) * 0.02 + 1;
-          ctx.scale(breathe, breathe);
-          ctx.fillStyle = 'rgba(8, 8, 16, 0.95)'; // Deep meditative silhouette
-
-          // Head
+          ctx.scale(breathe * 1.8, breathe * 1.8);
+          
+          // Use a sophisticated path for a more professional silhouette
+          ctx.fillStyle = 'rgba(5, 5, 12, 0.98)';
+          
+          // Draw a more anatomically accurate human silhouette
           ctx.beginPath();
-          ctx.ellipse(0, -60, 24, 28, 0, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Torso
-          ctx.beginPath();
-          ctx.moveTo(-35, -25);
-          ctx.quadraticCurveTo(-45, 10, -30, 45);
-          ctx.lineTo(30, 45);
-          ctx.quadraticCurveTo(45, 10, 35, -25);
+          
+          // Head (slightly more oval and natural)
+          ctx.ellipse(0, -52, 13, 16, 0, 0, Math.PI * 2);
+          
+          // Neck to Shoulder transition
+          ctx.moveTo(-4, -38);
+          ctx.quadraticCurveTo(-15, -35, -28, -25); // Left shoulder slope
+          ctx.quadraticCurveTo(-45, -15, -42, 10); // Left arm outer
+          ctx.quadraticCurveTo(-38, 25, -25, 30); // Left arm to waist
+          
+          // Bottom / Legs in Lotus
+          ctx.quadraticCurveTo(-55, 35, -75, 55); // Left knee
+          ctx.quadraticCurveTo(-80, 65, -40, 68); // Left leg inner
+          ctx.quadraticCurveTo(0, 70, 40, 68);    // Right leg inner
+          ctx.quadraticCurveTo(80, 65, 75, 55);   // Right knee
+          
+          // Right side back up
+          ctx.quadraticCurveTo(55, 35, 25, 30);  // Right waist
+          ctx.quadraticCurveTo(38, 25, 42, 10);  // Right arm outer
+          ctx.quadraticCurveTo(45, -15, 28, -25); // Right shoulder
+          ctx.quadraticCurveTo(15, -35, 4, -38);  // Right shoulder to neck
+          
           ctx.closePath();
           ctx.fill();
 
-          // Arms in lap / mudra posture
-          ctx.beginPath();
-          ctx.moveTo(-35, -15);
-          ctx.quadraticCurveTo(-15, 40, 0, 50);
-          ctx.quadraticCurveTo(15, 40, 35, -15);
-          ctx.quadraticCurveTo(0, 5, -35, -15);
-          ctx.fill();
-
-          // Crossed legs (Lotus pose base)
-          ctx.beginPath();
-          ctx.moveTo(-30, 40);
-          ctx.quadraticCurveTo(-60, 55, -85, 75);
-          ctx.lineTo(85, 75);
-          ctx.quadraticCurveTo(60, 55, 30, 40);
-          ctx.closePath();
-          ctx.fill();
+          // Subtle "Rim Light" from the Montblanc glow to add volume
+          ctx.globalCompositeOperation = 'screen';
+          ctx.strokeStyle = `hsla(45, 100%, 80%, ${0.1 + (Math.sin(t * 2) * 0.05)})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          ctx.globalCompositeOperation = 'source-over';
 
           ctx.restore();
         };
