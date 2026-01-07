@@ -131,39 +131,63 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
         const drawFigure = (fcx: number, fcy: number) => {
           ctx.save();
           ctx.translate(fcx, fcy);
-          const breathe = Math.sin(t * 1.2) * 0.05 + 1;
+          const breathe = Math.sin(t * 1.2) * 0.03 + 1;
           ctx.scale(breathe, breathe);
-
           ctx.fillStyle = '#000';
-          // Legs crossed
-          ctx.beginPath();
-          ctx.moveTo(-40, 60);
-          ctx.quadraticCurveTo(0, 20, 40, 60);
-          ctx.quadraticCurveTo(30, 80, 0, 85);
-          ctx.quadraticCurveTo(-30, 80, -40, 60);
-          ctx.fill();
-
-          // Torso
-          ctx.beginPath();
-          ctx.moveTo(-35, 55);
-          ctx.lineTo(-25, -20);
-          ctx.lineTo(25, -20);
-          ctx.lineTo(35, 55);
-          ctx.closePath();
-          ctx.fill();
-
-          // Arms / mudra
-          ctx.beginPath();
-          ctx.arc(-20, 25, 25, Math.PI * 0.8, Math.PI * 2.2);
-          ctx.arc(20, 25, 25, Math.PI * 0.8, Math.PI * 2.2, true);
-          ctx.closePath();
-          ctx.fill();
-
+          
           // Head
           ctx.beginPath();
-          ctx.arc(0, -45, 28, 0, Math.PI * 2);
+          ctx.ellipse(0, -55, 22, 26, 0, 0, Math.PI * 2);
           ctx.fill();
-
+          
+          // Neck
+          ctx.fillRect(-8, -30, 16, 12);
+          
+          // Torso (tapered from shoulders to waist)
+          ctx.beginPath();
+          ctx.moveTo(-32, -18);
+          ctx.lineTo(-24, 30);
+          ctx.lineTo(24, 30);
+          ctx.lineTo(32, -18);
+          ctx.closePath();
+          ctx.fill();
+          
+          // Left arm extended (shoulder to elbow to hand)
+          ctx.beginPath();
+          ctx.moveTo(-32, -10);
+          ctx.lineTo(-65, 5);
+          ctx.lineTo(-95, 25);
+          ctx.lineTo(-100, 35);
+          ctx.lineTo(-92, 38);
+          ctx.lineTo(-62, 18);
+          ctx.lineTo(-30, 0);
+          ctx.closePath();
+          ctx.fill();
+          
+          // Right arm extended
+          ctx.beginPath();
+          ctx.moveTo(32, -10);
+          ctx.lineTo(65, 5);
+          ctx.lineTo(95, 25);
+          ctx.lineTo(100, 35);
+          ctx.lineTo(92, 38);
+          ctx.lineTo(62, 18);
+          ctx.lineTo(30, 0);
+          ctx.closePath();
+          ctx.fill();
+          
+          // Seated legs (wider base, crossed)
+          ctx.beginPath();
+          ctx.moveTo(-24, 32);
+          ctx.quadraticCurveTo(-35, 50, -50, 58);
+          ctx.lineTo(-48, 68);
+          ctx.quadraticCurveTo(-30, 62, 0, 65);
+          ctx.quadraticCurveTo(30, 62, 48, 68);
+          ctx.lineTo(50, 58);
+          ctx.quadraticCurveTo(35, 50, 24, 32);
+          ctx.closePath();
+          ctx.fill();
+          
           ctx.restore();
         };
 
