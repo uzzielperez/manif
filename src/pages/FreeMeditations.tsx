@@ -100,15 +100,36 @@ const FreeMeditations: React.FC = () => {
 
     // Use selected voice URL or default audioUrl
     const audioSrc = voiceUrl || meditation.audioUrl;
+    console.log('🎵 Playing audio:', audioSrc);
     
     // Play new audio
     const audio = new Audio(audioSrc);
-    audio.play();
-    setCurrentAudio(audio);
-    setPlayingId(meditation.id);
+    
+    // Add error handling
+    audio.onerror = (e) => {
+      console.error('❌ Audio error:', e);
+      console.error('Failed to load:', audioSrc);
+      alert(`Failed to load audio: ${audioSrc}\nCheck console for details.`);
+    };
+    
+    audio.onloadeddata = () => {
+      console.log('✅ Audio loaded successfully');
+    };
+    
+    audio.play()
+      .then(() => {
+        console.log('▶️ Playing audio');
+        setCurrentAudio(audio);
+        setPlayingId(meditation.id);
+      })
+      .catch((error) => {
+        console.error('❌ Play failed:', error);
+        alert(`Play failed: ${error.message}`);
+      });
 
     // Reset when done
     audio.onended = () => {
+      console.log('⏹️ Audio ended');
       setPlayingId(null);
       setCurrentAudio(null);
     };
