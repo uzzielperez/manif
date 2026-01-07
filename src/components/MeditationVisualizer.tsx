@@ -9,16 +9,6 @@ interface MeditationVisualizerProps {
 export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
-  const silhouetteRef = useRef<HTMLImageElement | null>(null);
-
-  useEffect(() => {
-    if (type === 'loving-kindness') {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = 'https://pngimg.com/uploads/yoga/yoga_PNG40992.png';
-      silhouetteRef.current = img;
-    }
-  }, [type]);
 
   useEffect(() => {
     const handleMouseMove = (e: PointerEvent) => {
@@ -119,26 +109,47 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
 
         // drawSilhouette
         const drawSilhouette = (fcx: number, fcy: number) => {
-          const silhouette = silhouetteRef.current;
-          if (silhouette && silhouette.complete) {
-            const scale = Math.min(
-              h * 0.6 / silhouette.height,
-              w * 0.5 / silhouette.width
-            );
-            const sw = silhouette.width * scale;
-            const sh = silhouette.height * scale;
-            const b = 1 + Math.sin(t * 1.6) * 0.03;
-            ctx.drawImage(
-              silhouette,
-              fcx - (sw * b) / 2,
-              fcy - (sh * b) / 2 + 30,
-              sw * b,
-              sh * b
-            );
-          }
+          ctx.save();
+          ctx.translate(fcx, fcy);
+          const breathe = Math.sin(t * 1.4) * 0.02 + 1;
+          ctx.scale(breathe, breathe);
+          ctx.fillStyle = 'rgba(8, 8, 16, 0.95)'; // Deep meditative silhouette
+
+          // Head
+          ctx.beginPath();
+          ctx.ellipse(0, -60, 24, 28, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Torso
+          ctx.beginPath();
+          ctx.moveTo(-35, -25);
+          ctx.quadraticCurveTo(-45, 10, -30, 45);
+          ctx.lineTo(30, 45);
+          ctx.quadraticCurveTo(45, 10, 35, -25);
+          ctx.closePath();
+          ctx.fill();
+
+          // Arms in lap / mudra posture
+          ctx.beginPath();
+          ctx.moveTo(-35, -15);
+          ctx.quadraticCurveTo(-15, 40, 0, 50);
+          ctx.quadraticCurveTo(15, 40, 35, -15);
+          ctx.quadraticCurveTo(0, 5, -35, -15);
+          ctx.fill();
+
+          // Crossed legs (Lotus pose base)
+          ctx.beginPath();
+          ctx.moveTo(-30, 40);
+          ctx.quadraticCurveTo(-60, 55, -85, 75);
+          ctx.lineTo(85, 75);
+          ctx.quadraticCurveTo(60, 55, 30, 40);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.restore();
         };
 
-        drawNebula(cx, cy * 0.97); // slight cy adjustment for cx, cy based on w,h
+        drawNebula(cx, cy * 0.97);
         drawStars();
         drawMontblancAura(cx, cy - 40);
         drawSilhouette(cx, cy);
