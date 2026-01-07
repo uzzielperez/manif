@@ -7,14 +7,14 @@ const MOCK_MEDITATIONS = [
   {
     id: '1',
     title: 'Cosmic Grounding',
-    duration: '10 min',
+    duration: '5 min',
     category: 'Foundational',
     isDaily: true,
   },
   {
     id: '2',
     title: 'Nebula Relaxation',
-    duration: '15 min',
+    duration: '5 min',
     category: 'Sleep',
   },
   {
@@ -26,25 +26,25 @@ const MOCK_MEDITATIONS = [
   {
     id: '4',
     title: 'Stellar Abundance',
-    duration: '20 min',
+    duration: '5 min',
     category: 'Manifestation',
   },
   {
     id: '5',
     title: 'Void Silence',
-    duration: '12 min',
+    duration: '5 min',
     category: 'Deep Zen',
   },
   {
     id: '6',
     title: 'Galactic Gratitude',
-    duration: '8 min',
+    duration: '5 min',
     category: 'Gratitude',
   },
   {
     id: '7',
     title: 'Loving Kindness Meditation',
-    duration: '15 min',
+    duration: '5 min',
     category: 'Compassion',
   },
 ];
