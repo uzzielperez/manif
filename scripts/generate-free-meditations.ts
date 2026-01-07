@@ -274,10 +274,11 @@ if (args.includes('--help') || args.includes('-h')) {
     console.log(`  ${voice}`);
   });
   console.log('\nExamples:');
-  console.log('  npm run generate-meditations 7 jameson              # Generate #7 with Jameson');
-  console.log('  npm run generate-meditations --exclude 7            # Generate all except #7');
-  console.log('  npm run generate-meditations --exclude 1,3,5        # Generate all except #1, #3, #5');
-  console.log('  npm run generate-meditations --exclude 7 jameson    # All except #7, with Jameson voice');
+  console.log('  npm run generate-meditations 7 jameson                # Generate #7 with Jameson');
+  console.log('  npm run generate-meditations -- --exclude 7           # Generate all except #7');
+  console.log('  npm run generate-meditations -- --exclude 1,3,5       # Generate all except #1, #3, #5');
+  console.log('  npm run generate-meditations -- --exclude 7 jameson   # All except #7, with Jameson voice');
+  console.log('\nNote: The "--" before "--exclude" tells npm to pass flags to the script.');
   console.log('');
   process.exit(0);
 }

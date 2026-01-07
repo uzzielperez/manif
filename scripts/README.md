@@ -32,10 +32,11 @@ npm run generate-meditations
 
 **Generate all EXCEPT certain meditations:**
 ```bash
-npm run generate-meditations --exclude 7           # All except #7
-npm run generate-meditations --exclude 1,3,5       # All except #1, #3, #5
-npm run generate-meditations --exclude 7 jameson   # All except #7, with Jameson voice
+npm run generate-meditations -- --exclude 7           # All except #7
+npm run generate-meditations -- --exclude 1,3,5       # All except #1, #3, #5
+npm run generate-meditations -- --exclude 7 jameson   # All except #7, with Jameson voice
 ```
+**Note:** The `--` before `--exclude` is required to pass flags to the script.
 
 **Generate a specific meditation:**
 ```bash
