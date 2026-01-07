@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { Gift, Sparkles, Search, Play } from 'lucide-react';
 import { MeditationCard } from '../components/MeditationCard';
 
+// Cloudinary CDN base URL
+const CDN_BASE_URL = 'https://res.cloudinary.com/dhu3eocfo/video/upload';
+
 const MOCK_MEDITATIONS = [
   {
     id: '1',
@@ -10,7 +13,7 @@ const MOCK_MEDITATIONS = [
     duration: '5 min',
     category: 'Foundational',
     isDaily: true,
-    audioUrl: '/audio/free-meditations/1-cosmic-grounding.mp3',
+    audioUrl: `${CDN_BASE_URL}/1-cosmic-grounding.mp3`,
     description: 'Connect with the earth while channeling cosmic energy for stability and presence.',
   },
   {
@@ -18,7 +21,7 @@ const MOCK_MEDITATIONS = [
     title: 'Nebula Relaxation',
     duration: '5 min',
     category: 'Sleep',
-    audioUrl: '/audio/free-meditations/2-nebula-relaxation.mp3',
+    audioUrl: `${CDN_BASE_URL}/2-nebula-relaxation.mp3`,
     description: 'Float through colorful nebulas as you release tension and prepare for deep rest.',
   },
   {
@@ -26,7 +29,7 @@ const MOCK_MEDITATIONS = [
     title: 'Solar Energy Breath',
     duration: '5 min',
     category: 'Energy',
-    audioUrl: '/audio/free-meditations/3-solar-energy-breath.mp3',
+    audioUrl: `${CDN_BASE_URL}/3-solar-energy-breath.mp3`,
     description: 'Harness the power of solar energy through breathwork to invigorate body and mind.',
   },
   {
@@ -34,7 +37,7 @@ const MOCK_MEDITATIONS = [
     title: 'Stellar Abundance',
     duration: '5 min',
     category: 'Manifestation',
-    audioUrl: '/audio/free-meditations/4-stellar-abundance.mp3',
+    audioUrl: `${CDN_BASE_URL}/4-stellar-abundance.mp3`,
     description: 'Align with the infinite abundance of the universe to manifest your desires.',
   },
   {
@@ -42,7 +45,7 @@ const MOCK_MEDITATIONS = [
     title: 'Void Silence',
     duration: '5 min',
     category: 'Deep Zen',
-    audioUrl: '/audio/free-meditations/5-void-silence.mp3',
+    audioUrl: `${CDN_BASE_URL}/5-void-silence.mp3`,
     description: 'Experience the profound peace of the cosmic void in deep meditation.',
   },
   {
@@ -50,7 +53,7 @@ const MOCK_MEDITATIONS = [
     title: 'Galactic Gratitude',
     duration: '5 min',
     category: 'Gratitude',
-    audioUrl: '/audio/free-meditations/6-galactic-gratitude.mp3',
+    audioUrl: `${CDN_BASE_URL}/6-galactic-gratitude.mp3`,
     description: 'Expand your heart with cosmic gratitude for all that exists.',
   },
   {
@@ -58,12 +61,12 @@ const MOCK_MEDITATIONS = [
     title: 'Loving Kindness Meditation',
     duration: '5 min',
     category: 'Compassion',
-    audioUrl: '/audio/free-meditations/7-loving-kindness-meditation-jameson-v2.mp3',
+    audioUrl: `${CDN_BASE_URL}/7-loving-kindness-meditation-jameson-v2.mp3`,
     description: 'Send waves of loving kindness to yourself, others, and the entire cosmos.',
     voices: [
-      { name: 'Jameson', url: '/audio/free-meditations/7-loving-kindness-meditation-jameson-v2.mp3' },
-      { name: 'Sarah', url: '/audio/free-meditations/7-loving-kindness-meditation-sarah.mp3' },
-      { name: 'Uzi', url: '/audio/free-meditations/7-loving-kindness-meditation-uzi.mp3' },
+      { name: 'Jameson', url: `${CDN_BASE_URL}/7-loving-kindness-meditation-jameson-v2.mp3` },
+      { name: 'Sarah', url: `${CDN_BASE_URL}/7-loving-kindness-meditation-sarah.mp3` },
+      { name: 'Uzi', url: `${CDN_BASE_URL}/7-loving-kindness-meditation-uzi.mp3` },
     ],
   },
 ];
