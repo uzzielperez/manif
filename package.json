@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-meditations": "tsx scripts/generate-free-meditations.ts"
+    "generate-meditations": "npx tsx scripts/generate-free-meditations.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
