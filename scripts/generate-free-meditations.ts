@@ -58,16 +58,19 @@ const FREE_MEDITATIONS = [
 ];
 
 // Voice ID for ElevenLabs
-// Available voices:
+// Available voices (from PromptForm.tsx):
 const VOICES = {
-  lily: 'pFZP5JQG7iQjIQuC4Bku',      // Soft, nurturing, gentle
-  charlotte: 'XB0fDUnXU5powFXDhCwa',  // Warm, soothing
-  serena: 'pMsXgVXv3BLzUgSXRplE',    // Gentle, calm
-  uzi: process.env.UZI_VOICE_ID || 'pFZP5JQG7iQjIQuC4Bku' // Your cloned voice (falls back to Lily)
+  uzi: 'B69tnztZ1gRYSVTCL8Cv',        // Uzi - Your voice!
+  lauren: 'mgu2yPwXYhibgnytBnpW',     // Lauren
+  jameson: 'ZQe5CZNOzWyzPSCn5a3c',    // Jameson - Guided Meditation
+  sarah: 'EXAVITQu4vr4xnSDxMaL',      // Sarah - Soothing
+  alison: 'uagKcbxPLaJH7iYADCbR',     // Alison
+  lily: 'pFZP5JQG7iQjIQuC4Bku',       // Lily - Soft, nurturing
+  charlotte: 'XB0fDUnXU5powFXDhCwa',  // Charlotte - Warm
 };
 
 // Select voice here:
-const VOICE_ID = VOICES.uzi; // Change to VOICES.lily, VOICES.charlotte, etc.
+const VOICE_ID = VOICES.uzi; // Your voice!
 
 // Audio output directory
 const AUDIO_DIR = path.join(process.cwd(), 'audio', 'free-meditations');

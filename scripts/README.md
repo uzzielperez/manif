@@ -9,13 +9,19 @@ This script automatically generates all 7 free meditations with AI-powered scrip
 Make sure you have the following environment variables set:
 - `GROQ_API_KEY` - For generating meditation scripts
 - `ELEVENLABS_API_KEY` - For synthesizing speech
-- `UZI_VOICE_ID` (optional) - Your cloned voice ID from ElevenLabs
 
-To use your own voice:
-1. Go to https://elevenlabs.io/voice-lab
-2. Clone your voice by uploading samples
-3. Copy the Voice ID
-4. Add `UZI_VOICE_ID=your_voice_id_here` to your `.env` file
+### Voice Selection
+
+The script is currently set to use **Uzi's voice** (your cloned voice).
+
+To switch voices, edit `scripts/generate-free-meditations.ts` line 68:
+```typescript
+const VOICE_ID = VOICES.uzi;     // Your voice (default)
+// or try:
+const VOICE_ID = VOICES.jameson; // Jameson - Guided Meditation
+const VOICE_ID = VOICES.sarah;   // Sarah - Soothing
+const VOICE_ID = VOICES.alison;  // Alison
+```
 
 ### Usage
 
