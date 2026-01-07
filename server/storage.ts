@@ -29,7 +29,7 @@ export class DatabaseStorage implements IStorage {
           prompt: meditation.prompt,
           content: meditation.content, // Store the actual generated content
           rating: null,
-          model: meditation.model || "llama3-70b-8192", // Add default model
+          model: meditation.model || "llama-3.3-70b-versatile", // Add default model
           createdAt: new Date()
         };
         
@@ -72,7 +72,7 @@ export class DatabaseStorage implements IStorage {
         prompt: "Mock prompt",
         content: "This is a mock meditation content for development.",
         rating: null,
-        model: "llama3-70b-8192", // Add default model
+        model: "llama-3.3-70b-versatile", // Add default model
         createdAt: new Date()
       };
     }
@@ -96,7 +96,7 @@ export class DatabaseStorage implements IStorage {
         prompt: "Mock prompt",
         content: "This is a mock meditation content for development.",
         rating: null,
-        model: "llama3-70b-8192", // Add default model
+        model: "llama-3.3-70b-versatile", // Add default model
         createdAt: new Date(Date.now() - 86400000) // 1 day ago
       }];
       
@@ -123,7 +123,7 @@ export class DatabaseStorage implements IStorage {
         prompt: "Mock prompt",
         content: "This is a mock meditation content for development.",
         rating: rating,
-        model: "llama3-70b-8192", // Add default model
+        model: "llama-3.3-70b-versatile", // Add default model
         createdAt: new Date()
       };
     }
@@ -165,7 +165,7 @@ export class DatabaseStorage implements IStorage {
         prompt: "Mock prompt",
         content: content,
         rating: null,
-        model: "llama3-70b-8192", // Add default model
+        model: "llama-3.3-70b-versatile", // Add default model
         createdAt: new Date()
       };
     }

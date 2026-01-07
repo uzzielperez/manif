@@ -41,7 +41,7 @@ export async function listModels() {
   }
 }
 
-export async function generateMeditation(prompt: string, model: string = "llama3-70b-8192") {
+export async function generateMeditation(prompt: string, model: string = "llama-3.3-70b-versatile") {
   try {
     console.log(`Starting meditation generation for prompt: "${prompt}" using model: ${model}`);
     
@@ -101,7 +101,7 @@ export async function generateMeditation(prompt: string, model: string = "llama3
   }
 }
 
-export async function generateTimeline(prompt: string, model: string = "llama3-70b-8192") {
+export async function generateTimeline(prompt: string, model: string = "llama-3.3-70b-versatile") {
   try {
     console.log(`Starting timeline generation for prompt: "${prompt}" using model: ${model}`);
     
