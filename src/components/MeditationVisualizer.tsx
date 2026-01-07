@@ -37,7 +37,7 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
       const w = canvas.width;
       const h = canvas.height;
       const cx = w >> 1;
-      const cy = h * 0.65;
+      const cy = h * 0.35; // Moved to the top third of the screen
 
       if (type === 'aura') {
         t += 0.02;
@@ -86,20 +86,17 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
 
         // drawMontblancAura
         const drawMontblancAura = (hcx: number, hcy: number) => {
-          const breathe = Math.sin(t * 1.4) * 40 + 120; // Breathing core
-          const pulse = Math.sin(t * 3) * 10; // micro shimmer
+          const breathe = Math.sin(t * 1.4) * 30 + 100; // Breathing core
+          const pulse = Math.sin(t * 3) * 8; // micro shimmer
           const intensity = 0.65 + Math.sin(t * 2.2) * 0.25;
 
           for (let i = 0; i < 5; i++) {
-            const r = breathe + pulse + i * 40;
-            const alpha = (0.2 - i * 0.03) * intensity;
+            const r = breathe + pulse + i * 35;
+            const alpha = (0.18 - i * 0.03) * intensity;
 
             const grad = ctx.createRadialGradient(hcx, hcy, 0, hcx, hcy, r);
-            // Core bright white
             grad.addColorStop(0, "rgba(255,255,255,1)");
-            // Soft golden Montblanc inner glow
-            grad.addColorStop(0.35, `hsla(45, 100%, 75%, ${alpha + 0.25})`);
-            // Fades into dark sapphire blue
+            grad.addColorStop(0.35, `hsla(45, 100%, 75%, ${alpha + 0.2})`);
             grad.addColorStop(1, `hsla(215, 80%, 20%, 0)`);
 
             ctx.fillStyle = grad;
@@ -112,56 +109,67 @@ export const MeditationVisualizer: React.FC<MeditationVisualizerProps> = ({ type
           ctx.save();
           ctx.translate(fcx, fcy);
           const breathe = Math.sin(t * 1.4) * 0.02 + 1;
-          ctx.scale(breathe * 1.4, breathe * 1.4);
+          ctx.scale(breathe * 1.6, breathe * 1.6);
           
           ctx.fillStyle = 'rgba(2, 2, 8, 0.98)';
           
-          // --- High-Fidelity Silhouette Path ---
+          // --- Sophisticated Sculpted Path ---
           ctx.beginPath();
           
           // Head (Natural oval)
-          ctx.ellipse(0, -85, 14, 18, 0, 0, Math.PI * 2);
+          ctx.ellipse(0, -85, 13, 17, 0, 0, Math.PI * 2);
           ctx.fill();
 
-          // Neck
-          ctx.fillRect(-4, -68, 8, 12);
-
-          // Body & Shoulders (Natural curves)
+          // Neck detail
           ctx.beginPath();
-          ctx.moveTo(-5, -67);
-          ctx.bezierCurveTo(-20, -65, -35, -55, -45, -30); // Left shoulder
-          ctx.bezierCurveTo(-55, -10, -50, 20, -35, 35); // Left arm
-          ctx.quadraticCurveTo(-20, 48, 0, 50); // Hands in lap
-          ctx.quadraticCurveTo(20, 48, 35, 35); // Right arm back
-          ctx.bezierCurveTo(50, 20, 55, -10, 45, -30); // Right arm
-          ctx.bezierCurveTo(35, -55, 20, -65, 5, -67); // Right shoulder
+          ctx.moveTo(-4, -68);
+          ctx.quadraticCurveTo(0, -65, 4, -68);
+          ctx.lineTo(3, -72);
+          ctx.lineTo(-3, -72);
           ctx.fill();
 
-          // --- Seated Lotus Legs (Artistic wide base) ---
+          // Body (Elegant, non-cartoonish posture)
           ctx.beginPath();
-          ctx.moveTo(-25, 35);
-          ctx.bezierCurveTo(-65, 35, -110, 55, -120, 85); // Left knee
-          ctx.quadraticCurveTo(-120, 105, -60, 105); // Left base
-          ctx.lineTo(60, 105); // Bottom
-          ctx.quadraticCurveTo(120, 105, 120, 85); // Right knee
-          ctx.bezierCurveTo(110, 55, 65, 35, 25, 35);
+          ctx.moveTo(-3, -70);
+          // Shoulder line
+          ctx.bezierCurveTo(-15, -68, -32, -58, -38, -35);
+          // Outer arms
+          ctx.quadraticCurveTo(-48, 0, -38, 28);
+          // Hands joined softly
+          ctx.quadraticCurveTo(-15, 42, 0, 42);
+          ctx.quadraticCurveTo(15, 42, 38, 28);
+          ctx.quadraticCurveTo(48, 0, 38, -35);
+          // Back to shoulder
+          ctx.bezierCurveTo(32, -58, 15, -68, 3, -70);
+          ctx.fill();
+
+          // --- Seated Lotus Legs (Artistic & Grounded) ---
+          ctx.beginPath();
+          ctx.moveTo(-25, 32);
+          // Left knee
+          ctx.bezierCurveTo(-60, 32, -105, 50, -115, 78);
+          ctx.quadraticCurveTo(-115, 95, -55, 95);
+          ctx.lineTo(55, 95);
+          // Right knee
+          ctx.quadraticCurveTo(115, 95, 115, 78);
+          ctx.bezierCurveTo(105, 50, 60, 32, 25, 32);
           ctx.closePath();
           ctx.fill();
 
-          // --- Rim Light (Subtle gold highlight) ---
+          // High-end Rim Light (Gold highlight on edges)
           ctx.globalCompositeOperation = 'screen';
-          ctx.strokeStyle = `hsla(45, 100%, 85%, ${0.12 + Math.sin(t*2)*0.05})`;
-          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = `hsla(45, 100%, 85%, ${0.12 + Math.sin(t*2)*0.04})`;
+          ctx.lineWidth = 1.0;
           ctx.stroke();
           ctx.globalCompositeOperation = 'source-over';
 
           ctx.restore();
         };
 
-        drawNebula(cx, cy * 0.85);
+        drawNebula(cx, cy);
         drawStars();
-        drawMontblancAura(cx, cy - 180); // Move everything much higher
-        drawSilhouette(cx, cy - 140);    // Move everything much higher
+        drawMontblancAura(cx, cy - 20);
+        drawSilhouette(cx, cy + 10);
       } else if (type === 'chakra') {
         t += 0.05;
         const cols = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
