@@ -176,10 +176,12 @@ async function synthesizeWithElevenLabs(text: string, voiceId: string): Promise<
         },
         body: JSON.stringify({
           text: chunk,
-          model_id: 'eleven_turbo_v2',
+          model_id: 'eleven_multilingual_v2', // Higher quality, more natural than turbo
           voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.5,
+            stability: 0.75,           // Higher = more consistent, calmer delivery
+            similarity_boost: 0.4,     // Lower = less peppy, more relaxed
+            style: 0.2,                // Lower = more neutral, meditative tone
+            use_speaker_boost: true    // Better audio quality
           },
         }),
         signal: controller.signal,

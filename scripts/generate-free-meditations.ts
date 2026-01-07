@@ -59,10 +59,10 @@ const FREE_MEDITATIONS = [
 
 // Voice ID for ElevenLabs
 // Options: 
-// - Serena: pMsXgVXv3BLzUgSXRplE (gentle, calm - best for meditation)
+// - Lily: pFZP5JQG7iQjIQuC4Bku (soft, nurturing, gentle)
 // - Charlotte: XB0fDUnXU5powFXDhCwa (warm, soothing)
-// - Lily: pFZP5JQG7iQjIQuC4Bku (soft, nurturing)
-const VOICE_ID = 'pMsXgVXv3BLzUgSXRplE'; // Serena
+// - Serena: pMsXgVXv3BLzUgSXRplE (gentle, calm)
+const VOICE_ID = 'pFZP5JQG7iQjIQuC4Bku'; // Lily
 
 // Audio output directory
 const AUDIO_DIR = path.join(process.cwd(), 'audio', 'free-meditations');
@@ -91,9 +91,12 @@ Description: ${meditation.description}
 Please create a calming, cosmic-themed meditation script that:
 - Is approximately ${meditation.duration * 150} words (for ~${meditation.duration} minutes of speech)
 - Uses cosmic imagery and metaphors
-- Guides the listener through relaxation and the specific focus of this meditation
+- Has a SLOW, GENTLE pace - this is NOT a conversation, it's a meditation
+- Uses MANY pauses indicated by ellipses (...) - at least 2-3 per paragraph
+- Allows time for listeners to breathe and experience each moment
+- Speaks in a calm, unhurried manner
 - Has a gentle introduction and closing
-- Uses natural pauses indicated by ellipses (...)
+- Each instruction should be followed by a pause for the listener to comply
 
 Return ONLY the meditation script text, no titles or metadata.`;
 
