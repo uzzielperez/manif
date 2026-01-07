@@ -84,7 +84,9 @@ export async function generateMeditation(prompt: string, model: string = "llama3
     });
     
     if (!response.ok) {
-      throw new Error(`API error: ${response.status} ${response.statusText}`);
+      const errorBody = await response.text();
+      console.error(`Groq API Error Response:`, errorBody);
+      throw new Error(`API error: ${response.status} ${response.statusText} - ${errorBody}`);
     }
     
     const data = await response.json();
@@ -92,7 +94,7 @@ export async function generateMeditation(prompt: string, model: string = "llama3
     console.log(`Generated meditation with ${content.length} characters`);
     
     const duration = Math.round(content.length / 15);
-    return { content, duration };
+    return { text: content, content, duration };
   } catch (error: any) {
     console.error('Meditation generation error:', error);
     throw new Error(`Failed to generate meditation: ${error.message || 'Unknown error'}`);
