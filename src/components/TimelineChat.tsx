@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Sparkles, Loader2, RotateCcw, Lock } from 'lucide-react';
 import { getTimelineUsageCount, incrementTimelineUsage } from '../utils/paymentUtils';
 import { getInfluencerByCode } from '../data/influencers';
+import { trackEvent } from '../utils/analytics';
 
 interface Message {
   id: string;
@@ -49,6 +50,9 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
 
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
+    trackEvent('timeline_unlock_attempt', {
+      code_provided: Boolean(unlockCodeInput.trim()),
+    });
     const influencer = getInfluencerByCode(unlockCodeInput);
     if (influencer) {
       setIsUnlocked(true);
@@ -71,14 +75,20 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
       } catch (err) {
         console.error('Failed to track unlock:', err);
       }
+      trackEvent('timeline_unlocked', { influencer: influencer.id });
     } else {
+      trackEvent('timeline_unlock_failed', { reason: 'invalid_code' });
       alert('Invalid unlock code.');
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading || isLocked) return;
+    if (isLocked) {
+      trackEvent('timeline_request_blocked', { reason: 'locked' });
+      return;
+    }
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -229,6 +239,7 @@ export const TimelineChat: React.FC<TimelineChatProps> = ({
                 setUsageCount(0);
                 setIsUnlocked(false);
                 setActiveInfluencer(null);
+                trackEvent('timeline_usage_reset');
               }}
               className="mt-6 text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white transition-colors"
             >

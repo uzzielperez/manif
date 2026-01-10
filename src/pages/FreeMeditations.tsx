@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Gift, Sparkles, Search, Play } from 'lucide-react';
 import { MeditationCard } from '../components/MeditationCard';
 import { MeditationSessionModal } from '../components/MeditationSessionModal';
+import { trackEvent } from '../utils/analytics';
 
 const MOCK_MEDITATIONS = [
   {
@@ -76,6 +77,7 @@ const FreeMeditations: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMeditation, setSelectedMeditation] = useState<typeof MOCK_MEDITATIONS[0] | null>(null);
   const [selectedVoiceUrl, setSelectedVoiceUrl] = useState<string | undefined>(undefined);
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string | undefined>(undefined);
 
   const categories = ['All', ...new Set(MOCK_MEDITATIONS.map((m) => m.category))];
 
@@ -87,9 +89,15 @@ const FreeMeditations: React.FC = () => {
 
   const dailyMeditation = MOCK_MEDITATIONS.find((m) => m.isDaily);
 
-  const handlePlay = (meditation: typeof MOCK_MEDITATIONS[0], voiceUrl?: string) => {
+  const handlePlay = (meditation: typeof MOCK_MEDITATIONS[0], voice?: { name: string; url: string }) => {
     setSelectedMeditation(meditation);
-    setSelectedVoiceUrl(voiceUrl);
+    setSelectedVoiceUrl(voice?.url);
+    setSelectedVoiceName(voice?.name);
+    trackEvent('meditation_session_opened', {
+      meditation_id: meditation.id,
+      meditation_title: meditation.title,
+      voice: voice?.name ?? 'default',
+    });
     setIsModalOpen(true);
   };
 
@@ -133,7 +141,7 @@ const FreeMeditations: React.FC = () => {
 
       {/* Featured Daily */}
       {dailyMeditation && (
-        <motion.div 
+        <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
@@ -167,6 +175,11 @@ const FreeMeditations: React.FC = () => {
                   <a 
                     href={dailyMeditation?.audioUrl} 
                     download 
+                    onClick={() => dailyMeditation && trackEvent('meditation_downloaded', {
+                      meditation_id: dailyMeditation.id,
+                      meditation_title: dailyMeditation.title,
+                      source: 'daily',
+                    })}
                     className="px-8 py-4 bg-white/5 text-white border border-white/10 rounded-2xl font-medium hover:bg-white/10 transition-all inline-block text-center"
                   >
                     Download
@@ -208,7 +221,10 @@ const FreeMeditations: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 + i * 0.05 }}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => {
+                setActiveCategory(cat);
+                trackEvent('meditation_category_selected', { category: cat });
+              }}
               className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-medium tracking-wide transition-all ${
                 activeCategory === cat
                   ? 'bg-white text-black shadow-lg shadow-white/10'
@@ -218,11 +234,11 @@ const FreeMeditations: React.FC = () => {
               {cat}
             </motion.button>
           ))}
-        </div>
+      </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredMeditations.map((med, index) => (
-            <motion.div
+      <motion.div
               key={med.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

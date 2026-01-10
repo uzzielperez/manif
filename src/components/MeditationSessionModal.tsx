@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play, Pause, Download, Volume2 } from 'lucide-react';
 import { MeditationVisualizer, VisualizerType } from './MeditationVisualizer';
+import { trackEvent } from '../utils/analytics';
 
 interface MeditationSessionModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface MeditationSessionModalProps {
     category: string;
   } | null;
   voiceUrl?: string;
+  voiceName?: string;
 }
 
 export const MeditationSessionModal: React.FC<MeditationSessionModalProps> = ({
@@ -45,7 +47,16 @@ export const MeditationSessionModal: React.FC<MeditationSessionModalProps> = ({
       };
 
       setAudio(newAudio);
-      newAudio.play().then(() => setIsPlaying(true)).catch(console.error);
+      newAudio.play().then(() => {
+        setIsPlaying(true);
+        trackEvent('meditation_playback', {
+          meditation_id: meditation.id,
+          meditation_title: meditation.title,
+          action: 'play',
+          voice: voiceName ?? 'default',
+          trigger: 'autoplay',
+        });
+      }).catch(console.error);
 
       return () => {
         newAudio.pause();
@@ -59,8 +70,20 @@ export const MeditationSessionModal: React.FC<MeditationSessionModalProps> = ({
     if (!audio) return;
     if (isPlaying) {
       audio.pause();
+      trackEvent('meditation_playback', {
+        meditation_id: meditation.id,
+        meditation_title: meditation.title,
+        action: 'pause',
+        voice: voiceName ?? 'default',
+      });
     } else {
       audio.play().catch(console.error);
+      trackEvent('meditation_playback', {
+        meditation_id: meditation.id,
+        meditation_title: meditation.title,
+        action: 'play',
+        voice: voiceName ?? 'default',
+      });
     }
     setIsPlaying(!isPlaying);
   };
@@ -69,6 +92,10 @@ export const MeditationSessionModal: React.FC<MeditationSessionModalProps> = ({
     if (audio) {
       audio.pause();
     }
+    trackEvent('meditation_session_closed', {
+      meditation_id: meditation.id,
+      meditation_title: meditation.title,
+    });
     onClose();
   };
 
@@ -156,6 +183,11 @@ export const MeditationSessionModal: React.FC<MeditationSessionModalProps> = ({
                 <a 
                   href={voiceUrl || meditation.audioUrl}
                   download
+                  onClick={() => trackEvent('meditation_downloaded', {
+                    meditation_id: meditation.id,
+                    meditation_title: meditation.title,
+                    voice: voiceName ?? 'default',
+                  })}
                   className="text-white/40 hover:text-white transition-all"
                 >
                   <Download size={24} />

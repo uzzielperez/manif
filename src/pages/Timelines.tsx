@@ -4,6 +4,7 @@ import { useNodesState, useEdgesState, addEdge, Connection, Edge, Node, ReactFlo
 import { TimelineGraph } from '../components/TimelineGraph';
 import { TimelineChat } from '../components/TimelineChat';
 import { Sparkles, Save, Download, RotateCcw } from 'lucide-react';
+import { trackEvent } from '../utils/analytics';
 
 const initialNodes: Node[] = [
   {
@@ -41,12 +42,17 @@ const TimelinesContent: React.FC = () => {
 
   const handleSendMessage = async (message: string) => {
     setIsLoading(true);
+    const trimmedMessage = message.trim();
+    trackEvent('timeline_request_initiated', {
+      prompt_length: trimmedMessage.length,
+      active_paths: Array.from(activePaths).join(','),
+    });
     
     try {
       const response = await fetch('/.netlify/functions/timeline', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: message }),
+        body: JSON.stringify({ prompt: trimmedMessage }),
       });
 
       if (!response.ok) {
@@ -139,7 +145,17 @@ const TimelinesContent: React.FC = () => {
 
       setNodes(finalNodes);
       setEdges(finalEdges);
+      const pathCount = new Set((data.nodes || []).map((n: any) => n.pathId)).size;
+      trackEvent('timeline_manifested', {
+        node_count: data.nodes.length,
+        path_count: pathCount,
+        active_paths: Array.from(activePaths).join(','),
+      });
     } catch (error: any) {
+      trackEvent('timeline_error', {
+        error_message: error?.message ?? 'unknown error',
+        stage: 'generation',
+      });
       console.error('Error generating timeline:', error);
       throw error; 
     } finally {
@@ -150,11 +166,18 @@ const TimelinesContent: React.FC = () => {
   const togglePath = (pathId: string) => {
     setActivePaths(prev => {
       const next = new Set(prev);
+      let action = 'selected';
       if (next.has(pathId)) {
+        action = 'deselected';
         if (next.size > 1) next.delete(pathId);
       } else {
         next.add(pathId);
       }
+      trackEvent('timeline_path_toggle', {
+        pathId,
+        action,
+        resulting_paths: Array.from(next).join(','),
+      });
       return next;
     });
   };
@@ -162,6 +185,7 @@ const TimelinesContent: React.FC = () => {
   const handleReset = () => {
     setNodes(initialNodes);
     setEdges(initialEdges);
+    trackEvent('timeline_reset');
   };
 
   // Filter nodes and edges based on active paths
@@ -182,7 +206,7 @@ const TimelinesContent: React.FC = () => {
         <div>
           <h1 className="text-4xl md:text-6xl font-light text-white mb-4 tracking-tight">
             Timeline <span className="font-medium italic text-[var(--cosmic-accent)]">Architect</span>
-          </h1>
+        </h1>
           <div className="flex gap-3 mb-4">
             {[
               { id: 'steady', label: 'Steady Orbit', color: 'var(--cosmic-primary)' },
@@ -202,10 +226,10 @@ const TimelinesContent: React.FC = () => {
                 {p.label}
               </button>
             ))}
-          </div>
+                  </div>
           <p className="text-[var(--cosmic-text-muted)] text-lg font-light">Map the unfolding of your destiny across the stars.</p>
-        </div>
-        
+                </div>
+
         <div className="flex items-center gap-3">
           <button 
             onClick={handleReset}
@@ -245,7 +269,7 @@ const TimelinesContent: React.FC = () => {
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full border border-[var(--cosmic-accent)] bg-[var(--cosmic-accent)]/20 shadow-[0_0_10px_var(--cosmic-accent)]" />
               <span>Projected Node</span>
-            </div>
+          </div>
           </div>
         </div>
 

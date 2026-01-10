@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Clock, Star, Headphones, ArrowUpRight, Mic } from 'lucide-react';
+import { trackEvent } from '../utils/analytics';
 
 interface Voice {
   name: string;
@@ -8,13 +9,14 @@ interface Voice {
 }
 
 interface MeditationCardProps {
+  meditationId: string;
   title: string;
   duration: string;
   category: string;
   imageUrl?: string;
   isDaily?: boolean;
   voices?: Voice[];
-  onPlay: (voiceUrl?: string) => void;
+  onPlay: (voice?: Voice) => void;
 }
 
 export const MeditationCard: React.FC<MeditationCardProps> = ({
@@ -29,7 +31,7 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
   const [selectedVoice, setSelectedVoice] = useState<Voice | undefined>(voices?.[0]);
 
   const handlePlay = () => {
-    onPlay(selectedVoice?.url);
+    onPlay(selectedVoice);
   };
 
   return (
@@ -85,6 +87,13 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
               onChange={(e) => {
                 const voice = voices.find(v => v.name === e.target.value);
                 setSelectedVoice(voice);
+                if (voice) {
+                  trackEvent('meditation_voice_selected', {
+                    meditation_id: meditationId,
+                    meditation_title: title,
+                    voice: voice.name,
+                  });
+                }
               }}
               className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[var(--cosmic-accent)] hover:bg-white/10 transition-all cursor-pointer"
             >
