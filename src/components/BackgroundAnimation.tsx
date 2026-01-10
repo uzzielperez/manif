@@ -23,34 +23,33 @@ export const BackgroundAnimation: React.FC = () => {
     window.addEventListener('resize', setCanvasSize);
 
     class Particle {
-      x: number;
-      y: number;
-      radius: number;
-      speed: number;
+      baseAngle: number;
       angle: number;
+      radius: number;
+      orbitRadius: number;
       color: string;
       opacity: number;
+      rotationSpeed: number;
+      x: number;
+      y: number;
 
       constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
+        this.baseAngle = Math.random() * Math.PI * 2;
+        this.angle = this.baseAngle;
         this.radius = Math.random() * (theme.particles.maxSize - theme.particles.minSize) + theme.particles.minSize;
-        this.speed = Math.random() * (theme.particles.maxSpeed - theme.particles.minSpeed) + theme.particles.minSpeed;
-        this.angle = Math.random() * Math.PI * 2;
+        this.orbitRadius = Math.random() * Math.min(canvas.width, canvas.height) * 0.55;
         this.color = theme.particles.colors[Math.floor(Math.random() * theme.particles.colors.length)];
         this.opacity = Math.random() * 0.5 + 0.2;
+        this.rotationSpeed = Math.random() * 0.005 + 0.001;
+        this.x = 0;
+        this.y = 0;
       }
 
-      update() {
-        this.x += Math.cos(this.angle) * this.speed;
-        this.y += Math.sin(this.angle) * this.speed;
-
-        if (this.x < 0) this.x = canvas.width;
-        if (this.x > canvas.width) this.x = 0;
-        if (this.y < 0) this.y = canvas.height;
-        if (this.y > canvas.height) this.y = 0;
-
-        this.angle += Math.random() * 0.02 - 0.01;
+      update(centerX: number, centerY: number, globalRotation: number) {
+        this.angle += this.rotationSpeed;
+        const totalAngle = this.angle + globalRotation * 0.3;
+        this.x = centerX + Math.cos(totalAngle) * this.orbitRadius;
+        this.y = centerY + Math.sin(totalAngle) * this.orbitRadius;
       }
 
       draw() {
@@ -69,13 +68,18 @@ export const BackgroundAnimation: React.FC = () => {
       particles.push(new Particle());
     }
 
+    let rotationTime = 0;
     const animate = () => {
       if (!ctx) return;
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
+      rotationTime += 0.004;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
       for (const particle of particles) {
-        particle.update();
+        particle.update(centerX, centerY, rotationTime);
         particle.draw();
       }
       
@@ -94,11 +98,11 @@ export const BackgroundAnimation: React.FC = () => {
       className="fixed inset-0 z-0 transition-colors duration-1000"
       style={{ backgroundColor: theme.colors.background }}
     >
-      <canvas
-        ref={canvasRef}
+    <canvas
+      ref={canvasRef}
         className="absolute inset-0"
-        style={{ background: 'transparent' }}
-      />
+      style={{ background: 'transparent' }}
+    />
       {/* Dynamic gradients for nebula effect */}
       <div 
         className="absolute inset-0 opacity-30 pointer-events-none transition-opacity duration-1000"
