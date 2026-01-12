@@ -271,6 +271,8 @@ export const handler: Handler = async (event, context) => {
     }
   } catch (error: any) {
     console.error('Agent status error:', error);
+    console.error('Error stack:', error?.stack);
+    // Always return JSON, never HTML
     return {
       statusCode: 500,
       headers,
@@ -278,6 +280,9 @@ export const handler: Handler = async (event, context) => {
         success: false,
         error: 'Internal server error',
         message: error?.message || 'Unknown error',
+        type: error?.constructor?.name || 'Error',
+        // Only include stack in development
+        ...(process.env.NODE_ENV === 'development' && { stack: error?.stack }),
       }),
     };
   }
