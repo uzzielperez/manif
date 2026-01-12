@@ -30,7 +30,15 @@
   status = 200
   force = true
 
+# Handle Netlify functions (must come before catch-all)
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
 # Handle all other routes with SPA fallback
+# Note: Netlify functions are automatically handled, so this won't interfere
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -57,7 +57,7 @@ export default function MarketingDashboard() {
       const authData = localStorage.getItem('manifest_admin_authenticated');
       const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD || 'manifest-admin-2024';
       
-      const response = await fetch('/.netlify/functions/marketing-agents/agent-status', {
+      const response = await fetch('/.netlify/functions/marketing-agents-status', {
         headers: {
           'Authorization': `Bearer ${adminPassword}`,
         },

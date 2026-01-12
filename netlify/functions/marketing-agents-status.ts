@@ -1,13 +1,13 @@
 import { Handler } from '@netlify/functions';
-import { AgentOrchestrator } from '../../../server/marketing-agents/orchestrator';
-import { TwitterAgent } from '../../../server/marketing-agents/channels/twitter-agent';
-import { BaseAgent, AgentConfig } from '../../../server/marketing-agents/agent-core';
-import { InMemoryAgentMemory } from '../../../server/marketing-agents/agent-memory';
-import { checkAdminAuth } from './admin-auth';
+import { AgentOrchestrator } from '../../server/marketing-agents/orchestrator';
+import { TwitterAgent } from '../../server/marketing-agents/channels/twitter-agent';
+import { BaseAgent, AgentConfig } from '../../server/marketing-agents/agent-core';
+import { InMemoryAgentMemory } from '../../server/marketing-agents/agent-memory';
+import { checkAdminAuth } from './marketing-agents/admin-auth';
 
 /**
  * Netlify Function: Agent Status & Monitoring
- * Provides detailed status, performance metrics, and history for all agents
+ * Accessible at: /.netlify/functions/marketing-agents-status
  */
 
 const orchestrator = new AgentOrchestrator();
@@ -18,7 +18,6 @@ function initializeAgents() {
 
   const memory = new InMemoryAgentMemory();
 
-  // Initialize Twitter Agent
   const twitterConfig: AgentConfig = {
     id: 'twitter-main',
     name: 'Twitter Main Agent',
@@ -48,7 +47,6 @@ function initializeAgents() {
 }
 
 export const handler: Handler = async (event, context) => {
-  // Always return JSON headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -56,48 +54,32 @@ export const handler: Handler = async (event, context) => {
     'Content-Type': 'application/json',
   };
 
-  // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
 
-  // Ensure we always return JSON, even on errors
   try {
     // Check admin authentication
-    try {
-      if (!checkAdminAuth(event)) {
-        return {
-          statusCode: 401,
-          headers,
-          body: JSON.stringify({
-            success: false,
-            error: 'Unauthorized. Admin access required.',
-          }),
-        };
-      }
-    } catch (authError: any) {
-      console.error('Auth check error:', authError);
-      // If auth check fails, still allow in dev mode
-      if (process.env.NODE_ENV === 'production') {
-        return {
-          statusCode: 401,
-          headers,
-          body: JSON.stringify({
-            success: false,
-            error: 'Authentication error',
-          }),
-        };
-      }
+    if (!checkAdminAuth(event)) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          error: 'Unauthorized. Admin access required.',
+        }),
+      };
     }
+
     if (event.httpMethod !== 'GET') {
       return {
         statusCode: 405,
         headers,
-        body: JSON.stringify({ error: 'Method not allowed' }),
+        body: JSON.stringify({ success: false, error: 'Method not allowed' }),
       };
     }
 
-    // Initialize agents (with error handling)
+    // Initialize agents
     try {
       initializeAgents();
     } catch (initError: any) {
@@ -108,17 +90,16 @@ export const handler: Handler = async (event, context) => {
         body: JSON.stringify({
           success: false,
           error: 'Failed to initialize agents',
-          message: initError?.message || 'Unknown initialization error',
+          message: initError?.message || 'Unknown error',
         }),
       };
     }
 
     const queryParams = new URLSearchParams(event.queryStringParameters || {});
-
-    // Get all agents with detailed status (default behavior)
     const agentId = queryParams.get('agentId');
     
     if (!agentId) {
+      // Get all agents
       const agents = orchestrator.getAgents();
       const status = orchestrator.getStatus();
 
@@ -127,23 +108,16 @@ export const handler: Handler = async (event, context) => {
           const config = agent.getConfig();
           const memory = (agent as any).memory as any;
           
-          // Get last action
           const lastAction = memory?.getLastAction?.(config.id) || null;
-          
-          // Get performance history
           const performances = memory?.getPerformanceHistory?.(config.id, 10) || [];
-          
-          // Get learnings
           const learnings = memory?.getLearnings?.(config.id) || {};
 
-          // Calculate stats
           const totalActions = performances.length;
           const avgScore = learnings.averageScore || 0;
           const successRate = learnings.totalActions
             ? ((learnings.successfulActions || 0) / learnings.totalActions) * 100
             : 0;
 
-          // Recent performance trend
           const recentPerformances = performances.slice(0, 5);
           const recentAvgScore = recentPerformances.length > 0
             ? recentPerformances.reduce((sum, p) => sum + p.score, 0) / recentPerformances.length
@@ -188,24 +162,20 @@ export const handler: Handler = async (event, context) => {
         }),
       };
     } else {
-      // Get specific agent details
+      // Get specific agent
       const agent = orchestrator.getAgent(agentId);
       if (!agent) {
         return {
           statusCode: 404,
           headers,
-          body: JSON.stringify({ error: `Agent ${agentId} not found` }),
+          body: JSON.stringify({ success: false, error: `Agent ${agentId} not found` }),
         };
       }
 
       const config = agent.getConfig();
       const memory = (agent as any).memory as any;
-      
-      // Get full performance history
       const limit = parseInt(queryParams.get('limit') || '50');
       const performances = memory?.getPerformanceHistory?.(config.id, limit) || [];
-      
-      // Get learnings
       const learnings = memory?.getLearnings?.(config.id) || {};
 
       return {
@@ -232,7 +202,6 @@ export const handler: Handler = async (event, context) => {
     }
   } catch (error: any) {
     console.error('Agent status error:', error);
-    // Always return JSON, even on error
     return {
       statusCode: 500,
       headers,
@@ -240,7 +209,6 @@ export const handler: Handler = async (event, context) => {
         success: false,
         error: 'Internal server error',
         message: error?.message || 'Unknown error',
-        stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined,
       }),
     };
   }
