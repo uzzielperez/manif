@@ -13,7 +13,7 @@ import Blog from './pages/Blog';
 import InfluencerDashboard from './pages/InfluencerDashboard';
 import PaymentSuccess from './pages/PaymentSuccess';
 import GoalTemplate from './pages/GoalTemplate';
-import InfluencerDashboard from './pages/InfluencerDashboard';
+import MarketingDashboard from './components/admin/MarketingDashboard';
 import Footer from './components/Footer';
 import { BackgroundAnimation } from './components/BackgroundAnimation';
 import GlobalPaywallModal from './components/GlobalPaywallModal';
@@ -66,7 +66,7 @@ function App() {
                 <Route path="/influencer-dashboard" element={<InfluencerDashboard />} />
                 <Route path="/payment-success" element={<PaymentSuccess />} />
                 <Route path="/goal-template" element={<GoalTemplate />} />
-                <Route path="/influencer-dashboard" element={<InfluencerDashboard />} />
+                <Route path="/marketing-dashboard" element={<MarketingDashboard />} />
               </Routes>
             </AnimatePresence>
           </main>

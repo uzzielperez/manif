@@ -38,4 +38,4 @@ export const useUIStore = create<UIState>((set) => ({
   setCouponErrorInModal: (error) => set({ couponErrorInModal: error }),
   setIsProcessingPaymentInModal: (isLoading) => set({ isProcessingPaymentInModal: isLoading }),
   setCosmicTheme: (theme) => set({ cosmicTheme: theme }),
-}));
+})); 

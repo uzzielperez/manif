@@ -81,4 +81,3 @@ The goal is to move from a static interface to a dynamic, visual, and AI-support
 - **Referral Credit**: Influencer gets 5 "Stellar Credits" per free user sign-up.
 - **Payout Threshold**: $50 minimum payout via Stripe/PayPal.
 - **Payout Frequency**: Net-30 (monthly).
-
