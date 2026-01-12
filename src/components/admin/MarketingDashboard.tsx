@@ -53,11 +53,34 @@ export default function MarketingDashboard() {
   const fetchStatus = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/.netlify/functions/marketing-agents/agent-status');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Get admin password from localStorage (set by AdminPortal)
+      const authData = localStorage.getItem('manifest_admin_authenticated');
+      const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD || 'manifest-admin-2024';
+      
+      const response = await fetch('/.netlify/functions/marketing-agents/agent-status', {
+        headers: {
+          'Authorization': `Bearer ${adminPassword}`,
+        },
+      });
+      
+      // Check if response is actually JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON but got: ${contentType}. Response: ${text.substring(0, 200)}`);
       }
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+      
       const data: AgentStatusResponse = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to fetch agent status');
+      }
+      
       setStatus(data);
       setError(null);
       trackEvent('marketing_dashboard_view', {

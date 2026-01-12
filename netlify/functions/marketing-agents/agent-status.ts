@@ -3,6 +3,7 @@ import { AgentOrchestrator } from '../../../server/marketing-agents/orchestrator
 import { TwitterAgent } from '../../../server/marketing-agents/channels/twitter-agent';
 import { BaseAgent, AgentConfig } from '../../../server/marketing-agents/agent-core';
 import { InMemoryAgentMemory } from '../../../server/marketing-agents/agent-memory';
+import { checkAdminAuth } from './admin-auth';
 
 /**
  * Netlify Function: Agent Status & Monitoring
@@ -58,7 +59,17 @@ export const handler: Handler = async (event, context) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  initializeAgents();
+  // Check admin authentication (skip for OPTIONS)
+  if (event.httpMethod !== 'OPTIONS' && !checkAdminAuth(event)) {
+    return {
+      statusCode: 401,
+      headers,
+      body: JSON.stringify({
+        success: false,
+        error: 'Unauthorized. Admin access required.',
+      }),
+    };
+  }
 
   try {
     if (event.httpMethod !== 'GET') {
@@ -69,11 +80,15 @@ export const handler: Handler = async (event, context) => {
       };
     }
 
-    const path = event.path.split('/').pop() || '';
+    // Initialize agents
+    initializeAgents();
+
     const queryParams = new URLSearchParams(event.queryStringParameters || {});
 
-    // Get all agents with detailed status
-    if (path === 'agent-status' || path === '') {
+    // Get all agents with detailed status (default behavior)
+    const agentId = queryParams.get('agentId');
+    
+    if (!agentId) {
       const agents = orchestrator.getAgents();
       const status = orchestrator.getStatus();
 
@@ -142,11 +157,8 @@ export const handler: Handler = async (event, context) => {
           timestamp: new Date().toISOString(),
         }),
       };
-    }
-
-    // Get specific agent details
-    const agentId = queryParams.get('agentId');
-    if (agentId) {
+    } else {
+      // Get specific agent details
       const agent = orchestrator.getAgent(agentId);
       if (!agent) {
         return {
@@ -188,20 +200,17 @@ export const handler: Handler = async (event, context) => {
         }),
       };
     }
-
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: 'Invalid request' }),
-    };
   } catch (error: any) {
     console.error('Agent status error:', error);
+    // Always return JSON, even on error
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
+        success: false,
         error: 'Internal server error',
-        message: error.message,
+        message: error?.message || 'Unknown error',
+        stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined,
       }),
     };
   }
