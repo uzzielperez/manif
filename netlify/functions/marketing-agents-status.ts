@@ -1,6 +1,11 @@
 import { Handler } from '@netlify/functions';
 import { AgentOrchestrator } from '../../server/marketing-agents/orchestrator';
 import { TwitterAgent } from '../../server/marketing-agents/channels/twitter-agent';
+import { RedditAgent } from '../../server/marketing-agents/channels/reddit-agent';
+import { InstagramAgent } from '../../server/marketing-agents/channels/instagram-agent';
+import { TikTokAgent } from '../../server/marketing-agents/channels/tiktok-agent';
+import { EmailAgent } from '../../server/marketing-agents/channels/email-agent';
+import { BlogAgent } from '../../server/marketing-agents/channels/blog-agent';
 import { BaseAgent, AgentConfig } from '../../server/marketing-agents/agent-core';
 import { InMemoryAgentMemory } from '../../server/marketing-agents/agent-memory';
 // Simple inline auth check to avoid import issues
@@ -55,6 +60,131 @@ function initializeAgents() {
 
   const twitterAgent = new TwitterAgent(twitterConfig, memory);
   orchestrator.registerAgent(twitterAgent);
+
+  // Reddit Agent
+  const redditConfig: AgentConfig = {
+    id: 'reddit-main',
+    name: 'Reddit Main Agent',
+    channel: 'reddit',
+    enabled: process.env.REDDIT_AGENT_ENABLED === 'true',
+    personality: {
+      tone: 'friendly',
+      style: 'helpful, authentic, community-focused',
+    },
+    postingFrequency: {
+      minHours: 6,
+      maxHours: 24,
+      preferredTimes: [10, 14, 18, 22],
+    },
+    targetAudience: {
+      demographics: ['20-40', 'reddit users', 'community members'],
+      interests: ['meditation', 'self-improvement', 'spirituality', 'mindfulness'],
+      painPoints: ['seeking guidance', 'wanting community', 'looking for resources'],
+    },
+    learningRate: 0.3,
+  };
+  const redditAgent = new RedditAgent(redditConfig, memory);
+  orchestrator.registerAgent(redditAgent);
+
+  // Instagram Agent
+  const instagramConfig: AgentConfig = {
+    id: 'instagram-main',
+    name: 'Instagram Main Agent',
+    channel: 'instagram',
+    enabled: process.env.INSTAGRAM_AGENT_ENABLED === 'true',
+    personality: {
+      tone: 'inspiring',
+      style: 'visual, aesthetic, story-driven',
+    },
+    postingFrequency: {
+      minHours: 6,
+      maxHours: 12,
+      preferredTimes: [8, 12, 17, 20],
+    },
+    targetAudience: {
+      demographics: ['18-35', 'visual learners', 'social media users'],
+      interests: ['wellness', 'meditation', 'lifestyle', 'self-care'],
+      painPoints: ['seeking inspiration', 'wanting visual content', 'looking for community'],
+    },
+    learningRate: 0.3,
+  };
+  const instagramAgent = new InstagramAgent(instagramConfig, memory);
+  orchestrator.registerAgent(instagramAgent);
+
+  // TikTok Agent
+  const tiktokConfig: AgentConfig = {
+    id: 'tiktok-main',
+    name: 'TikTok Main Agent',
+    channel: 'tiktok',
+    enabled: process.env.TIKTOK_AGENT_ENABLED === 'true',
+    personality: {
+      tone: 'casual',
+      style: 'trendy, engaging, hook-driven',
+    },
+    postingFrequency: {
+      minHours: 4,
+      maxHours: 8,
+      preferredTimes: [9, 12, 15, 18, 21],
+    },
+    targetAudience: {
+      demographics: ['16-30', 'gen z', 'millennials'],
+      interests: ['trends', 'quick tips', 'entertainment', 'self-improvement'],
+      painPoints: ['short attention span', 'wanting quick wins', 'seeking trends'],
+    },
+    learningRate: 0.4,
+  };
+  const tiktokAgent = new TikTokAgent(tiktokConfig, memory);
+  orchestrator.registerAgent(tiktokAgent);
+
+  // Email Agent
+  const emailConfig: AgentConfig = {
+    id: 'email-main',
+    name: 'Email Marketing Agent',
+    channel: 'email',
+    enabled: process.env.EMAIL_AGENT_ENABLED === 'true',
+    personality: {
+      tone: 'professional',
+      style: 'personal, value-driven, clear',
+    },
+    postingFrequency: {
+      minHours: 24,
+      maxHours: 168, // Weekly
+      preferredTimes: [9, 10, 14], // Morning and early afternoon
+    },
+    targetAudience: {
+      demographics: ['25-50', 'subscribers', 'engaged users'],
+      interests: ['meditation', 'personal growth', 'manifestation', 'wellness'],
+      painPoints: ['wanting updates', 'seeking value', 'looking for resources'],
+    },
+    learningRate: 0.2,
+  };
+  const emailAgent = new EmailAgent(emailConfig, memory);
+  orchestrator.registerAgent(emailAgent);
+
+  // Blog Agent
+  const blogConfig: AgentConfig = {
+    id: 'blog-main',
+    name: 'Blog Content Agent',
+    channel: 'blog',
+    enabled: process.env.BLOG_AGENT_ENABLED === 'true',
+    personality: {
+      tone: 'authoritative',
+      style: 'comprehensive, SEO-optimized, educational',
+    },
+    postingFrequency: {
+      minHours: 72, // Every 3 days
+      maxHours: 168, // Weekly
+      preferredTimes: [10, 14], // Mid-morning and early afternoon
+    },
+    targetAudience: {
+      demographics: ['25-55', 'readers', 'learners'],
+      interests: ['deep dives', 'education', 'manifestation', 'meditation'],
+      painPoints: ['wanting in-depth content', 'seeking knowledge', 'looking for guides'],
+    },
+    learningRate: 0.2,
+  };
+  const blogAgent = new BlogAgent(blogConfig, memory);
+  orchestrator.registerAgent(blogAgent);
 
   initialized = true;
 }
