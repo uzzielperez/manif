@@ -1,5 +1,6 @@
 import { BaseChannelAgent } from './base-channel-agent';
 import { AgentConfig, AgentAction, AgentPerformance, AgentMemory } from '../agent-core';
+import { generateContent } from '../content-generator';
 
 /**
  * Blog Content Agent

@@ -1,6 +1,7 @@
 import { Handler } from '@netlify/functions';
 import { AgentOrchestrator } from '../../../server/marketing-agents/orchestrator';
 import { TwitterAgent } from '../../../server/marketing-agents/channels/twitter-agent';
+import { BlogAgent } from '../../../server/marketing-agents/channels/blog-agent';
 import { BaseAgent, AgentConfig } from '../../../server/marketing-agents/agent-core';
 import { InMemoryAgentMemory } from '../../../server/marketing-agents/agent-memory';
 
@@ -47,8 +48,31 @@ function initializeAgents() {
   const twitterAgent = new TwitterAgent(twitterConfig, memory);
   orchestrator.registerAgent(twitterAgent);
 
-  // TODO: Initialize other agents (Reddit, Instagram, TikTok, Email, Blog)
-  // as they are implemented
+  // Initialize Blog Agent
+  const blogConfig: AgentConfig = {
+    id: 'blog-main',
+    name: 'Blog Content Agent',
+    channel: 'blog',
+    enabled: process.env.BLOG_AGENT_ENABLED === 'true',
+    personality: {
+      tone: 'inspiring',
+      style: 'cosmic, mystical, empowering',
+    },
+    postingFrequency: {
+      minHours: 24,
+      maxHours: 168, // Weekly
+      preferredTimes: [9, 14],
+    },
+    targetAudience: {
+      demographics: ['25-45', 'spiritual seekers', 'meditation practitioners'],
+      interests: ['meditation', 'manifestation', 'personal growth', 'mindfulness'],
+      painPoints: ['lack of clarity', 'feeling stuck', 'wanting transformation'],
+    },
+    learningRate: 0.3,
+  };
+
+  const blogAgent = new BlogAgent(blogConfig, memory);
+  orchestrator.registerAgent(blogAgent);
 
   initialized = true;
 }
