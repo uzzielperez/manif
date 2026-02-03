@@ -1,8 +1,4 @@
 import { Handler } from '@netlify/functions';
-import { setupDatabase } from '../../db-setup.js';
-import { db } from '../../server/db';
-import { influencerEvents, influencers } from '../../shared/schema';
-import { eq } from 'drizzle-orm';
 import { getInfluencerByCode } from '../../shared/influencers';
 
 export const handler: Handler = async (event) => {
@@ -29,9 +25,19 @@ export const handler: Handler = async (event) => {
 
     if (!influencerId && referralCode) {
       const codeNorm = String(referralCode).trim().toUpperCase();
-      await setupDatabase();
-      const fromDb = await db.select({ id: influencers.id }).from(influencers).where(eq(influencers.code, codeNorm));
-      if (fromDb.length > 0) influencerId = fromDb[0].id;
+      if (process.env.DATABASE_URL) {
+        try {
+          const { setupDatabase } = await import('../../db-setup.js');
+          const { db } = await import('../../server/db');
+          const { influencers } = await import('../../shared/schema');
+          const { eq } = await import('drizzle-orm');
+          await setupDatabase();
+          const fromDb = await db.select({ id: influencers.id }).from(influencers).where(eq(influencers.code, codeNorm));
+          if (fromDb.length > 0) influencerId = fromDb[0].id;
+        } catch (dbErr) {
+          console.error('Track referral DB lookup:', dbErr);
+        }
+      }
       if (!influencerId) {
         const influencer = getInfluencerByCode(codeNorm);
         if (influencer) influencerId = influencer.id;
@@ -54,18 +60,33 @@ export const handler: Handler = async (event) => {
       };
     }
 
-    if (!body.referral_code) await setupDatabase();
-
-    await db.insert(influencerEvents).values({
-      influencerId,
-      eventType: resolvedEventType,
-      amount: typeof amount === 'number' ? amount : 0,
-    });
+    let persisted = false;
+    if (process.env.DATABASE_URL) {
+      try {
+        const { setupDatabase } = await import('../../db-setup.js');
+        const { db } = await import('../../server/db');
+        const { influencerEvents } = await import('../../shared/schema');
+        if (!body.referral_code) await setupDatabase();
+        await db.insert(influencerEvents).values({
+          influencerId,
+          eventType: resolvedEventType,
+          amount: typeof amount === 'number' ? amount : 0,
+        });
+        persisted = true;
+      } catch (dbErr) {
+        console.error('Track referral DB insert:', dbErr);
+      }
+    }
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, influencerId, eventType: resolvedEventType }),
+      body: JSON.stringify({
+        success: true,
+        influencerId,
+        eventType: resolvedEventType,
+        ...(persisted ? {} : { persisted: false, message: 'Event not persisted (no database)' }),
+      }),
     };
   } catch (error) {
     console.error('Track referral error:', error);
