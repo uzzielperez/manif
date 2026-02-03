@@ -43,6 +43,7 @@
 | 2026-02-03 | Referral code vs dashboard password | Completed | influencer-auth: partners log in with code + private dashboard password; passwords from env (INFLUENCER_DASHBOARD_PASSWORDS) or DB; code is public (links/checkout), password is private |
 | 2026-02-03 | Admin UI: add influencers + set password | Completed | Admin → Influencers tab: add influencer (name, code, commission %, payout, dashboard password) and set password for existing; data stored in DB only (influencers + influencer_dashboard_passwords, bcrypt); nothing sensitive in repo |
 | 2026-02-03 | DB-backed influencers | Completed | shared/schema: influencers + influencer_dashboard_passwords tables; db-setup creates tables and seeds 4 influencers; influencer-auth and track-referral read from DB first (env fallback); netlify/functions/admin-influencers (GET list, POST create, PATCH set password) |
+| 2026-02-03 | Temporal Architect (8.0) | Completed | Timeline function: Content-Type application/json, strip markdown from LLM output, parse and return valid { nodes, edges }; Timelines.tsx: robust parse (string/object), validate nodes/edges arrays, safe pathId/index, graphKey for React Flow sync; loading overlay and clear error when no nodes |
 
 ## Instructions for Completing Tasks
 
@@ -82,10 +83,10 @@
   - [x] 7.1 Create an `influencers.ts` config to map unique codes (e.g., MAGIC25M, STARS10) to specific profiles
   - [x] 7.2 Implement tracking logic to attribute unlocks/payments to specific influencer IDs
   - [ ] 7.3 Build a simple "Influencer Payout" report logic based on conversion percentage
-- [ ] 8.0 Debug & Stabilize Temporal Architect Chat
-  - [ ] 8.1 Investigation: Confirm why nodes are not manifesting in production despite successful API response
-  - [ ] 8.2 Fix: Refine React Flow state synchronization between Chat and Graph
-  - [ ] 8.3 Optimization: Add loading skeletons and retry logic for slow AI responses
+- [x] 8.0 Debug & Stabilize Temporal Architect Chat
+  - [x] 8.1 Investigation: Confirm why nodes are not manifesting in production despite successful API response
+  - [x] 8.2 Fix: Refine React Flow state synchronization between Chat and Graph
+  - [x] 8.3 Optimization: Add loading skeletons and retry logic for slow AI responses
 - [ ] 9.0 Enhance Landing Page with Deep Scroll Content
   - [ ] 9.1 Implement "Editorial Preview" section for recent blog posts
   - [ ] 9.2 Create "Meditation of the Month" spotlight with quick-play access

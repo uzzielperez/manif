@@ -1,11 +1,26 @@
 import { Handler } from '@netlify/functions';
 
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Content-Type': 'application/json',
+};
+
+function parseTimelineJson(raw: string): { nodes: any[]; edges: any[] } {
+  let s = typeof raw === 'string' ? raw.trim() : '{}';
+  s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  try {
+    const parsed = JSON.parse(s);
+    const nodes = Array.isArray(parsed?.nodes) ? parsed.nodes : [];
+    const edges = Array.isArray(parsed?.edges) ? parsed.edges : [];
+    return { nodes, edges };
+  } catch {
+    return { nodes: [], edges: [] };
+  }
+}
+
 export const handler: Handler = async (event, context) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
-  };
 
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
@@ -85,10 +100,12 @@ export const handler: Handler = async (event, context) => {
     }
 
     const data = await response.json();
+    const rawContent = data.choices?.[0]?.message?.content || '{}';
+    const { nodes, edges } = parseTimelineJson(rawContent);
     return {
       statusCode: 200,
       headers,
-      body: data.choices[0]?.message?.content || '{}'
+      body: JSON.stringify({ nodes, edges }),
     };
   } catch (error) {
     console.error('Timeline function error:', error);

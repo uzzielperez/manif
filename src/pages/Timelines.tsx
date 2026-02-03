@@ -34,6 +34,7 @@ const TimelinesContent: React.FC = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [isLoading, setIsLoading] = useState(false);
   const [activePaths, setActivePaths] = useState<Set<string>>(new Set(['steady', 'warp', 'quantum']));
+  const [graphKey, setGraphKey] = useState(0);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -60,12 +61,20 @@ const TimelinesContent: React.FC = () => {
         throw new Error(errorData.details || errorData.error || 'Failed to generate timeline');
       }
 
-      const data = await response.json();
-      console.log('Hybrid Timeline data received:', data);
-
-      if (!data.nodes || !Array.isArray(data.nodes)) {
-        throw new Error('Invalid timeline data: nodes missing or not an array');
+      let data = await response.json();
+      if (typeof data === 'string') {
+        try {
+          data = JSON.parse(data);
+        } catch {
+          throw new Error('Invalid timeline response format');
+        }
       }
+      const nodes = Array.isArray(data?.nodes) ? data.nodes : [];
+      const edges = Array.isArray(data?.edges) ? data.edges : [];
+      if (nodes.length === 0) {
+        throw new Error('No timeline nodes returned. Try rephrasing your goal or try again.');
+      }
+      console.log('Hybrid Timeline data received:', { nodeCount: nodes.length, edgeCount: edges.length });
       
       const pathColors = {
         steady: 'var(--cosmic-primary)',
@@ -74,8 +83,8 @@ const TimelinesContent: React.FC = () => {
       };
 
       // Transform API data into React Flow nodes and edges
-      const newNodes: Node[] = data.nodes.map((n: any, i: number) => {
-        const pathId = n.pathId || 'steady';
+      const newNodes: Node[] = nodes.map((n: any, i: number) => {
+        const pathId = (n.pathId && ['steady', 'warp', 'quantum'].includes(n.pathId)) ? n.pathId : 'steady';
         const color = pathColors[pathId as keyof typeof pathColors] || 'var(--cosmic-primary)';
         
         // Position paths in 3 distinct horizontal zones
@@ -85,15 +94,16 @@ const TimelinesContent: React.FC = () => {
         if (pathId === 'quantum') xPos = 600;
 
         // Vertical spacing based on node index within its path
-        const nodesInPath = data.nodes.filter((node: any) => node.pathId === pathId);
-        const indexInPath = nodesInPath.indexOf(n);
+        const nodesInPath = nodes.filter((node: any) => (node.pathId || 'steady') === pathId);
+        const indexInPath = nodesInPath.findIndex((node: any) => node.id === n.id);
+        const safeIndex = indexInPath >= 0 ? indexInPath : i;
 
         return {
-          id: n.id,
-          data: { label: n.label, pathId },
+          id: String(n.id || `node-${pathId}-${i}`),
+          data: { label: n.label ?? 'Step', pathId },
           position: { 
             x: xPos + (Math.random() * 20 - 10), 
-            y: (indexInPath * 150) + 200 
+            y: (safeIndex * 150) + 200 
           },
           style: { 
             background: 'var(--cosmic-glass)', 
@@ -109,8 +119,8 @@ const TimelinesContent: React.FC = () => {
         };
       });
 
-      const newEdges: Edge[] = (data.edges || []).map((e: any) => {
-        const sourceNode = data.nodes.find((n: any) => n.id === e.source);
+      const newEdges: Edge[] = edges.map((e: any) => {
+        const sourceNode = nodes.find((n: any) => n.id === e.source);
         const pathId = sourceNode?.pathId || 'steady';
         const color = pathColors[pathId as keyof typeof pathColors] || 'var(--cosmic-primary)';
 
@@ -131,7 +141,7 @@ const TimelinesContent: React.FC = () => {
 
       // Connect start of each path to origin
       ['steady', 'warp', 'quantum'].forEach(pId => {
-        const firstInPath = data.nodes.find((n: any) => n.pathId === pId);
+        const firstInPath = nodes.find((n: any) => (n.pathId || 'steady') === pId);
         if (firstInPath) {
           finalEdges.push({
             id: `edge-start-${firstInPath.id}`,
@@ -145,7 +155,8 @@ const TimelinesContent: React.FC = () => {
 
       setNodes(finalNodes);
       setEdges(finalEdges);
-      const pathCount = new Set((data.nodes || []).map((n: any) => n.pathId)).size;
+      setGraphKey((k) => k + 1);
+      const pathCount = new Set(nodes.map((n: any) => n.pathId || 'steady')).size;
       trackEvent('timeline_manifested', {
         node_count: data.nodes.length,
         path_count: pathCount,
@@ -252,7 +263,16 @@ const TimelinesContent: React.FC = () => {
       <div className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
         {/* Graph Area */}
         <div className="lg:col-span-8 relative h-full">
+          {isLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-2xl border border-white/10">
+              <div className="flex flex-col items-center gap-3 text-white/80">
+                <div className="w-10 h-10 border-2 border-[var(--cosmic-accent)] border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm font-medium">Manifesting your paths…</span>
+              </div>
+            </div>
+          )}
           <TimelineGraph 
+            key={`graph-${graphKey}`}
             nodes={filteredNodes} 
             edges={filteredEdges} 
             onNodesChange={onNodesChange} 
