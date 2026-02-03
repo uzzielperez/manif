@@ -43,12 +43,16 @@ interface AgentStatusResponse {
   timestamp: string;
 }
 
+const adminPassword = () => process.env.REACT_APP_ADMIN_PASSWORD || 'manifest-admin-2024';
+
 export default function MarketingDashboard() {
   const [status, setStatus] = useState<AgentStatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [runningAgentId, setRunningAgentId] = useState<string | null>(null);
+  const [testResult, setTestResult] = useState<{ agentId: string; success: boolean; contentPreview?: string; error?: string } | null>(null);
 
   const fetchStatus = async () => {
     try {
@@ -59,7 +63,7 @@ export default function MarketingDashboard() {
       
       const response = await fetch('/.netlify/functions/marketing-agents-status', {
         headers: {
-          'Authorization': `Bearer ${adminPassword}`,
+          'Authorization': `Bearer ${adminPassword()}`,
         },
       });
       
@@ -92,6 +96,41 @@ export default function MarketingDashboard() {
       console.error('Error fetching agent status:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runTest = async (agentId: string) => {
+    setTestResult(null);
+    setRunningAgentId(agentId);
+    try {
+      const res = await fetch('/.netlify/functions/marketing-agents/agent-orchestrator', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminPassword()}`,
+        },
+        body: JSON.stringify({
+          action: 'run-agent',
+          agentId,
+          topics: ['manifestation techniques'],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTestResult({ agentId, success: false, error: data.error || `HTTP ${res.status}` });
+        return;
+      }
+      setTestResult({
+        agentId,
+        success: !!data.action,
+        contentPreview: data.action?.contentPreview,
+        error: data.action ? undefined : 'No action returned',
+      });
+      if (data.action) fetchStatus();
+    } catch (err: any) {
+      setTestResult({ agentId, success: false, error: err.message || 'Request failed' });
+    } finally {
+      setRunningAgentId(null);
     }
   };
 
@@ -342,13 +381,38 @@ export default function MarketingDashboard() {
                   </div>
                 </div>
 
-                {/* View Details Button */}
-                <button
-                  onClick={() => setSelectedAgent(selectedAgent === agent.id ? null : agent.id)}
-                  className="mt-4 w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white text-sm"
-                >
-                  {selectedAgent === agent.id ? 'Hide Details' : 'View Details'}
-                </button>
+                {/* Test run & View Details */}
+                <div className="mt-4 flex gap-2">
+                  <button
+                    onClick={() => runTest(agent.id)}
+                    disabled={runningAgentId !== null}
+                    className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 rounded-lg text-white text-sm font-medium"
+                  >
+                    {runningAgentId === agent.id ? 'Running…' : 'Test run'}
+                  </button>
+                  <button
+                    onClick={() => setSelectedAgent(selectedAgent === agent.id ? null : agent.id)}
+                    className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white text-sm"
+                  >
+                    {selectedAgent === agent.id ? 'Hide Details' : 'View Details'}
+                  </button>
+                </div>
+                {testResult?.agentId === agent.id && (
+                  <div className={`mt-3 p-3 rounded-lg text-sm ${testResult.success ? 'bg-slate-800/80 text-green-200' : 'bg-red-900/30 text-red-200'}`}>
+                    {testResult.success ? (
+                      <>
+                        <div className="font-medium mb-1">Test run result</div>
+                        {testResult.contentPreview ? (
+                          <p className="text-slate-300 whitespace-pre-wrap break-words">{testResult.contentPreview}</p>
+                        ) : (
+                          <p>Action recorded (no content preview). Refresh to see last action.</p>
+                        )}
+                      </>
+                    ) : (
+                      <p>Error: {testResult.error}</p>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>

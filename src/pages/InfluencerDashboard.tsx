@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  TrendingUp, Users, DollarSign, Award, 
-  BarChart3, ShieldCheck, ArrowUpRight, Search 
+import {
+  TrendingUp, Users, DollarSign, Award,
+  BarChart3, ShieldCheck, ArrowUpRight, LogOut,
 } from 'lucide-react';
-import { INFLUENCERS, getInfluencerByCode } from '../data/influencers';
+
+const SESSION_KEY = 'manifest_influencer_session';
+
+interface InfluencerSession {
+  influencer: { id: string; name: string; code: string; commissionRate: number; payoutMethod: string };
+  token: string;
+  expiresAt: number;
+}
 
 const InfluencerDashboard: React.FC = () => {
   const [authCode, setAuthCode] = useState('');
-  const [influencer, setInfluencer] = useState<any>(null);
+  const [dashboardPassword, setDashboardPassword] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [influencer, setInfluencer] = useState<InfluencerSession['influencer'] | null>(null);
   const [stats, setStats] = useState({
     unlocks: 142,
     payments: 12,
@@ -16,20 +26,67 @@ const InfluencerDashboard: React.FC = () => {
     commission: 74.97,
   });
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const found = getInfluencerByCode(authCode);
-    if (found) {
-      setInfluencer(found);
-    } else {
-      alert('Invalid influencer code.');
+  useEffect(() => {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return;
+    try {
+      const session: InfluencerSession = JSON.parse(raw);
+      if (session.expiresAt && session.expiresAt > Date.now() && session.influencer) {
+        setInfluencer(session.influencer);
+      } else {
+        localStorage.removeItem(SESSION_KEY);
+      }
+    } catch {
+      localStorage.removeItem(SESSION_KEY);
     }
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError(null);
+    setLoading(true);
+    try {
+      const res = await fetch('/.netlify/functions/influencer-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: authCode.trim(), password: dashboardPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLoginError(data.error || 'Invalid partner code or password');
+        return;
+      }
+      if (data.success && data.influencer) {
+        const session: InfluencerSession = {
+          influencer: data.influencer,
+          token: data.token || '',
+          expiresAt: data.expiresAt || Date.now() + 7 * 24 * 60 * 60 * 1000,
+        };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        setInfluencer(data.influencer);
+        setDashboardPassword('');
+      } else {
+        setLoginError('Invalid partner code or password');
+      }
+    } catch {
+      setLoginError('Could not reach server. Try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem(SESSION_KEY);
+    setInfluencer(null);
+    setAuthCode('');
+    setDashboardPassword('');
+    setLoginError(null);
   };
 
   if (!influencer) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-[var(--cosmic-glass)] border border-[var(--cosmic-glass-border)] rounded-[2.5rem] p-12 max-w-md w-full backdrop-blur-2xl text-center shadow-2xl"
@@ -37,20 +94,36 @@ const InfluencerDashboard: React.FC = () => {
           <div className="w-20 h-20 bg-[var(--cosmic-primary)]/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-[var(--cosmic-primary)]/20">
             <ShieldCheck className="text-[var(--cosmic-primary)]" size={32} />
           </div>
-          <h1 className="text-3xl font-light text-white mb-4 tracking-tight">Influencer Portal</h1>
-          <p className="text-[var(--cosmic-text-muted)] mb-10 font-light leading-relaxed">
-            Enter your private partner code to access your earnings and impact dashboard.
+          <h1 className="text-3xl font-light text-white mb-4 tracking-tight">Partner Portal</h1>
+          <p className="text-[var(--cosmic-text-muted)] mb-6 font-light leading-relaxed text-sm">
+            Your <strong>referral code</strong> (e.g. FLOW20) is for links and checkout. Use your <strong>dashboard password</strong> here—only you have it.
           </p>
           <form onSubmit={handleLogin} className="space-y-4">
             <input
               type="text"
               value={authCode}
-              onChange={(e) => setAuthCode(e.target.value)}
-              placeholder="Your Partner Code (e.g. MAGIC25M)"
+              onChange={(e) => { setAuthCode(e.target.value); setLoginError(null); }}
+              placeholder="Partner code (e.g. FLOW20)"
               className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white font-light text-center focus:outline-none focus:border-[var(--cosmic-accent)] transition-all"
+              autoComplete="username"
             />
-            <button className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all shadow-xl shadow-white/5">
-              Access Dashboard
+            <input
+              type="password"
+              value={dashboardPassword}
+              onChange={(e) => { setDashboardPassword(e.target.value); setLoginError(null); }}
+              placeholder="Dashboard password"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white font-light text-center focus:outline-none focus:border-[var(--cosmic-accent)] transition-all"
+              autoComplete="current-password"
+            />
+            {loginError && (
+              <p className="text-sm text-red-400">{loginError}</p>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-[var(--cosmic-accent)] transition-all shadow-xl shadow-white/5 disabled:opacity-50"
+            >
+              {loading ? 'Signing in…' : 'Access Dashboard'}
             </button>
           </form>
         </motion.div>
@@ -84,6 +157,14 @@ const InfluencerDashboard: React.FC = () => {
           </div>
           <div className="h-10 w-px bg-white/10" />
           <Award className="text-[var(--cosmic-accent)]" size={24} />
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/80 hover:text-white text-sm font-medium transition-all"
+          >
+            <LogOut size={16} />
+            Log out
+          </button>
         </div>
       </div>
 

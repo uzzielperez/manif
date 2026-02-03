@@ -71,10 +71,9 @@ const Program: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          referral_code: refCode,
-          referral_url: document.referrer,
-          user_agent: navigator.userAgent,
-          timestamp: new Date().toISOString()
+          referral_code: refCode.trim().toUpperCase(),
+          eventType: 'click',
+          amount: 0,
         }),
       });
     } catch (error) {

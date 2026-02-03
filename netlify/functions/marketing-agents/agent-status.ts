@@ -2,6 +2,7 @@ import { Handler } from '@netlify/functions';
 import { AgentOrchestrator } from '../../../server/marketing-agents/orchestrator';
 import { TwitterAgent } from '../../../server/marketing-agents/channels/twitter-agent';
 import { BlogAgent } from '../../../server/marketing-agents/channels/blog-agent';
+import { EmailAgent } from '../../../server/marketing-agents/channels/email-agent';
 import { BaseAgent, AgentConfig } from '../../../server/marketing-agents/agent-core';
 import { InMemoryAgentMemory } from '../../../server/marketing-agents/agent-memory';
 import { checkAdminAuth } from './admin-auth';
@@ -70,6 +71,32 @@ function initializeAgents() {
 
   const blogAgent = new BlogAgent(blogConfig, memory);
   orchestrator.registerAgent(blogAgent);
+
+  // Initialize Email Agent
+  const emailConfig: AgentConfig = {
+    id: 'email-main',
+    name: 'Email Marketing Agent',
+    channel: 'email',
+    enabled: process.env.EMAIL_AGENT_ENABLED === 'true',
+    personality: {
+      tone: 'inspiring',
+      style: 'cosmic, mystical, empowering',
+    },
+    postingFrequency: {
+      minHours: 24,
+      maxHours: 168,
+      preferredTimes: [9, 14],
+    },
+    targetAudience: {
+      demographics: ['25-45', 'spiritual seekers', 'meditation practitioners'],
+      interests: ['meditation', 'manifestation', 'personal growth', 'mindfulness'],
+      painPoints: ['lack of clarity', 'feeling stuck', 'wanting transformation'],
+    },
+    learningRate: 0.3,
+  };
+
+  const emailAgent = new EmailAgent(emailConfig, memory);
+  orchestrator.registerAgent(emailAgent);
 
   initialized = true;
 }

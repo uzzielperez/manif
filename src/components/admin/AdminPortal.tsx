@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MarketingDashboard from './MarketingDashboard';
+import InfluencerManagement from './InfluencerManagement';
 
 const ADMIN_PASSWORD_KEY = 'manifest_admin_authenticated';
 const ADMIN_SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
@@ -10,6 +11,7 @@ export default function AdminPortal() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<'marketing' | 'influencers'>('marketing');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -117,7 +119,19 @@ export default function AdminPortal() {
 
   return (
     <div>
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <button
+          onClick={() => setTab('marketing')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'marketing' ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+        >
+          Marketing
+        </button>
+        <button
+          onClick={() => setTab('influencers')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'influencers' ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+        >
+          Influencers
+        </button>
         <button
           onClick={handleLogout}
           className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white text-sm"
@@ -125,7 +139,8 @@ export default function AdminPortal() {
           Logout
         </button>
       </div>
-      <MarketingDashboard />
+      {tab === 'marketing' && <MarketingDashboard />}
+      {tab === 'influencers' && <InfluencerManagement />}
     </div>
   );
 }

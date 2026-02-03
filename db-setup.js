@@ -75,6 +75,45 @@ export async function setupDatabase() {
       `;
       console.log('influencer_events table created successfully');
     }
+
+    // Influencers table (admin-managed; not in repo)
+    const influencersTableCheck = await sql`
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables WHERE table_name = 'influencers'
+      );
+    `;
+    if (!influencersTableCheck[0].exists) {
+      console.log('Creating influencers table');
+      await sql`
+        CREATE TABLE influencers (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          code TEXT NOT NULL UNIQUE,
+          commission_rate REAL NOT NULL,
+          payout_method TEXT NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `;
+      console.log('Creating influencer_dashboard_passwords table');
+      await sql`
+        CREATE TABLE influencer_dashboard_passwords (
+          influencer_id TEXT PRIMARY KEY REFERENCES influencers(id) ON DELETE CASCADE,
+          password_hash TEXT NOT NULL,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `;
+      // Seed existing 4 influencers (passwords set by admin in UI)
+      await sql`
+        INSERT INTO influencers (id, name, code, commission_rate, payout_method)
+        VALUES
+          ('inf-1', 'Magic Master', 'Magic25M', 0.25, 'stripe'),
+          ('inf-2', 'Stellar Guide', 'STARS10', 0.20, 'paypal'),
+          ('inf-3', 'Quantum Creator', 'QUANTUM50', 0.30, 'stripe'),
+          ('inf-4', 'Cosmic Flow', 'FLOW20', 0.25, 'stripe')
+        ON CONFLICT (id) DO NOTHING
+      `;
+      console.log('influencers and influencer_dashboard_passwords tables created (seed inserted)');
+    }
     
     return true;
   } catch (error) {

@@ -29,12 +29,21 @@ https://your-site.netlify.app/program?coupon=ALEX15
 
 ## 👥 Managing Influencers
 
-### Access Dashboard:
-Visit: `https://your-site.netlify.app/influencer-dashboard`
+### Admin: Add influencers and set passwords (private, not in repo)
+1. Log in at **`/admin`** (admin password).
+2. Open the **Influencers** tab.
+3. **Add influencer:** Name, Code (e.g. FLOW20), Commission %, Payout method, **Dashboard password**. Data is stored only in your **database** (Neon/Postgres)—never in the repo or env.
+4. **Set password:** For existing influencers, click **Set password** and enter a new dashboard password (hashed in DB).
 
-### Add New Influencer:
-1. Click **"Add Influencer"**
-2. Fill in details:
+Passwords are hashed (bcrypt) and never stored in GitHub or env. Only you (admin) can add influencers and set their dashboard passwords.
+
+### Partner dashboard (influencers):
+Visit: `https://your-site.netlify.app/influencer-dashboard`  
+Partners log in with **Partner code** + **Dashboard password** (the password you set in Admin → Influencers).
+
+### Legacy: Add New Influencer (code-only, in repo):
+1. Edit **`shared/influencers.ts`** to add a new entry (id, name, code, commission, payoutMethod).
+2. Set that influencer’s **dashboard password** in Admin → Influencers (or via env `INFLUENCER_DASHBOARD_PASSWORDS` until migrated).
    - **Name**: Full name
    - **Email**: Contact email
    - **Social Handle**: @username
@@ -84,6 +93,26 @@ Commission: 30%
 - Payment status
 - Click tracking data
 
+## 🔐 Referral Code vs Dashboard Password
+
+- **Referral code** (e.g. `FLOW20`) is **public**: used in links (`?ref=FLOW20`) and at checkout. Each use counts as a referral. Anyone can see it.
+- **Dashboard password** is **private**: only the influencer has it. They need it to log in at `/influencer-dashboard`. Without it, someone who knows the code cannot access earnings or payout info.
+
+**Login:** Partner code + dashboard password (both required). Passwords are stored only in Netlify env; the app never sees them.
+
+### Set dashboard passwords (Netlify)
+
+1. Netlify → your site → **Site configuration** → **Environment variables**.
+2. Add **`INFLUENCER_DASHBOARD_PASSWORDS`** (key) with value a JSON object mapping influencer **id** to password:
+   ```json
+   {"inf-1":"your-secret-1","inf-2":"your-secret-2","inf-3":"your-secret-3","inf-4":"your-secret-4"}
+   ```
+   Use the ids from `shared/influencers.ts`: `inf-1` (Magic Master), `inf-2` (Stellar Guide), `inf-3` (Quantum Creator), `inf-4` (Cosmic Flow).
+3. Optional: add **`INFLUENCER_JWT_SECRET`** for signing session tokens (defaults to `ADMIN_PASSWORD` if set).
+4. Redeploy so the function sees the new variables.
+
+---
+
 ## 🔧 Technical Setup Required
 
 ### 1. Stripe Webhook Configuration:
@@ -117,6 +146,34 @@ The system currently logs data to console. To persist data:
 - Monitor clicks and conversions
 - Export monthly reports
 - Pay commissions based on CSV data
+
+## 🧪 Test One Referral Code
+
+**Test person:** Magic Master — code `MAGIC25M`.
+
+### Option A: In the browser
+1. Open your app (local or deployed).
+2. Go to: **`/program?ref=MAGIC25M`**
+3. Coupon field should auto-fill with `MAGIC25M`.
+4. Open DevTools → Network; filter by "track-referral".
+5. You should see a POST to `/.netlify/functions/track-referral` with status **200** and response `{"success":true,"influencerId":"inf-1","eventType":"click"}`.
+
+### Option B: cURL (no UI)
+```bash
+# Deployed site (replace with your Netlify URL)
+curl -X POST https://YOUR-SITE.netlify.app/.netlify/functions/track-referral \
+  -H "Content-Type: application/json" \
+  -d '{"referral_code":"MAGIC25M","eventType":"click","amount":0}'
+```
+Expected: `{"success":true,"influencerId":"inf-1","eventType":"click"}`
+
+Or run: `./scripts/test-referral.sh https://YOUR-SITE.netlify.app`
+
+### Other test codes
+- **STARS10** → Stellar Guide (inf-2)
+- **QUANTUM50** → Quantum Creator (inf-3)
+
+---
 
 ## 📱 Referral Link Examples
 

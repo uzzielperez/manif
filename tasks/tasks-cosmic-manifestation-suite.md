@@ -39,6 +39,10 @@
 | 2026-01-07 | Free Meditations Live | Completed | Generated all 7 meditations with Jameson voice, integrated audio playback on site |
 | 2026-01-07 | Contributor System PRD | Completed | Designed multi-tier contributor/stakeholder system with Web3 integration |
 | 2026-01-11 | Meditation visualizer polish & GA instrumentation | Completed | Removed human silhouette, aligned all visualizers, and added GA event tracking across meditations and timelines |
+| 2026-02-03 | 7.2 Referral tracking | Completed | Program page sends referral_code + eventType to track-referral; shared/influencers.ts for server-side code lookup; track-referral resolves code → influencerId and inserts into influencer_events |
+| 2026-02-03 | Referral code vs dashboard password | Completed | influencer-auth: partners log in with code + private dashboard password; passwords from env (INFLUENCER_DASHBOARD_PASSWORDS) or DB; code is public (links/checkout), password is private |
+| 2026-02-03 | Admin UI: add influencers + set password | Completed | Admin → Influencers tab: add influencer (name, code, commission %, payout, dashboard password) and set password for existing; data stored in DB only (influencers + influencer_dashboard_passwords, bcrypt); nothing sensitive in repo |
+| 2026-02-03 | DB-backed influencers | Completed | shared/schema: influencers + influencer_dashboard_passwords tables; db-setup creates tables and seeds 4 influencers; influencer-auth and track-referral read from DB first (env fallback); netlify/functions/admin-influencers (GET list, POST create, PATCH set password) |
 
 ## Instructions for Completing Tasks
 
