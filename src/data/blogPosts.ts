@@ -187,6 +187,68 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: 'seven-points-mind-training-lojong-manifestation',
+    title: 'The Seven Points of Mind Training: Lojong, Tibetan Buddhism, and Manifestation',
+    date: 'Feb 9, 2026',
+    category: 'Philosophy',
+    excerpt:
+      'Tibetan Buddhism’s lojong (mind training) offers a seven-point framework for shifting how we relate to thought, adversity, and intention—with surprising parallels to conscious manifestation.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'Lojong doesn’t change the world first. It changes the mind that meets the world—and from that shift, different realities become possible.',
+      },
+      {
+        type: 'p',
+        text: 'Lojong (Tibetan: blo sbyong, “mind training”) is a centuries-old practice from Tibetan Buddhism. Its most famous formulation—the Seven Points of Mind Training—comes from the lineage of Atisha and Chekawa Yeshe Dorje. The aim is enlightenment for the benefit of all beings; the method is a systematic retraining of how we use our minds in everyday life. For anyone interested in manifestation, lojong is worth knowing: it’s a rigorous map for turning intention, adversity, and habit into the very material of transformation.',
+      },
+      { type: 'h2', text: '1. The Preliminaries: Foundation for Any Practice' },
+      {
+        type: 'p',
+        text: 'The first point establishes the basis. It includes reflections on the preciousness of human life, the reality of death and impermanence, the law of cause and effect (karma), and the shortcomings of unexamined, reactive existence. In lojong, you don’t jump straight to “think positive”—you ground in why the mind matters at all. For manifestation, the parallel is clear: without a sober sense that this life is the one you have, and that your thoughts and actions have consequences, intention can stay vague or passive. The preliminaries turn the mind toward the work.',
+      },
+      { type: 'h2', text: '2. Training in the Two Bodhicittas: Heart and Wisdom' },
+      {
+        type: 'p',
+        text: 'The second point is the core practice: cultivating relative bodhicitta (loving-kindness and compassion) and ultimate bodhicitta (wisdom that sees the empty, interdependent nature of experience). Relative bodhicitta softens the heart and extends care; ultimate bodhicitta loosens the grip on fixed stories about “me” and “my reality.” In manifestation terms: the heart aligns you with what you want to call in (for yourself and others), while the wisdom side reminds you that rigid attachment to one outcome can block the very shift you’re seeking. Together they support both intention and flexibility.',
+      },
+      { type: 'h2', text: '3. Transforming Bad Circumstances into the Path' },
+      {
+        type: 'p',
+        text: 'The third point is famous: when the world is full of difficulty, use that difficulty as the path. Instead of treating obstacles as proof that manifestation “isn’t working,” lojong asks you to use adversity as the raw material for training—patience, compassion, letting go. That doesn’t mean pretending suffering is good; it means refusing to let hardship be the only story. For manifestors, this is the “obstacle as fuel” principle: setbacks can refine your intention and clarify what you’re actually aligned with, instead of stopping the process.',
+      },
+      {
+        type: 'tip',
+        title: 'Practical Tip',
+        text: 'When something goes wrong, try the lojong slogan: “When the world is filled with evil, transform bad circumstances into the path of bodhi.” Ask: What can this situation train in me? What intention stays clear even here? Pair this with a short grounding or loving-kindness meditation to keep the mind from collapsing into blame or despair.',
+      },
+      { type: 'h2', text: '4. Showing the Practice in One Lifetime' },
+      {
+        type: 'p',
+        text: 'The fourth point condenses the practice into instructions that can be lived in a single lifetime. It’s pragmatic: you don’t need infinite time; you need consistent application now. In manifestation, the equivalent is “this life is the field”—you’re not waiting for another era or a better version of yourself. The timeline you visualize, the goals you set, and the small steps you take today are the only place the practice happens. One lifetime is enough to change how you think, speak, and act.',
+      },
+      { type: 'h2', text: '5. The Measure of Having Trained' },
+      {
+        type: 'p',
+        text: 'The fifth point describes the signs that mind training has taken hold: the “five degenerations” (e.g., strong negative emotions, rigid views) begin to reverse. You notice yourself less reactive, more able to turn difficulty into practice. For manifestation, the measure isn’t only “did I get the thing?”—it’s “is my mind more aligned, resilient, and clear?” When your baseline shifts from anxiety and doubt toward steadiness and openness, the conditions for manifesting improve even before specific outcomes appear.',
+      },
+      { type: 'h2', text: '6. The Commitments of Mind Training' },
+      {
+        type: 'p',
+        text: 'The sixth point lays out commitments: don’t be inconsistent, don’t be partial (practicing only when it’s easy), don’t lose the thread in busyness. These are promises to yourself about how you’ll hold the practice. In manifestation language: you commit to showing up for your intentions not only on good days but as a default. The commitment is to the process—meditation, visualization, aligned action—rather than to a single result, which keeps the practice alive through ups and downs.',
+      },
+      { type: 'h2', text: '7. The Precepts of Mind Training' },
+      {
+        type: 'p',
+        text: 'The seventh point adds precepts: don’t transfer your negativity onto others, don’t strike at the heart of someone’s vulnerability, don’t exploit others for your own gain. Ethics and mind training are one. For manifestors, this is a check: the reality you’re calling in should not require harming or manipulating others. Aligning with abundance, love, or success in a way that respects interdependence strengthens both your integrity and the sustainability of what you manifest.',
+      },
+      {
+        type: 'p',
+        text: 'The seven points of lojong aren’t a quick “manifestation hack”—they’re a full reeducation of the mind. But that reeducation is exactly what makes intention effective: a mind that’s grounded, compassionate, flexible in difficulty, committed in one lifetime, and bound by care for others is a mind that can genuinely align with and move toward the reality it chooses. Tibetan Buddhism and manifestation meet where the mind is trained to be the kind of vessel that can hold—and co-create—what it intends.',
+      },
+    ],
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
