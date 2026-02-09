@@ -249,6 +249,53 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: 'stability-over-chaos-life-coming-from-you',
+    title: 'Choosing Stability Over Chaos: Life Is Coming From You, Not At You',
+    date: 'Feb 9, 2026',
+    category: 'Practice',
+    excerpt:
+      'When you choose a stable inner stance over reacting to chaos, you stop waiting for life to calm down. You become the source—and “no excuses” becomes clarity, not cruelty.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'Chaos doesn’t disappear when you choose stability. You become the one who can meet it—because you stopped believing it’s only happening to you.',
+      },
+      {
+        type: 'p',
+        text: 'Life throws curveballs. Jobs end, relationships shift, health scares happen, plans collapse. It’s easy to feel like chaos is coming at you—something the world is doing to you—and that you’ll finally be able to think clearly, manifest, or “show up” once things settle down. But things don’t settle down. The real leverage isn’t waiting for calm; it’s choosing stability as your default response. And that choice rests on a single shift: life is coming from you, not at you. Not in a woo way that denies hardship, but in a practical way—you are the one interpreting, responding, and deciding what you do with what happens. No excuses.',
+      },
+      { type: 'h2', text: '1. Stability Isn’t the Absence of Chaos' },
+      {
+        type: 'p',
+        text: 'Choosing stability over chaos doesn’t mean your outer world gets quiet. It means you build an inner baseline—through meditation, routine, boundaries, or simple repetition—so that when the storm hits, you’re not only the storm. You have something to return to: your breath, your intention, your next small action. That baseline is a choice. Nobody can give it to you; you practice it until it’s there. The chaos of life doesn’t have to disappear for you to stop being at its mercy.',
+      },
+      { type: 'h2', text: '2. Life Coming From You, Not At You' },
+      {
+        type: 'p',
+        text: '"Life is coming from you" doesn’t mean you caused the layoff or the illness or the breakup. It means: your experience of life is filtered through you. Your thoughts, your story, your focus, and your response are the only things you can actually steer. When you live as if life is “at” you, you’re always in reaction—defending, blaming, waiting for the world to change so you can finally act. When you live as if life is “from” you, you’re the locus. You ask: What am I making this mean? What do I do next? What can I create from here? That’s not denial; it’s agency.',
+      },
+      {
+        type: 'tip',
+        title: 'Practical Tip',
+        text: 'When something goes wrong, pause before you blame or spiral. Ask: “What part of my experience is coming from my interpretation and my next move?” You don’t have to fix it in one second—just notice that you have a say. Then choose one small action that moves you toward stability (one breath, one clear intention, one concrete step). Repeat. That’s choosing stability over chaos in real time.',
+      },
+      { type: 'h2', text: '3. No Excuses: Ownership Without Self-Blame' },
+      {
+        type: 'p',
+        text: '"No excuses" can sound harsh. It doesn’t mean “pretend you’re not tired or hurt” or “never acknowledge real limits.” It means: stop using circumstances as a permanent reason to opt out. Excuses are the story we tell so we don’t have to try—or so we can stay in the comfort of “it’s not my fault.” Ownership is different: I didn’t choose this event, but I choose what I do with it. I choose whether I practice stability or get swept away. I choose whether I keep aligning with what I want or wait for the world to give me permission. No excuses isn’t about beating yourself up; it’s about refusing to hand your agency over to chaos.',
+      },
+      { type: 'h2', text: '4. How Stability Helps You Handle Chaos' },
+      {
+        type: 'p',
+        text: 'When you’ve trained stability—even a little—you don’t need life to be easy to function. You can meditate in a crisis. You can set an intention when the news is bad. You can take one step toward your goal when you’re tired. Chaos becomes something you move through, not something that defines you. That’s how choosing stability over chaos actually helps you handle chaos: you stop waiting for it to leave before you live. You become the steady point. And from that place, manifestation isn’t a fair-weather game—it’s what you do with whatever weather you’ve got.',
+      },
+      {
+        type: 'p',
+        text: 'Choose stability. Treat life as coming from you—your meaning, your response, your next move. Drop the excuses without dropping self-compassion. The chaos will still come. You’ll just be the one who’s ready for it.',
+      },
+    ],
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
