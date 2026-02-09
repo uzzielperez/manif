@@ -71,11 +71,29 @@ Commission: 30%
 - **Final Amount**: €14.25
 - **Commission**: 30% of €14.25 = €4.28
 
-### Payment Tracking:
-- All commissions tracked in dashboard
-- Export CSV for payment processing
-- Mark commissions as paid
-- Full audit trail
+### How influencers get Stripe payments (payouts)
+
+**Right now: manual payouts**
+
+1. **Commission is tracked automatically**  
+   When a customer pays with an influencer’s coupon, the Stripe webhook records the sale in `influencer_events` (event type `payment`, amount in cents). The Partner dashboard shows **Your Earnings** = commission (revenue × that influencer’s rate).
+
+2. **You pay influencers yourself**  
+   There is no automatic transfer to influencers. You use the dashboard (or export) to see how much each partner is owed, then pay them manually:
+   - **Stripe**: Send a payout from your Stripe Dashboard (Payments → pay out to your bank, then pay the influencer from your bank; or use Stripe’s “Send funds” / manual transfer if you collect their details).
+   - **PayPal**: Send the commission amount to their PayPal email.
+   - **Bank / other**: Use your usual process.
+
+   The **payout method** (stripe | paypal) on each influencer is only a label for how you intend to pay them; it does not trigger any automatic payment.
+
+3. **Optional later: Stripe Connect**  
+   For automatic split payments (a share of each sale goes to the influencer’s Stripe account), you’d add [Stripe Connect](https://stripe.com/connect) (Express or Custom accounts), onboarding flows, and possibly tax forms (e.g. 1099). That’s not implemented in this codebase yet.
+
+### Payment tracking (current)
+- All commissions tracked in dashboard from Stripe webhook + `influencer_events`
+- Export CSV for payment processing (optional; not yet implemented)
+- Mark commissions as paid (optional; not yet implemented)
+- Full audit trail via `influencer_events` table
 
 ## 📊 Analytics & Reporting
 
@@ -172,6 +190,20 @@ Or run: `./scripts/test-referral.sh https://YOUR-SITE.netlify.app`
 ### Other test codes
 - **STARS10** → Stellar Guide (inf-2)
 - **QUANTUM50** → Quantum Creator (inf-3)
+
+### Testing the Partner Dashboard (real numbers)
+The dashboard at `/influencer-dashboard` shows **real stats** from `influencer_events` (clicks, unlocks, payments, revenue, commission). To test:
+
+1. **Fire sample events** (requires `DATABASE_URL` and Netlify dev or deployed site):
+   ```bash
+   ./scripts/test-dashboard-stats.sh http://localhost:8888
+   # or: ./scripts/test-dashboard-stats.sh https://YOUR-SITE.netlify.app
+   ```
+   This sends 3 clicks, 1 unlock, and 1 payment ($19.99) for **MAGIC25M** (Magic Master).
+
+2. **Log in** at `/influencer-dashboard` with partner code **MAGIC25M** and the dashboard password you set in Admin.
+
+3. You should see **Total Unlocks: 1**, **Paid Conversions: 1**, **Attributed Revenue: $19.99**, and **Your Earnings** = 25% of $19.99.
 
 ---
 

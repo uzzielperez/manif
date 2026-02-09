@@ -30,9 +30,9 @@ export const handler: Handler = async (event) => {
           const { setupDatabase } = await import('../../db-setup.js');
           const { db } = await import('../../server/db');
           const { influencers } = await import('../../shared/schema');
-          const { eq } = await import('drizzle-orm');
+          const { sql } = await import('drizzle-orm');
           await setupDatabase();
-          const fromDb = await db.select({ id: influencers.id }).from(influencers).where(eq(influencers.code, codeNorm));
+          const fromDb = await db.select({ id: influencers.id }).from(influencers).where(sql`lower(${influencers.code}) = ${codeNorm.toLowerCase()}`);
           if (fromDb.length > 0) influencerId = fromDb[0].id;
         } catch (dbErr) {
           console.error('Track referral DB lookup:', dbErr);

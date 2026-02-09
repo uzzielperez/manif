@@ -68,9 +68,9 @@ export const handler: Handler = async (event) => {
         const { setupDatabase } = await import('../../db-setup.js');
         const { db } = await import('../../server/db');
         const { influencers, influencerDashboardPasswords } = await import('../../shared/schema');
-        const { eq } = await import('drizzle-orm');
+        const { eq, sql } = await import('drizzle-orm');
         await setupDatabase();
-        const fromDb = await db.select().from(influencers).where(eq(influencers.code, codeNorm));
+        const fromDb = await db.select().from(influencers).where(sql`lower(${influencers.code}) = ${codeNorm.toLowerCase()}`);
         if (fromDb.length > 0) {
           const inf = fromDb[0];
           const pwRows = await db.select().from(influencerDashboardPasswords).where(eq(influencerDashboardPasswords.influencerId, inf.id));
@@ -96,6 +96,7 @@ export const handler: Handler = async (event) => {
                 }),
               };
             }
+            return { statusCode: 401, headers, body: JSON.stringify({ success: false, error: 'Wrong password. Use the dashboard password set in the Partner admin.' }) };
           } else {
             return { statusCode: 401, headers, body: JSON.stringify({ success: false, error: 'Dashboard password not set. Ask admin to set it.' }) };
           }
@@ -132,7 +133,7 @@ export const handler: Handler = async (event) => {
       return {
         statusCode: 401,
         headers,
-        body: JSON.stringify({ success: false, error: 'Invalid partner code or password' }),
+        body: JSON.stringify({ success: false, error: 'Wrong password. Use the dashboard password (set in Netlify or by admin).' }),
       };
     }
     const exp = Date.now() + TOKEN_EXPIRY_MS;

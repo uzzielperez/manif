@@ -140,6 +140,53 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: 'breaking-patterns-grief-heartbreak-and-manifesting',
+    title: 'Breaking Patterns: Moving Through Grief, Heartbreak, and Low Energy—And How It Affects Manifesting',
+    date: 'Feb 9, 2026',
+    category: 'Healing',
+    excerpt:
+      'Grief, heartbreak, and painful days don’t mean you’re “bad at manifesting.” They mean you’re human. Here’s how to honor the low and still keep the door open to what you’re calling in.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'Your ability to manifest isn’t broken when you’re broken. It’s just waiting for you to stop fighting the wave—so you can learn to move with it.',
+      },
+      {
+        type: 'p',
+        text: 'If you’ve ever been in the middle of heartbreak, loss, or a stretch of days when getting out of bed feels like the only “win,” you may have also heard a cruel inner voice: “You’re supposed to be manifesting. You’re supposed to be vibrating high. Why can’t you just think positive?” That voice misunderstands both grief and manifestation. Moving through pain doesn’t disqualify you from calling in what you want—but it does change how the work looks, and that’s something we can work with.',
+      },
+      { type: 'h2', text: '1. Why Pain Feels Like It “Blocks” Manifestation' },
+      {
+        type: 'p',
+        text: 'Manifestation is often described as alignment: your thoughts, feelings, and actions lining up with the reality you want. When you’re grieving, exhausted, or heartbroken, your nervous system is in survival mode. Your “vibration” isn’t low because you’re doing it wrong—it’s low because your body and psyche are processing something real. Trying to force yourself into peak positivity on top of that can feel like lying to yourself, and that creates its own kind of misalignment. The block isn’t the pain; it’s the belief that you must be “on” all the time to manifest.',
+      },
+      { type: 'h2', text: '2. Breaking the Pattern of “I Have to Feel Good to Manifest”' },
+      {
+        type: 'p',
+        text: 'One of the most persistent patterns in manifestation culture is the idea that you must feel good, grateful, and high-energy for anything to work. That’s only partly true. Clarity of intention matters. So does taking small, aligned actions when you can. But insisting that you feel great before you’re “allowed” to manifest adds a layer of pressure that can make the low periods even heavier. Breaking the pattern means: you can set an intention, or simply hold a gentle hope, even on days when you’re not at your best. You don’t have to perform wellness to be worthy of what you want.',
+      },
+      {
+        type: 'tip',
+        title: 'Practical Tip',
+        text: 'On low-energy or painful days, scale your practice down instead of skipping it. One breath with a single intention (“I am allowed to want good things even when I don’t feel good”) or one short grounding meditation can keep the thread of manifestation alive without demanding more than you have. Use our free Cosmic Grounding or Void Silence meditations when you need something slow and spacious rather than uplifting.',
+      },
+      { type: 'h2', text: '3. Grief and Heartbreak as Part of the Path, Not the Enemy' },
+      {
+        type: 'p',
+        text: 'Grief and heartbreak often clear out old attachments—to a person, a version of yourself, or a story of how life “should” go. That clearing is uncomfortable, but it can also create space. The same cup that was full of the old relationship or the old identity can, in time, hold something new. You don’t have to rush that process. Honoring the low—crying, resting, saying “not today” to big goals—isn’t the opposite of manifesting. It’s often the messy middle that makes the next chapter possible.',
+      },
+      { type: 'h2', text: '4. Low Energy Doesn’t Mean No Alignment' },
+      {
+        type: 'p',
+        text: 'On painful days, “alignment” might look different. It might mean choosing rest over productivity, or kindness toward yourself over another round of self-criticism. It might mean a tiny action—sending one message, opening one door—that keeps you connected to a future you still want, even when you can’t feel it yet. Manifestation isn’t only about big visualizations and high vibes. It’s also about the small, honest choices that keep you moving in the direction of your desires, at the pace that your system can handle.',
+      },
+      {
+        type: 'p',
+        text: 'Breaking patterns isn’t about never feeling grief or low energy again. It’s about no longer treating those states as proof that you’re failing at manifesting. When you allow the wave of pain to move through you—without demanding that it leave on a schedule—you stop fighting yourself. And when you stop fighting yourself, you create more room for the reality you’re calling in to actually land. Be gentle. Move at the pace of your healing. Your intentions can wait for you.',
+      },
+    ],
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {

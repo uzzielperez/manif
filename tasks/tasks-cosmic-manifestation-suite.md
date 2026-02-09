@@ -117,3 +117,7 @@
 - [ ] 14.0 Enhance Meditation Audio Controls
   - [ ] 14.1 Add Pause/Resume functionality to meditation player
   - [ ] 14.2 Implement progress bar/timer for active sessions
+
+## Nice-to-have
+
+- **3. Optional later: Stripe Connect** – If you want automatic splits (part of each sale going to the influencer’s Stripe account), add [Stripe Connect](https://stripe.com/connect) (e.g. Express or Custom accounts), onboarding, and possibly tax (e.g. 1099). Not implemented in this codebase.

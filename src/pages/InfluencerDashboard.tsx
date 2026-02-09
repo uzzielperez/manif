@@ -20,11 +20,12 @@ const InfluencerDashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [influencer, setInfluencer] = useState<InfluencerSession['influencer'] | null>(null);
   const [stats, setStats] = useState({
-    unlocks: 142,
-    payments: 12,
-    revenue: 299.88,
-    commission: 74.97,
+    unlocks: 0,
+    payments: 0,
+    revenue: 0,
+    commission: 0,
   });
+  const [statsLoading, setStatsLoading] = useState(false);
 
   useEffect(() => {
     const raw = localStorage.getItem(SESSION_KEY);
@@ -40,6 +41,35 @@ const InfluencerDashboard: React.FC = () => {
       localStorage.removeItem(SESSION_KEY);
     }
   }, []);
+
+  useEffect(() => {
+    if (!influencer) return;
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return;
+    let session: InfluencerSession;
+    try {
+      session = JSON.parse(raw);
+      if (!session.token || session.expiresAt && session.expiresAt <= Date.now()) return;
+    } catch {
+      return;
+    }
+    setStatsLoading(true);
+    fetch('/.netlify/functions/influencer-stats', {
+      headers: { Authorization: `Bearer ${session.token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error && data.unlocks === undefined) return;
+        setStats({
+          unlocks: typeof data.unlocks === 'number' ? data.unlocks : 0,
+          payments: typeof data.payments === 'number' ? data.payments : 0,
+          revenue: typeof data.revenue === 'number' ? data.revenue : 0,
+          commission: typeof data.commission === 'number' ? data.commission : 0,
+        });
+      })
+      .catch(() => {})
+      .finally(() => setStatsLoading(false));
+  }, [influencer?.id]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,10 +201,10 @@ const InfluencerDashboard: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
         {[
-          { label: 'Total Unlocks', value: stats.unlocks, icon: Users, color: 'text-blue-400' },
-          { label: 'Paid Conversions', value: stats.payments, icon: TrendingUp, color: 'text-emerald-400' },
-          { label: 'Attributed Revenue', value: `$${stats.revenue.toFixed(2)}`, icon: BarChart3, color: 'text-purple-400' },
-          { label: 'Your Earnings', value: `$${stats.commission.toFixed(2)}`, icon: DollarSign, color: 'text-[var(--cosmic-accent)]' },
+          { label: 'Total Unlocks', value: statsLoading ? '…' : stats.unlocks, icon: Users, color: 'text-blue-400' },
+          { label: 'Paid Conversions', value: statsLoading ? '…' : stats.payments, icon: TrendingUp, color: 'text-emerald-400' },
+          { label: 'Attributed Revenue', value: statsLoading ? '…' : `$${stats.revenue.toFixed(2)}`, icon: BarChart3, color: 'text-purple-400' },
+          { label: 'Your Earnings', value: statsLoading ? '…' : `$${stats.commission.toFixed(2)}`, icon: DollarSign, color: 'text-[var(--cosmic-accent)]' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -220,7 +250,7 @@ const InfluencerDashboard: React.FC = () => {
           <div className="space-y-6">
             <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
               <p className="text-[10px] text-[var(--cosmic-text-muted)] uppercase tracking-widest font-bold mb-2">Pending Balance</p>
-              <p className="text-3xl font-bold text-white">$124.50</p>
+              <p className="text-3xl font-bold text-white">{statsLoading ? '…' : `$${stats.commission.toFixed(2)}`}</p>
             </div>
             <p className="text-sm text-[var(--cosmic-text-muted)] font-light leading-relaxed">
               Payouts are processed automatically when your balance reaches **$50.00**.

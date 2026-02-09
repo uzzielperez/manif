@@ -1,11 +1,11 @@
 import { Handler } from '@netlify/functions';
 import Stripe from 'stripe';
+import { getInfluencerByCode } from '../../shared/influencers';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16' as Stripe.LatestApiVersion,
 });
 
-// This should be set in your Netlify environment variables
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 
 export const handler: Handler = async (event, context) => {
@@ -29,7 +29,6 @@ export const handler: Handler = async (event, context) => {
   let stripeEvent: Stripe.Event;
 
   try {
-    // Verify the webhook signature
     stripeEvent = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     console.error('Webhook signature verification failed:', err);
@@ -40,16 +39,13 @@ export const handler: Handler = async (event, context) => {
   }
 
   try {
-    // Handle the event
     switch (stripeEvent.type) {
       case 'checkout.session.completed':
         await handleCheckoutSessionCompleted(stripeEvent.data.object as Stripe.Checkout.Session);
         break;
-      
       case 'payment_intent.succeeded':
         await handlePaymentIntentSucceeded(stripeEvent.data.object as Stripe.PaymentIntent);
         break;
-
       default:
         console.log(`Unhandled event type: ${stripeEvent.type}`);
     }
@@ -58,7 +54,6 @@ export const handler: Handler = async (event, context) => {
       statusCode: 200,
       body: JSON.stringify({ received: true })
     };
-
   } catch (error) {
     console.error('Webhook processing error:', error);
     return {
@@ -68,75 +63,66 @@ export const handler: Handler = async (event, context) => {
   }
 };
 
+/** Resolve Stripe coupon ID (e.g. MAGIC25M) to influencer id and commission rate. */
+async function resolveInfluencerFromCoupon(couponId: string): Promise<{ id: string; commissionRate: number } | null> {
+  const codeNorm = String(couponId).trim().toUpperCase();
+  if (!codeNorm) return null;
+
+  if (process.env.DATABASE_URL) {
+    try {
+      const { setupDatabase } = await import('../../db-setup.js');
+      const { db } = await import('../../server/db');
+      const { influencers } = await import('../../shared/schema');
+      const { sql } = await import('drizzle-orm');
+      await setupDatabase();
+      const rows = await db.select({ id: influencers.id, commissionRate: influencers.commissionRate }).from(influencers).where(sql`lower(${influencers.code}) = ${codeNorm.toLowerCase()}`);
+      if (rows.length > 0) return { id: rows[0].id, commissionRate: rows[0].commissionRate };
+    } catch (e) {
+      console.error('Stripe webhook DB lookup:', e);
+    }
+  }
+
+  const inf = getInfluencerByCode(codeNorm);
+  if (inf) return { id: inf.id, commissionRate: inf.commissionRate };
+  return null;
+}
+
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   console.log('Checkout session completed:', session.id);
-  
-  try {
-    // Get the line items to see if a coupon was used
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
-      expand: ['data.price.product']
-    });
 
-    // Check if there are any discounts (coupons)
-    const discounts = session.total_details?.amount_discount || 0;
-    const originalAmount = session.amount_total ? session.amount_total + discounts : 0;
-    const finalAmount = session.amount_total || 0;
+  const finalAmountCents = session.amount_total ?? 0;
+  const couponId = session.discount?.coupon?.id ?? '';
 
-    // Extract coupon information
-    let couponCode = '';
-    let influencerId = '';
-    
-    if (session.discount?.coupon?.id) {
-      couponCode = session.discount.coupon.id;
-      // TODO: Look up influencer by coupon code in database
-      // influencerId = await getInfluencerIdByCouponCode(couponCode);
+  const influencer = couponId ? await resolveInfluencerFromCoupon(couponId) : null;
+  if (influencer) {
+    if (process.env.DATABASE_URL) {
+      try {
+        const { setupDatabase } = await import('../../db-setup.js');
+        const { db } = await import('../../server/db');
+        const { influencerEvents } = await import('../../shared/schema');
+        await setupDatabase();
+        await db.insert(influencerEvents).values({
+          influencerId: influencer.id,
+          eventType: 'payment',
+          amount: finalAmountCents,
+        });
+        console.log('Recorded influencer payment:', influencer.id, finalAmountCents, 'cents');
+      } catch (e) {
+        console.error('Stripe webhook DB insert:', e);
+      }
     }
-
-    // Calculate commission if this was an influencer referral
-    let commissionAmount = 0;
-    if (influencerId) {
-      // TODO: Get commission rate from database
-      const commissionRate = 0.30; // 30% default
-      commissionAmount = (finalAmount / 100) * commissionRate;
-    }
-
-    // TODO: Save the performance data to database
-    const performanceData = {
-      influencer_id: influencerId,
-      payment_intent_id: session.payment_intent as string,
-      session_id: session.id,
-      customer_email: session.customer_details?.email,
-      original_amount: originalAmount / 100, // Convert from cents
-      discount_amount: discounts / 100,
-      final_amount: finalAmount / 100,
-      commission_amount: commissionAmount,
-      commission_paid: false,
-      created_at: new Date()
-    };
-
-    console.log('Performance data to save:', performanceData);
-    
-    // TODO: Implement database save
-    // await saveInfluencerPerformance(performanceData);
-
-  } catch (error) {
-    console.error('Error processing checkout session:', error);
   }
+
+  // Legacy log (no DB dependency)
+  const performanceData = {
+    influencer_id: influencer?.id ?? '',
+    session_id: session.id,
+    final_amount_cents: finalAmountCents,
+    commission_rate: influencer?.commissionRate,
+  };
+  console.log('Performance data:', performanceData);
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment intent succeeded:', paymentIntent.id);
-  
-  // Additional processing if needed
-  // This could be used for backup tracking or additional business logic
 }
-
-// TODO: Implement these database functions
-// async function getInfluencerIdByCouponCode(couponCode: string): Promise<string | null> {
-//   // Look up influencer in database by coupon code
-//   return null;
-// }
-
-// async function saveInfluencerPerformance(data: any): Promise<void> {
-//   // Save performance data to database
-// }
