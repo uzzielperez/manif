@@ -296,6 +296,49 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: 'knowing-what-to-want-opening-your-heart-james-doty',
+    title: 'Knowing What to Want: Opening Your Heart with James Doty and the Magic Shop',
+    date: 'Feb 9, 2026',
+    category: 'Philosophy',
+    excerpt:
+      'Not every want can make you happy. James Doty, M.D., author of Into the Magic Shop, shows how opening the heart—and aligning it with the mind—reveals what’s truly worth wanting, and why service changes everything.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'The heart doesn’t want more of everything. It wants what aligns with who you are—and often that includes giving, not just getting.',
+      },
+      {
+        type: 'p',
+        text: 'Manifestation asks: What do you want? But a deeper question is: How do you know what’s worth wanting? James Doty, M.D.—neurosurgeon, Stanford professor, and founder of the Center for Compassion and Altruism Research and Education (CCARE)—addresses this in his memoir and guide, Into the Magic Shop. As a boy, Doty met a woman in a magic shop who taught him practices that didn’t just sharpen his mind; they opened his heart. That opening changed the trajectory of his life. His work suggests that knowing what to want isn’t a matter of listing goals and grinding harder. It’s about opening the heart so you can tell the difference between wants that leave you empty and wants that align with meaning—and with the good of others.',
+      },
+      { type: 'h2', text: '1. Some Wants Cannot Make You Happy' },
+      {
+        type: 'p',
+        text: 'Research on income and well-being has shown a striking pattern: up to a certain point, more money does correlate with greater life satisfaction and emotional well-being—covering basic needs, security, and comfort. Beyond that threshold (often cited in the range of roughly $75,000–$100,000 per year in the U.S., depending on the study and when it was done), additional income tends to add little to day-to-day happiness. The “want” for more money, in other words, has diminishing returns. The same can be true for other culturally celebrated wants: status, possessions, external validation. They can feel urgent and obvious, but they don’t reliably deliver lasting happiness. That doesn’t mean money or success is bad—it means that “what I want” and “what will actually make me happy” aren’t always the same. Opening the heart is one way to tell the difference.',
+      },
+      { type: 'h2', text: '2. Service and Helping Others: What the Heart Knows' },
+      {
+        type: 'p',
+        text: 'Doty’s work at CCARE—and a growing body of research in psychology and neuroscience—shows that compassion, altruism, and service aren’t just morally nice; they’re linked to greater well-being, resilience, and even physical health. When we help others, we often feel more meaning and connection than when we chase purely self-focused goals. That doesn’t mean you have to sacrifice your own needs or desires. It means that “what I want” can include the flourishing of others—and that when the heart opens, those wants often become clearer and more compelling. Service isn’t the opposite of manifestation; it can be part of what you’re manifesting: a life that includes contribution, care, and connection.',
+      },
+      {
+        type: 'tip',
+        title: 'Read Into the Magic Shop',
+        text: 'James Doty’s book Into the Magic Shop: A Neurosurgeon’s Quest to Discover the Mysteries of the Brain and the Secrets of the Heart (Avery, 2016) weaves his personal story with science and practical wisdom. It’s a powerful entry point into how opening the heart can change what you want—and what you’re capable of. His work at CCARE (ccare.stanford.edu) continues to advance the science of compassion and its applications in health, education, and leadership.',
+      },
+      { type: 'h2', text: '3. Superalignment of Heart and Mind: How to Know This Is Really What You Want' },
+      {
+        type: 'p',
+        text: 'Manifestation works best when intention is clear and aligned—not only in the mind (goals, plans, logic) but in the heart (values, feeling, care). When heart and mind point in the same direction, you get what we might call superalignment: a sense that “this is really what I want,” not because you’ve talked yourself into it, but because it resonates at a deeper level. How do you know? The mind can list pros and cons; the heart shows up as bodily sensation, ease or unease, and the quality of your motivation. When you imagine achieving a goal, do you feel expansion or contraction? Relief or dread? When you think about your life in service of this want, does it feel like “yes” or like performing someone else’s script? Opening the heart—through the kinds of practices Doty describes, or through meditation, reflection, and honest self-inquiry—helps you read those signals. Superalignment isn’t perfection; it’s the growing capacity to distinguish what you truly want from what you’ve been told to want.',
+      },
+      { type: 'h2', text: '4. From Wanting to Wanting Well' },
+      {
+        type: 'p',
+        text: 'Knowing what to want by opening your heart doesn’t mean wanting less or giving up on ambition. It means wanting with more clarity and less noise. Some wants will fall away when you look at them with an open heart; others will strengthen because they’re tied to meaning, connection, and the good of others as well as yourself. James Doty’s journey—from a difficult childhood to a magic shop that changed his life, to a career in medicine and a mission to study and teach compassion—is a reminder that the heart, when trained and attended to, can guide the mind toward what’s not only achievable but worth achieving. Align heart and mind. Ask what you want. Ask whether this want can make you happy—and whether it leaves room for others to flourish too. That’s when manifestation becomes not just powerful, but wise.',
+      },
+    ],
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
