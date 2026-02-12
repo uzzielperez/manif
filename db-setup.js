@@ -114,6 +114,29 @@ export async function setupDatabase() {
       `;
       console.log('influencers and influencer_dashboard_passwords tables created (seed inserted)');
     }
+
+    // Content library (scheduled blog / marketing content)
+    const contentLibraryCheck = await sql`
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables WHERE table_name = 'content_library'
+      );
+    `;
+    if (!contentLibraryCheck[0].exists) {
+      console.log('Creating content_library table');
+      await sql`
+        CREATE TABLE content_library (
+          id SERIAL PRIMARY KEY,
+          content_id TEXT NOT NULL UNIQUE,
+          channel TEXT NOT NULL,
+          content TEXT NOT NULL,
+          metadata JSONB,
+          status TEXT NOT NULL DEFAULT 'draft',
+          generated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          scheduled_for TIMESTAMP WITH TIME ZONE
+        );
+      `;
+      console.log('content_library table created successfully');
+    }
     
     return true;
   } catch (error) {

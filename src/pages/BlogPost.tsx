@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Calendar, ArrowLeft, Share2 } from 'lucide-react';
 import { Link, useParams, Navigate } from 'react-router-dom';
-import { getPostBySlug, type BlogPostBlock } from '../data/blogPosts';
+import { getPostBySlug, type BlogPostBlock, type BlogPost } from '../data/blogPosts';
+
+const API_BASE = (import.meta as { env?: { VITE_API_BASE?: string } }).env?.VITE_API_BASE ?? '';
 
 const renderBlock = (block: BlogPostBlock, index: number) => {
   switch (block.type) {
@@ -45,11 +47,41 @@ const renderBlock = (block: BlogPostBlock, index: number) => {
   }
 };
 
-const BlogPost: React.FC = () => {
+const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const post = slug ? getPostBySlug(slug) : undefined;
+  const [post, setPost] = useState<BlogPost | null>(slug ? getPostBySlug(slug) ?? null : null);
+  const [loading, setLoading] = useState(!slug || !getPostBySlug(slug));
+  const [notFound, setNotFound] = useState(false);
 
-  if (!post) {
+  useEffect(() => {
+    if (!slug) return;
+    const staticPost = getPostBySlug(slug);
+    if (staticPost) {
+      setPost(staticPost);
+      setLoading(false);
+      return;
+    }
+    fetch(`${API_BASE}/api/get-blog-posts?slug=${encodeURIComponent(slug)}`)
+      .then((r) => {
+        if (!r.ok) throw new Error('Not found');
+        return r.json();
+      })
+      .then((data: { post?: BlogPost }) => {
+        if (data?.post) setPost(data.post);
+        else setNotFound(true);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-4xl mx-auto pb-20 px-4 flex items-center justify-center min-h-[40vh] text-white/70">
+        Loading…
+      </div>
+    );
+  }
+  if (notFound || !post) {
     return <Navigate to="/blog" replace />;
   }
 
@@ -127,4 +159,4 @@ const BlogPost: React.FC = () => {
   );
 };
 
-export default BlogPost;
+export default BlogPostPage;

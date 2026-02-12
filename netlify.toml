@@ -16,6 +16,10 @@
   timeout = 30
   memory = 512
 
+# Scheduled: publish blog posts daily (UTC midnight)
+[functions.scheduled-publish-blog]
+  schedule = "@daily"
+
 # Handle static assets first
 [[redirects]]
   from = "/assets/*"

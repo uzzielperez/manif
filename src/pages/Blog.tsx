@@ -1,10 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, ArrowLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { BLOG_POSTS } from '../data/blogPosts';
+import { BLOG_POSTS, type BlogPost } from '../data/blogPosts';
+
+const API_BASE = (import.meta as { env?: { VITE_API_BASE?: string } }).env?.VITE_API_BASE ?? '';
+
+function mergeAndSortPosts(staticPosts: BlogPost[], cmsPosts: BlogPost[]): BlogPost[] {
+  const bySlug = new Map<string, BlogPost>();
+  staticPosts.forEach((p) => bySlug.set(p.slug, p));
+  cmsPosts.forEach((p) => bySlug.set(p.slug, p));
+  return Array.from(bySlug.values()).sort((a, b) => {
+    const tA = new Date(a.date).getTime();
+    const tB = new Date(b.date).getTime();
+    return tB - tA;
+  });
+}
 
 const Blog: React.FC = () => {
+  const [posts, setPosts] = useState<BlogPost[]>(BLOG_POSTS);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/get-blog-posts`)
+      .then((r) => r.json())
+      .then((data: { posts?: BlogPost[] }) => {
+        if (Array.isArray(data?.posts) && data.posts.length > 0) {
+          setPosts(mergeAndSortPosts(BLOG_POSTS, data.posts));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -30,7 +56,7 @@ const Blog: React.FC = () => {
       </header>
 
       <ul className="space-y-6">
-        {BLOG_POSTS.map((post, index) => (
+        {posts.map((post, index) => (
           <motion.li
             key={post.slug}
             initial={{ opacity: 0, y: 12 }}

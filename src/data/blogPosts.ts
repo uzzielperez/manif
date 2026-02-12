@@ -339,6 +339,96 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: 'manifest-qualities-not-a-specific-person-valentines',
+    title: 'Manifest Qualities, Not a Specific Person: What to Call In This Valentine’s Day',
+    date: 'Feb 14, 2026',
+    category: 'Practice',
+    excerpt:
+      'The wiser move is not to wish for a particular face but for the conditions of love: consistency, presence, respect, and someone who helps you become more yourself.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'One ought not to wish for a face. One ought to wish for the kind of life—and the kind of person—that can sustain the wish.',
+      },
+      {
+        type: 'p',
+        text: 'Valentine’s Day has a way of concentrating the mind on a single question: whom do you want? It is tempting to answer with a name—to fix upon a particular person, as if the universe were a catalogue and one had only to point. The trouble is that the person one has in mind is often a fiction: a composite of glimpses, projections, and the private cinema of longing. The actual human may turn out to be inconsistent, unkind, or incapable of returning to the conversation after a quarrel. None of this is “meant to be” simply because one wished for them. The wiser move is to wish not for a face but for certain qualities—so that whoever appears, whether new or already in one’s life, is the sort of person who can love you well.',
+      },
+      { type: 'h2', text: 'On Fixating on a Particular Person' },
+      {
+        type: 'p',
+        text: 'When we fixate on a specific person, we are often manifesting an idea of them—or the intensity of our own longing—rather than the full, flawed creature they are. They may be avoidant, dismissive of our needs, or unable to regulate their emotions and find their way back to the table. Manifesting a face can lead to heartbreak; manifesting qualities leaves room for the universe—and for us—to recognize the right match when it appears, even if it does not resemble the picture we had in our heads.',
+      },
+      { type: 'h2', text: 'What to Wish For Instead' },
+      {
+        type: 'p',
+        text: 'So what does one call in? Someone who treats you with respect, kindness, and care. Someone who is consistent despite a busy life—who shows up, follows through, and does not vanish when the calendar fills. Someone who can regulate and return: who does not stonewall or blow up but can calm down and repair. Someone who offers presence and clarity—who is there when you are together and communicates in a way that does not leave you guessing. Someone who encourages you to grow and to take care of yourself, who does not shrink you but supports your becoming. And, yes, the part that the body knows—the pull, the spark—ought not to be neglected. Fun. Values-aligned. Kind. Smart. Chemistry and character both matter.',
+      },
+      { type: 'h2', text: 'Your Role in Attracting This Person' },
+      {
+        type: 'p',
+        text: 'One often forgets that attracting such a person is not only a matter of wishing. It is also a matter of becoming the sort of person who can recognize and receive them—and who can sustain a love when it arrives. That means developing in oneself the very qualities one hopes to find: learning to pour love into oneself without tipping into self-absorption; being kind to oneself, not as a performance of wellness but as a steady practice; aligning with one’s purpose so that one’s life has direction and room for another; being consistent and healthy enough to show up for the relationship when it comes; and knowing how to regulate—so that one can calm down, return to the conversation, and repair rather than flee or attack. The person one is calling in is, in a sense, a mirror: they tend to appear when one has begun to embody what one seeks.',
+      },
+      {
+        type: 'tip',
+        title: 'A Practical Turn',
+        text: 'Try writing a “qualities list” rather than a “person list”: how you want to feel (safe, seen, challenged in a good way) and what behaviors you want (consistency, repair after conflict, presence). Use that list in meditation or visualization, and let go of the face. When one aligns with qualities, one becomes a match for people who carry them.',
+      },
+      { type: 'h2', text: 'Chemistry and Character' },
+      {
+        type: 'p',
+        text: 'The excitement one feels—the pull, the spark—is real and worth honoring. But it is not sufficient. A person can be fun, attractive, and clever and still be wrong for you: inconsistent, disrespectful, unable to show up. One does well to wish for both the aliveness and the alignment—someone who treats you right and also makes your body say yes. That is not settling; that is clarity.',
+      },
+      {
+        type: 'p',
+        text: 'This Valentine’s Day, then: do not wish for a specific person. Wish for the qualities that make a love you can actually live in—and trust that the right person will be the one who carries them.',
+      },
+    ],
+  },
+  {
+    slug: 'substances-clarity-and-closing-doors',
+    title: 'Substances, Clarity, and Closing Doors: When the Universe Forces You to Face Yourself',
+    date: 'Feb 10, 2026',
+    category: 'Healing',
+    excerpt:
+      'Substances and endless partying blur the mind and feed self-destruction. Sooner or later the universe can force you to stop. Presence—with others and with yourself—requires sobriety. Closing doors and moving toward meaning isn’t bullshit.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'You’re not bullshit. Choosing to close doors and move toward something you can’t fully see yet—that’s not bullshit. That’s the only way out.',
+      },
+      {
+        type: 'p',
+        text: 'Substances and excessive partying don’t just “take the edge off”—they dull the very clarity you need to know what you want and to move toward it. The mind that’s always chasing a high, or always running from the low, stops being able to tell the difference between a real desire and a craving. It stops being able to sit with pain. And manifestation—the kind that actually lands—requires a mind that can hold intention, face discomfort, and show up. When you’re never sober enough to be present, you’re not only hurting your body; you’re undercutting your ability to build the life you’re trying to call in.',
+      },
+      { type: 'h2', text: 'How It Leads to Self-Destruction' },
+      {
+        type: 'p',
+        text: 'It’s not moralizing to say that a life organized around the next high tends to shrink. Priorities narrow. Relationships become transactional or shallow—who’s going out, who’s got what, who can keep the buzz going. The part of you that wants meaning, purpose, or a real connection gets quieter. That’s self-destruction: not necessarily a single crash, but the slow replacement of a life you could have built with one that’s built around escape. And one day, often when you least expect it, the universe can force you to stop anyway: a health scare, a loss, a bottom, a moment when the party’s over and you’re left alone with yourself. That moment is brutal. It’s also the only place from which something else can begin.',
+      },
+      { type: 'h2', text: 'Presence Requires Sobriety' },
+      {
+        type: 'p',
+        text: 'Deep, meaningful relationships don’t happen in the blur. They require presence—actually being there in the conversation, in the silence, in the discomfort. You can’t do that when you’re always half-gone, always one drink or one hit away from checking out. Presence with another person means being sober enough to listen, to repair after a fight, to sit with their pain and yours. It means not needing to chase a high to feel alive. If you want a love or a friendship that means something, sobriety isn’t optional; it’s the condition under which that kind of connection becomes possible.',
+      },
+      { type: 'h2', text: 'Chasing the High and Avoiding Pain Ruins Manifestation' },
+      {
+        type: 'p',
+        text: 'Manifestation works when your mind is clear enough to hold an intention and when your actions can align with it. If you’re always chasing a high, your “intentions” are often just cravings in disguise. If you never learn to face pain—to sit with it, to let it move through you—you’ll keep running, and the run will keep undermining whatever you say you want. The universe doesn’t reward the performance of desire; it responds to the person who can actually show up, sober and willing to feel what’s there. Always running from pain is a way of telling life you’re not ready for what you’re asking for.',
+      },
+      {
+        type: 'tip',
+        title: 'A Hard Truth',
+        text: 'You don’t have to have it all figured out. You don’t have to know your “purpose” in capital letters. You just have to stop walking toward the path of self-destruction. Close doors—with people who only want the party, with habits that only want your numbness. Move toward something that feels like meaning or stability even when it’s not clear. That’s not bullshit. That’s the beginning.',
+      },
+      { type: 'h2', text: 'Closing Doors and Moving Toward Something Unclear' },
+      {
+        type: 'p',
+        text: 'Sometimes you have to close doors. With certain people. Toward the version of life that was eating you alive. It’s lonely. It can feel like you’re giving up the only fun you had or the only people who “got” you. But if those doors lead only to self-destruction, closing them isn’t cruel—it’s the only way to make room for something else. You don’t have to know exactly what’s on the other side. You don’t have to have a ten-year plan. You just have to stop walking toward the cliff and turn toward something—purpose, meaning, stability, a life you can actually be present in—even when the path isn’t clear. The universe forced you to stop. Now you get to choose which way you face. That’s not bullshit. That’s the only move that’s real.',
+      },
+    ],
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
