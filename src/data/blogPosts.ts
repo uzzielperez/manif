@@ -400,7 +400,21 @@ export const BLOG_POSTS: BlogPost[] = [
       },
       {
         type: 'p',
-        text: 'Substances and excessive partying don’t just “take the edge off”—they dull the very clarity you need to know what you want and to move toward it. The mind that’s always chasing a high, or always running from the low, stops being able to tell the difference between a real desire and a craving. It stops being able to sit with pain. And manifestation—the kind that actually lands—requires a mind that can hold intention, face discomfort, and show up. When you’re never sober enough to be present, you’re not only hurting your body; you’re undercutting your ability to build the life you’re trying to call in.',
+        text: 'Substances and excessive partying don’t just “take the edge off”—they dull the very clarity you need to know what you want and to move toward it. The mind that’s always chasing a high, or always running from the low, stops being able to tell the difference between a real desire and a craving. It stops being able to sit with pain. And manifestation—the kind that actually lands—requires a mind that can hold intention, face discomfort, and show up. When you’re never sober enough to be present, you’re not only hurting your body; you’re undercutting your ability to build the life you’re trying to call in. That said, the picture isn’t black and white.',
+      },
+      { type: 'h2', text: 'Mushrooms, Medicine, and the Fine Line' },
+      {
+        type: 'p',
+        text: 'Psilocybin mushrooms and other medically controlled or researched substances—used under guidance, in clinical or intentional settings—have been genuinely life-changing for some people with treatment-resistant depression and anxiety. The same compound that can be abused in a cycle of escape can, in another context, help someone finally face what they’ve been running from and reconnect with meaning. The difference often lies in set, setting, intention, and support: Is this a one-off or a pattern? Are you trying to open a door or to disappear through it? Are you in a container that can hold what comes up?',
+      },
+      {
+        type: 'p',
+        text: 'The fine line is real: having a good time isn’t the same as needing to get high to feel okay. Needing to get high to feel okay isn’t the same as medically needing something—a prescribed treatment, or a carefully held psychedelic experience—to break a pattern that therapy and medication alone haven’t touched. Some people do need that. Honoring that doesn’t undo the danger of escape; it just means we don’t throw everyone into the same bucket. The question is whether the substance is in service of clarity and healing or in service of avoiding both.',
+      },
+      { type: 'h2', text: 'Maharaj-ji and Seeing What People Need' },
+      {
+        type: 'p',
+        text: 'In the tradition of Neem Karoli Baba—Maharaj-ji—there are many stories of his helping people lost in addiction or despair. He didn’t always condemn the substance; he often saw through to the person. Someone would come to him wrecked by drink or drugs, and he would offer not a lecture but presence—or a gesture so unexpected it cut through the story. He might give food, ask a simple question, or refuse to engage with the drama until the person was willing to meet him in something real. The teaching wasn’t “substances are evil”; it was “what are you really hungry for?” For some, that question, in that context, was enough to turn the corner. For others, he was the one who helped them close the door on the life that was killing them and take the first step toward something they couldn’t yet name. The point was always the same: love them, see them, and pull them toward truth—not toward more escape.',
       },
       { type: 'h2', text: 'How It Leads to Self-Destruction' },
       {
