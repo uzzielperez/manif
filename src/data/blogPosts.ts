@@ -1,8 +1,8 @@
 export type BlogPostBlock =
-  | { type: 'blockquote'; text: string }
-  | { type: 'p'; text: string }
+  | { type: 'blockquote'; text: string; draft?: string }
+  | { type: 'p'; text: string; draft?: string }
   | { type: 'h2'; text: string }
-  | { type: 'tip'; title: string; text: string };
+  | { type: 'tip'; title: string; text: string; draft?: string };
 
 export interface BlogPost {
   slug: string;
@@ -397,49 +397,101 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: 'blockquote',
         text: 'You’re not bullshit. Choosing to close doors and move toward something you can’t fully see yet—that’s not bullshit. That’s the only way out.',
+        draft: 'What you are is not a lie. The act of turning away from the known ruin and toward the unlit path—that turning is not a story you tell yourself. It is the only exit the architecture of the real still permits.',
       },
       {
         type: 'p',
         text: 'Substances and excessive partying don’t just “take the edge off”—they dull the very clarity you need to know what you want and to move toward it. The mind that’s always chasing a high, or always running from the low, stops being able to tell the difference between a real desire and a craving. It stops being able to sit with pain. And manifestation—the kind that actually lands—requires a mind that can hold intention, face discomfort, and show up. When you’re never sober enough to be present, you’re not only hurting your body; you’re undercutting your ability to build the life you’re trying to call in. That said, the picture isn’t black and white.',
+        draft: 'The chemistry of avoidance doesn’t merely soften the world’s edge; it dims the very aperture through which intention might pass into act—that narrow band of clarity where desire and possibility align. A nervous system trained to chase elevation or flee its absence loses the capacity to distinguish signal from noise, hunger from meaning, and eventually loses the capacity to abide the weight of unmediated pain. The kind of manifestation that leaves a mark on the real requires a mind that can hold a shape in the dark and step toward it. To live in permanent fugue is to burn the bridge between wanting and becoming. The picture, however, is not binary.',
       },
       { type: 'h2', text: 'Mushrooms, Medicine, and the Fine Line' },
       {
         type: 'p',
         text: 'Psilocybin mushrooms and other medically controlled or researched substances—used under guidance, in clinical or intentional settings—have been genuinely life-changing for some people with treatment-resistant depression and anxiety. The same compound that can be abused in a cycle of escape can, in another context, help someone finally face what they’ve been running from and reconnect with meaning. The difference often lies in set, setting, intention, and support: Is this a one-off or a pattern? Are you trying to open a door or to disappear through it? Are you in a container that can hold what comes up?',
+        draft: 'The same fungal alkaloid that can lock a life into a loop of flight has, under different conditions—held in ritual, dosage, and care—broken the grip of treatment-resistant despair for people whose neural weather had seemed permanent. One molecule, two destinies: the difference lives in the intention that summons it, the vessel that holds the voyage, and the question of whether the door being opened leads out into the world or only deeper into the same escape. The compound is indifferent; the mind and the context are not.',
       },
       {
         type: 'p',
         text: 'The fine line is real: having a good time isn’t the same as needing to get high to feel okay. Needing to get high to feel okay isn’t the same as medically needing something—a prescribed treatment, or a carefully held psychedelic experience—to break a pattern that therapy and medication alone haven’t touched. Some people do need that. Honoring that doesn’t undo the danger of escape; it just means we don’t throw everyone into the same bucket. The question is whether the substance is in service of clarity and healing or in service of avoiding both.',
+        draft: 'The boundary is real: pleasure is not the same as dependence; dependence is not the same as the calibrated use of a compound to shatter a pattern that talk and pharmaceuticals have not moved. Some nervous systems require that rupture. To grant that is not to deny the abyss of misuse; it is to refuse the single story. The only question that matters is whether the molecule serves the restoration of presence or its further evacuation.',
       },
       { type: 'h2', text: 'Maharaj-ji and Seeing What People Need' },
       {
         type: 'p',
         text: 'In the tradition of Neem Karoli Baba—Maharaj-ji—there are many stories of his helping people lost in addiction or despair. He didn’t always condemn the substance; he often saw through to the person. Someone would come to him wrecked by drink or drugs, and he would offer not a lecture but presence—or a gesture so unexpected it cut through the story. He might give food, ask a simple question, or refuse to engage with the drama until the person was willing to meet him in something real. The teaching wasn’t “substances are evil”; it was “what are you really hungry for?” For some, that question, in that context, was enough to turn the corner. For others, he was the one who helped them close the door on the life that was killing them and take the first step toward something they couldn’t yet name. The point was always the same: love them, see them, and pull them toward truth—not toward more escape.',
+        draft: 'In the stories that collect around Neem Karoli Baba—Maharaj-ji—the pattern repeats: someone arrives at the edge of themselves, chemistry and habit having replaced the person with a story. He did not begin with condemnation of the substance; he looked through to the one who was hungry. A gesture—food, silence, a question that could not be answered with the old script—would sometimes dissolve the narrative enough that the person could feel the ground again. The teaching was never “this molecule is evil”; it was “what are you actually hungry for?” For some, that reframe was the hinge. For others, he was simply the one who stood at the door they had to close and did not look away. Love them, see them, pull them toward what is true: not toward another form of leave-taking.',
       },
       { type: 'h2', text: 'How It Leads to Self-Destruction' },
       {
         type: 'p',
         text: 'It’s not moralizing to say that a life organized around the next high tends to shrink. Priorities narrow. Relationships become transactional or shallow—who’s going out, who’s got what, who can keep the buzz going. The part of you that wants meaning, purpose, or a real connection gets quieter. That’s self-destruction: not necessarily a single crash, but the slow replacement of a life you could have built with one that’s built around escape. And one day, often when you least expect it, the universe can force you to stop anyway: a health scare, a loss, a bottom, a moment when the party’s over and you’re left alone with yourself. That moment is brutal. It’s also the only place from which something else can begin.',
+        draft: 'A life whose organizing principle is the next alteration of consciousness contracts like a closing iris: the world narrows to source, dose, and the maintenance of the fugue. The bonds that might have held meaning become transactional—who has access, who can extend the run. The part of the self that asked for more than this goes quiet. That is self-destruction: not always the single catastrophic break but the gradual substitution of a life that could have been built by one that is built around exit. And then the real—health, loss, bottom—forces a halt. The party ends and you are left in the room with yourself. The moment is merciless. It is also the only site from which another story can begin.',
       },
       { type: 'h2', text: 'Presence Requires Sobriety' },
       {
         type: 'p',
         text: 'Deep, meaningful relationships don’t happen in the blur. They require presence—actually being there in the conversation, in the silence, in the discomfort. You can’t do that when you’re always half-gone, always one drink or one hit away from checking out. Presence with another person means being sober enough to listen, to repair after a fight, to sit with their pain and yours. It means not needing to chase a high to feel alive. If you want a love or a friendship that means something, sobriety isn’t optional; it’s the condition under which that kind of connection becomes possible.',
+        draft: 'The kind of bond that can bear weight does not form in the blur. It requires a nervous system present enough to hold the other’s silence, their anger, their grief—and your own—without the default escape into chemical weather. You cannot meet another when you are one dose away from leave-taking. Presence is the capacity to listen, to return after rupture, to sit in the shared room without fleeing. If you want a connection that means something, sobriety is not one option among many; it is the condition of possibility for that encounter.',
       },
       { type: 'h2', text: 'Chasing the High and Avoiding Pain Ruins Manifestation' },
       {
         type: 'p',
         text: 'Manifestation works when your mind is clear enough to hold an intention and when your actions can align with it. If you’re always chasing a high, your “intentions” are often just cravings in disguise. If you never learn to face pain—to sit with it, to let it move through you—you’ll keep running, and the run will keep undermining whatever you say you want. The universe doesn’t reward the performance of desire; it responds to the person who can actually show up, sober and willing to feel what’s there. Always running from pain is a way of telling life you’re not ready for what you’re asking for.',
+        draft: 'Manifestation that lands requires a mind capable of holding an intention across time and a body capable of moving toward it. When the primary orientation is toward the next alteration of state, “intention” collapses into craving. When pain is never met—never sat with, never allowed to pass through—the flight itself undermines every stated want. The real does not reward the performance of desire; it responds to the one who can show up, undefended, willing to feel what is there. To run from pain indefinitely is to declare, in the only language that counts, that you are not yet ready for what you claim to want.',
       },
       {
         type: 'tip',
         title: 'A Hard Truth',
         text: 'You don’t have to have it all figured out. You don’t have to know your “purpose” in capital letters. You just have to stop walking toward the path of self-destruction. Close doors—with people who only want the party, with habits that only want your numbness. Move toward something that feels like meaning or stability even when it’s not clear. That’s not bullshit. That’s the beginning.',
+        draft: 'You are not required to have decoded your purpose. You are required only to stop walking toward the cliff. Close the doors—to the people who want only the party, to the habits that want only your absence. Turn toward whatever faint signal feels like meaning or ground, even when the path is not yet legible. That is not self-deception. That is the first move.',
       },
       { type: 'h2', text: 'Closing Doors and Moving Toward Something Unclear' },
       {
         type: 'p',
         text: 'Sometimes you have to close doors. With certain people. Toward the version of life that was eating you alive. It’s lonely. It can feel like you’re giving up the only fun you had or the only people who “got” you. But if those doors lead only to self-destruction, closing them isn’t cruel—it’s the only way to make room for something else. You don’t have to know exactly what’s on the other side. You don’t have to have a ten-year plan. You just have to stop walking toward the cliff and turn toward something—purpose, meaning, stability, a life you can actually be present in—even when the path isn’t clear. The universe forced you to stop. Now you get to choose which way you face. That’s not bullshit. That’s the only move that’s real.',
+        draft: 'Sometimes the only move is to close the door. On certain people. On the version of a life that was consuming you. The loneliness is real; so is the sense of having abandoned the only brightness you knew. But if the door opens only onto the same dissolution, closing it is not cruelty—it is the only way to make space for an unknown that might hold something else. You do not need to see the destination. You need only to stop walking toward the edge and turn your face toward whatever flicker suggests meaning, stability, or a life you could inhabit without leaving. The real forced the stop. The turn is the only move that counts.',
+      },
+    ],
+  },
+  {
+    slug: 'cleaning-environment-room-manifesting',
+    title: 'Cleaning Your Environment, Cleansing Your Mind: Why Your Room and Your Head Need the Same Care',
+    date: 'Feb 11, 2026',
+    category: 'Practice',
+    excerpt:
+      'A cluttered room holds old energy. A cluttered mind holds old stories. Cleaning your space and tossing what no longer serves you isn’t just tidying—it’s making room for what you’re trying to call in.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'What you allow in your space is a message to your subconscious. Clear the room; you start to clear the channel.',
+      },
+      {
+        type: 'p',
+        text: 'Your environment isn’t separate from your mind. The pile of mail, the chair full of clothes, the drawer you haven’t opened in years—they take up physical space, but they also take up mental space. Every time you look at clutter, part of you registers “unfinished,” “stuck,” or “I’ll deal with it later.” That background hum affects your mood, your focus, and your capacity to hold a clear intention. Manifestation works best when your inner and outer worlds aren’t fighting each other. Cleaning your room—and by extension, cleansing your body and mind—is one of the most practical ways to align them.',
+      },
+      { type: 'h2', text: 'Why Your Space Affects Your Manifestation' },
+      {
+        type: 'p',
+        text: 'When your environment is cluttered, your nervous system is constantly processing low-level chaos. There’s no clear “here” to land in. Intentions get scattered because the space itself doesn’t support focus or calm. Clearing your room—tossing what’s broken, donating what you don’t use, organizing what remains—sends a signal to your subconscious: I am making room. I am choosing what stays. That act of choosing is the same muscle you use when you set an intention: you’re deciding what you want to keep and what you’re ready to release. The outer cleanup supports the inner one.',
+      },
+      { type: 'h2', text: 'Tossing Clutter in Your Home and in Your Mind' },
+      {
+        type: 'p',
+        text: 'Physical clutter and mental clutter often mirror each other. The box of old papers you’ve been avoiding might be the same energy as the grudge you’ve been carrying or the story you keep telling yourself about why you can’t have what you want. Tossing clutter in your home—literally letting go of objects that no longer serve you—can make it easier to let go of thought patterns that don’t serve you either. You don’t have to do it all at once. Start with one drawer, one shelf, one corner. The practice of “keep or release” in your space trains the same practice in your mind.',
+      },
+      {
+        type: 'tip',
+        title: 'Practical Tip',
+        text: 'Before you set a big intention or do a manifestation practice, spend 15 minutes clearing one small area—a desk, a nightstand, a bag. Throw away or donate at least three things. Then sit for a minute in the cleared space. Notice how it feels. That feeling—room to breathe, room to choose—is the same quality you’re inviting when you manifest.',
+      },
+      { type: 'h2', text: 'Cleansing Body and Mind' },
+      {
+        type: 'p',
+        text: 'Cleaning your environment often goes hand in hand with cleansing your body and mind. A shower, a clean room, a made bed—these aren’t superficial. They’re ways of resetting the vessel. When your body feels cared for and your space feels ordered, your mind has less static. You’re not wasting energy on background discomfort or the subtle drag of mess. That freed-up energy can go toward clarity: What do I actually want? What am I ready to release? Cleansing isn’t about being perfect; it’s about creating conditions where intention can land.',
+      },
+      {
+        type: 'p',
+        text: 'Your room and your head are not separate. Clean one, and you send a message to the other. Toss the clutter you can see, and you make it easier to toss the clutter you can’t—the old stories, the stuck beliefs, the “I’ll deal with it later” that never comes. Make room. Then see what wants to move in.',
       },
     ],
   },

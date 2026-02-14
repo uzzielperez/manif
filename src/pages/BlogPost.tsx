@@ -6,22 +6,51 @@ import { getPostBySlug, type BlogPostBlock, type BlogPost } from '../data/blogPo
 
 const API_BASE = (import.meta as { env?: { VITE_API_BASE?: string } }).env?.VITE_API_BASE ?? '';
 
+const Footnote = ({ id, label, children }: { id: number; label: string; children: React.ReactNode }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <footer key={id} className="mt-2 mb-6">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="text-xs text-[var(--cosmic-text-muted)] hover:text-[var(--cosmic-accent)] transition-colors font-medium"
+      >
+        [{id}] {label}
+      </button>
+      {open && (
+        <p className="mt-2 text-sm text-white/60 italic border-l-2 border-white/20 pl-4">
+          {children}
+        </p>
+      )}
+    </footer>
+  );
+};
+
+let footnoteCounter = 0;
 const renderBlock = (block: BlogPostBlock, index: number) => {
+  const hasDraft = 'draft' in block && block.draft;
+  const fnId = hasDraft ? ++footnoteCounter : 0;
+
   switch (block.type) {
     case 'blockquote':
       return (
-        <p
-          key={index}
-          className="text-xl text-white font-medium italic border-l-4 border-[var(--cosmic-accent)] pl-6 py-2 bg-white/5 rounded-r-xl"
-        >
-          "{block.text}"
-        </p>
+        <div key={index}>
+          <p
+            className="text-xl text-white font-medium italic border-l-4 border-[var(--cosmic-accent)] pl-6 py-2 bg-white/5 rounded-r-xl"
+          >
+            "{block.text}"
+          </p>
+          {hasDraft && <Footnote id={fnId} label="Second draft">{block.draft}</Footnote>}
+        </div>
       );
     case 'p':
       return (
-        <p key={index} className="text-white/80">
-          {block.text}
-        </p>
+        <div key={index}>
+          <p className="text-white/80">
+            {block.text}
+          </p>
+          {hasDraft && <Footnote id={fnId} label="Second draft">{block.draft}</Footnote>}
+        </div>
       );
     case 'h2':
       return (
@@ -31,15 +60,17 @@ const renderBlock = (block: BlogPostBlock, index: number) => {
       );
     case 'tip':
       return (
-        <div
-          key={index}
-          className="bg-gradient-to-r from-[var(--cosmic-primary)]/20 to-transparent p-8 rounded-2xl border-l-2 border-[var(--cosmic-primary)] my-12"
-        >
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <BookOpen className="text-[var(--cosmic-primary)]" />
-            {block.title}
-          </h3>
-          <p className="text-white/80">{block.text}</p>
+        <div key={index}>
+          <div
+            className="bg-gradient-to-r from-[var(--cosmic-primary)]/20 to-transparent p-8 rounded-2xl border-l-2 border-[var(--cosmic-primary)] my-12"
+          >
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <BookOpen className="text-[var(--cosmic-primary)]" />
+              {block.title}
+            </h3>
+            <p className="text-white/80">{block.text}</p>
+          </div>
+          {hasDraft && <Footnote id={fnId} label="Second draft">{block.draft}</Footnote>}
         </div>
       );
     default:
@@ -132,7 +163,10 @@ const BlogPostPage: React.FC = () => {
         </header>
 
         <div className="prose prose-invert max-w-none text-lg leading-relaxed space-y-8">
-          {post.content.map(renderBlock)}
+          {post.content.map((block, i) => {
+            if (i === 0) footnoteCounter = 0;
+            return renderBlock(block, i);
+          })}
         </div>
 
         <footer className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
