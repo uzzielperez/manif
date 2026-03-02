@@ -495,6 +495,58 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: 'expectations-importance-dispenza-doty-transurfing',
+    title: 'Expectations, Importance, and Manifestation: Dispenza, Doty, and Transurfing',
+    date: 'Feb 12, 2026',
+    category: 'Philosophy',
+    excerpt:
+      'Expectations can focus your mind or trap you in stress. Here is how Joe Dispenza, Jim Doty, and Transurfing each treat importance differently-and how to use that difference wisely.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'Set a clear intention. Hold a coherent state. Then loosen your grip enough to let reality move.',
+      },
+      {
+        type: 'p',
+        text: 'A common confusion in manifestation is this: Should your desire feel deeply important, or should you keep it light? If it matters too much, you become anxious. If it matters too little, you drift. This tension shows up clearly when people compare Joe Dispenza and Jim Doty with Transurfing. They are not saying the exact same thing, but they are not total opposites either. They are describing different parts of the same mechanism: intention, emotional state, and attachment.',
+      },
+      { type: 'h2', text: 'Expectations: Helpful or Harmful?' },
+      {
+        type: 'p',
+        text: 'Expectations help when they create direction and commitment: you know what you are building, and you keep showing up. Expectations hurt when they become emotional ultimatums: "If this does not happen now, I am not okay." In that second mode, expectation creates pressure, fear, and tunnel vision. You do not respond creatively; you react. In manifestation terms, expectations are useful as a compass but destructive as a threat.',
+      },
+      { type: 'h2', text: 'Joe Dispenza: Elevated Emotion + Embodied Future' },
+      {
+        type: 'p',
+        text: 'In Joe Dispenza-style work, importance is linked to coherence and signal strength. You rehearse the future in mind and body, and you generate elevated states-gratitude, love, wholeness-as if the future is already unfolding. Importance, here, can energize practice: what matters to you gets your full attention. But if importance turns into desperation, your body slips back into survival chemistry (stress, lack, urgency), which contradicts the state you are trying to embody.',
+      },
+      { type: 'h2', text: 'Jim Doty: Clear Intention, Open Heart, Service' },
+      {
+        type: 'p',
+        text: 'Jim Doty emphasizes intention plus an open, compassionate heart. In that framing, importance is not "I must control this exact outcome"; it is "this aligns with my values and with care for others." The heart component matters because it softens egoic grasping. You still want what you want, but your identity is not fused to forcing it. Expectations become healthier when the intention includes meaning, ethics, and contribution-not just personal acquisition.',
+      },
+      { type: 'h2', text: 'Transurfing: Excess Importance Creates Distortion' },
+      {
+        type: 'p',
+        text: 'Transurfing introduces a sharper warning: excess importance creates "excess potential," and balancing forces push back. In plain terms: when you inflate an outcome into life-or-death significance, you generate internal tension and external friction. You cling, over-control, and misread opportunities. The Transurfing correction is to lower excess importance while maintaining intention: choose your goal, act, and stay internally free.',
+      },
+      {
+        type: 'tip',
+        title: 'Practical Synthesis',
+        text: 'Use all three: (1) Set a precise intention (Doty/Dispenza). (2) Enter a coherent state through body and emotion (Dispenza). (3) Drop excess importance and rigid timing (Transurfing). Ask daily: "Am I committed, or am I clenched?" Commitment builds. Clenching blocks.',
+      },
+      { type: 'h2', text: 'So What Role Does Importance Play?' },
+      {
+        type: 'p',
+        text: 'Importance is useful at the level of meaning and priority-it tells your system what matters. It becomes harmful at the level of attachment and identity-when your peace depends on one exact path, person, or timeline. That is why these methods can feel different: Dispenza and Doty often emphasize intentional focus and heart coherence, while Transurfing emphasizes reducing excess significance. Together, they suggest a mature equation: care deeply, practice consistently, and hold outcomes lightly enough that life can still surprise you.',
+      },
+      {
+        type: 'p',
+        text: 'If expectation is making you tight, reduce the grip, not the vision. Keep the intention. Keep the practice. Release the panic. You are not asked to be indifferent; you are asked to be aligned.',
+      },
+    ],
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
