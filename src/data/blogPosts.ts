@@ -547,6 +547,68 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: '21-day-lojong-tonglen-mind-training-manifestation',
+    title: 'A 21-Day Mind Training Program: Lojong, Tonglen, and Manifestation',
+    date: 'Feb 13, 2026',
+    category: 'Practice',
+    excerpt:
+      'Lojong and Tonglen retrain the mind to use adversity as fuel and to extend compassion before grasping. Here’s an overview—and a 21-day program that ties both to clearer, more grounded manifestation.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'Mind training doesn’t replace manifestation. It builds the mind that can manifest without collapsing into craving or fear.',
+      },
+      {
+        type: 'p',
+        text: 'Lojong (Tibetan: blo sbyong, “mind training”) is a centuries-old system from Tibetan Buddhism for turning every circumstance—especially difficulty—into the path of awakening. Tonglen (literally “giving and taking”) is the practice of breathing in suffering (your own and others’) and breathing out relief and ease; it is often practiced alongside lojong as a way to transform aversion and self-centeredness into compassion. Together they offer a rigorous way to clean the lens of the mind. For anyone interested in manifestation, that matters: a mind trained in lojong and Tonglen is less likely to confuse intention with attachment, and more likely to hold a clear vision without being thrown by obstacles.',
+      },
+      { type: 'h2', text: 'Lojong in Brief' },
+      {
+        type: 'p',
+        text: 'Lojong is usually presented in seven points (see our earlier post on the Seven Points for more). In short: you establish a foundation (precious human life, impermanence, cause and effect); you train in the two bodhicittas—relative (loving-kindness and compassion) and ultimate (wisdom/emptiness); you learn to use bad circumstances as the path; you apply the practice in one lifetime; you recognize the signs of having trained; and you hold to commitments and precepts. The method is slogan-based: short, punchy phrases you recall in daily life (e.g. “When the world is filled with evil, transform bad circumstances into the path of bodhi”). The aim is to change how you relate to thought, emotion, and adversity—not to change the world first, but to change the mind that meets the world.',
+      },
+      { type: 'h2', text: 'Tonglen in Brief' },
+      {
+        type: 'p',
+        text: 'In Tonglen you visualize breathing in dark, heavy, hot suffering—your own or others’—and breathing out light, cool, spacious relief. You take on what is difficult and send back what is healing. The practice reverses the usual habit of pushing away pain and clinging to comfort. It builds courage to be with suffering without being destroyed by it, and it softens the heart so that your intentions are less about “me first” and more about a larger field of care. For manifestation, Tonglen helps prevent your desires from becoming brittle: when you can hold others’ pain in awareness, your own “want” doesn’t have to carry all the weight.',
+      },
+      { type: 'h2', text: 'How This Relates to Manifestation' },
+      {
+        type: 'p',
+        text: 'Manifestation works best when intention is clear, the mind is coherent, and you’re not constantly undermined by resistance or fear. Lojong trains you to use obstacles as the path—so setbacks refine rather than block your aim. Tonglen trains you to include suffering in your awareness without collapsing—so you can hold your vision without needing the world to be pain-free first. Both practices reduce the “excess importance” and rigidity that Transurfing warns about: you care, but you’re not clenched. You intend, but you’re not identified with one fixed outcome. A 21-day program that weaves Lojong and Tonglen into daily life can strengthen exactly that capacity.',
+      },
+      { type: 'h2', text: '21-Day Mind Training Program: Overview' },
+      {
+        type: 'p',
+        text: 'The program below is a practical frame. You can pair it with meditation (e.g. 10–15 minutes daily) and use one slogan or theme per week, with Tonglen as a daily or alternate-day practice.',
+      },
+      {
+        type: 'tip',
+        title: 'Weeks 1–3 at a Glance',
+        text: 'Week 1 — Foundation: Precious human life, impermanence, cause and effect. Daily: 5 min reflection + 5 min Tonglen (for yourself, then one other person). Slogan: “Train in the preliminaries.” Week 2 — Relative bodhicitta: Loving-kindness and compassion. Daily: 5 min reflection + 10 min Tonglen (expand to a group or “all beings”). Slogan: “When the world is filled with evil, transform bad circumstances into the path of bodhi.” Week 3 — Applying it: Use one difficulty each day as the path. Daily: 5 min reflection + 10 min Tonglen + one “obstacle as fuel” reflection. Slogan: “Whatever you meet unexpectedly, join with meditation.”',
+      },
+      { type: 'h2', text: 'How to Use the 21 Days' },
+      {
+        type: 'p',
+        text: 'Each morning or evening: (1) Read or recall the week’s theme and slogan. (2) Sit for a few minutes and do Tonglen—start with your own difficulty, then extend to someone else, then optionally to all beings. (3) During the day, when something difficult arises, recall the slogan and ask: “How can I use this as the path?” (4) Relate to manifestation: Before setting or reinforcing an intention, do a short Tonglen round or recall “reduce excess importance; keep intention clear.” By day 21 you’re not “done”—you’ve established a pattern. Keep one slogan in rotation and Tonglen as a regular practice so that mind training and manifestation support each other.',
+      },
+      { type: 'h2', text: 'Further Reading & Resources' },
+      {
+        type: 'p',
+        text: 'To go deeper, these books and teachers are widely cited and respected in both academic and practice circles.',
+      },
+      {
+        type: 'tip',
+        title: 'Books & Teachers',
+        text: 'Lojong: “Start Where You Are” and “The Wisdom of No Escape” by Pema Chödrön (Shambhala)—accessible commentary on the slogans. “Training the Mind and Cultivating Loving-Kindness” by Chögyam Trungpa (Shambhala)—root text and commentary. “Training in Compassion: Zen Teachings on the Practice of Lojong” by Norman Fischer (Shambhala). Tonglen: “When Things Fall Apart” and “The Places That Scare You” by Pema Chödrön—Tonglen and working with fear. “The Art of Happiness” by the Dalai Lama and Howard Cutler (Riverhead)—compassion and mind training in everyday life. Classical: “The Great Path of Awakening” by Jamgön Kongtrul (Shambhala)—commentary on the root text by Chekawa. Online: Lion’s Roar (lionsroar.com) and Tricycle (tricycle.org) often feature Lojong and Tonglen; Pema Chödrön’s talks are available through Shambhala and major audio platforms.',
+      },
+      {
+        type: 'p',
+        text: 'Lojong and Tonglen don’t replace your desire to manifest; they train the mind so that your desires are clearer, your resilience is greater, and your heart is more open. That’s the overlap: a mind that can transform adversity and include suffering in awareness is a mind that can hold intention without breaking.',
+      },
+    ],
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
