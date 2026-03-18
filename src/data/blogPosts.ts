@@ -1003,6 +1003,249 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: 'inner-work-manifestation-dont-lay-your-trip-on-others',
+    title: "Inner Work & Manifestation: Don't Lay Your Trip on Others",
+    date: 'Mar 18, 2026',
+    category: 'Personal Growth',
+    excerpt:
+      "A counterculture phrase about not projecting your inner weather onto others—especially when your manifestation work starts becoming subtle control.",
+    content: [
+      {
+        type: 'blockquote',
+        text: 'Don’t lay your trip on others.',
+      },
+      {
+        type: 'p',
+        text: 'There’s a phrase that came out of the 1960s counterculture, rough around the edges and a little stoned-sounding, but surprisingly sharp once you sit with it: don’t lay your trip on others.',
+      },
+      {
+        type: 'p',
+        text: 'It meant: don’t make your neurosis, your agenda, your interpretation of reality someone else’s problem. Don’t project your inner weather onto the people around you and call it the forecast.',
+      },
+      {
+        type: 'p',
+        text: "It’s a casual thing to say. But it points to something most personal growth frameworks quietly avoid — the way our manifestation work, our \"inner alignment,\" our spiritual certainty can become a kind of colonization of the people closest to us.",
+      },
+      { type: 'h2', text: 'The Hidden Ego in "Raising Your Vibration"' },
+      {
+        type: 'p',
+        text: 'Most manifestation teaching begins with a sound premise: the world you perceive is filtered through your interior state. Clean up the interior, and the world looks different.',
+      },
+      {
+        type: 'p',
+        text: "If you carry a story that people can’t be trusted, you’ll read neutral behavior as threatening. If you believe you’re unworthy of success, you’ll find ways to sabotage it.",
+      },
+      {
+        type: 'p',
+        text: 'But somewhere between that honest insight and the way it gets popularized, something slips. The teaching stops being you shape your perception and becomes you create your reality.',
+      },
+      {
+        type: 'p',
+        text: 'That’s a much bigger claim, and it has consequences.',
+      },
+      {
+        type: 'p',
+        text: "Because if you create your reality — fully, totally — then other people aren’t quite real to you. They become projections. Evidence. Cast members in your story. They lose their irreducible otherness.",
+      },
+      {
+        type: 'p',
+        text: 'And you start, without meaning to, laying your trip on them.',
+      },
+      {
+        type: 'p',
+        text: "The moment someone else exists primarily to confirm or deny your inner state, you’ve stopped relating to them. You’re using them.",
+      },
+      {
+        type: 'p',
+        text: 'This shows up in relationships constantly: someone is working on abundance consciousness and gets frustrated that their partner’s anxiety is keeping low vibrations in the house.',
+      },
+      {
+        type: 'p',
+        text: 'Someone practices gratitude and starts finding people who express worry or grief to be spiritually immature.',
+      },
+      {
+        type: 'p',
+        text: 'Someone does shadow work and starts seeing everyone else’s behavior as a mirror of their own unresolved material — which sounds humble but is actually a subtle way of making everything about yourself.',
+      },
+      {
+        type: 'p',
+        text: 'It shows up in manifestation communities as a kind of magical gaslighting: if this didn’t work, you must have been blocking it. If they treated you badly, you must have called that in. If the relationship ended, you weren’t aligned.',
+      },
+      {
+        type: 'p',
+        text: 'The framework becomes unfalsifiable, and the other person disappears behind your interpretation of them.',
+      },
+      { type: 'h2', text: 'What Projection Actually Does' },
+      {
+        type: 'p',
+        text: 'Projection isn’t a spiritual failing — it’s a built-in feature of the human mind. We read new situations through the lens of old ones. We assign meaning based on pattern.',
+      },
+      {
+        type: 'p',
+        text: 'We see in others what we can’t yet look at in ourselves. This is well-documented in psychology, and the contemplative traditions have been naming it for centuries.',
+      },
+      {
+        type: 'p',
+        text: 'The Tibetan Buddhist teachings on Lojong — mind training — speak directly to this. One of the root slogans is: Don’t ponder others. It’s not a command to stop observing people. It’s a reminder that the stories we construct about others are mostly about us.',
+      },
+      {
+        type: 'p',
+        text: 'The obsessive analysis of someone else’s motives, flaws, or choices is often a way of avoiding our own interior work.',
+      },
+      {
+        type: 'p',
+        text: "Here’s how projection functions in practice: you have a feeling or belief that’s uncomfortable — unworthiness, rage, desire, fear — and rather than sitting with it, you locate it in someone else.",
+      },
+      {
+        type: 'p',
+        text: "They’re the jealous one. They’re the one who needs approval. They’re the one who can’t commit.",
+      },
+      {
+        type: 'p',
+        text: 'The relief is temporary. The feeling stays, displaced but intact, and now you’ve also distorted your relationship with that person.',
+      },
+      {
+        type: 'p',
+        text: 'The manifestation version of this is subtler but structurally the same. Instead of projecting a fear, you project a meaning system.',
+      },
+      {
+        type: 'p',
+        text: 'This person appeared in my life to teach me X. This situation is reflecting back Y. The universe sent them as a sign. Maybe true. Maybe useful.',
+      },
+      {
+        type: 'p',
+        text: 'But it’s worth asking: are you relating to this person, or to the role you’ve assigned them in your growth narrative?',
+      },
+      { type: 'h2', text: 'The Difference Between Alignment and Imposition' },
+      {
+        type: 'p',
+        text: 'None of this means inner work is suspect. The opposite. The deeper you go into honest self-inquiry, the more clearly you see the boundary between what’s yours and what belongs to someone else.',
+      },
+      {
+        type: 'p',
+        text: 'That’s the whole point.',
+      },
+      {
+        type: 'p',
+        text: 'Real alignment — the kind that actually changes things — doesn’t need the people around you to mirror it back.',
+      },
+      {
+        type: 'p',
+        text: "It doesn’t require your partner to stop being anxious before you can feel at peace. It doesn’t need your coworker to confirm your intuition before you trust it. It stands on its own ground.",
+      },
+      {
+        type: 'p',
+        text: 'It’s stable without external validation.',
+      },
+      {
+        type: 'p',
+        text: 'Manifestation that’s working looks like: you shift something inside, and you notice the world opening in ways it didn’t before. You feel more capable, so you take more chances.',
+      },
+      {
+        type: 'p',
+        text: 'You stop expecting abandonment, so you stop triggering it. Your presence changes, and people respond differently — not because you’ve controlled them, but because you’ve stopped being defended in ways that kept connection out.',
+      },
+      {
+        type: 'p',
+        text: "Manifestation that’s off the rails looks like: you need the people around you to behave in ways that confirm your inner state.",
+      },
+      {
+        type: 'p',
+        text: "You interpret their independence, their moods, their separate needs as spiritual failure — yours or theirs.",
+      },
+      {
+        type: 'p',
+        text: 'You start curating your social circle not for genuine affinity, but for vibrational compatibility. You mistake agreement for alignment.',
+      },
+      {
+        type: 'p',
+        text: 'Real inner work makes you more curious about other people, not less. It opens toward them, not away.',
+      },
+      { type: 'h2', text: 'The Practice: Holding Your Own Reality Lightly' },
+      {
+        type: 'p',
+        text: 'So what does it actually look like to do inner work without laying your trip on others?',
+      },
+      {
+        type: 'p',
+        text: 'It starts with a distinction: your inner state is yours to work with; other people are not yours to interpret.',
+      },
+      {
+        type: 'p',
+        text: 'You can notice that a situation brings up fear. You can trace that fear to something old. You can sit with it, breathe through it, let it move.',
+      },
+      {
+        type: 'p',
+        text: 'That’s your work. The other person in the situation gets to be exactly who they are — separate, real, not a symbol.',
+      },
+      {
+        type: 'p',
+        text: "It requires what the contemplatives call don’t-know mind — the willingness to hold your interpretations loosely.",
+      },
+      {
+        type: 'p',
+        text: 'Maybe this relationship is here to teach you something. Maybe it’s just a relationship. Maybe the difficulty is a mirror. Maybe the other person is just going through something that has nothing to do with you.',
+      },
+      {
+        type: 'p',
+        text: 'Both can be true. Neither has to colonize your experience of them.',
+      },
+      {
+        type: 'p',
+        text: "It also means being honest about the moments when spiritual language is doing emotional work it shouldn’t be doing.",
+      },
+      {
+        type: 'p',
+        text: 'When “this is a reflection of my inner state” is a way of not saying I’m hurt, I’m scared, I want something I’m not getting, those feelings deserve to be named directly, not transcended into framework.',
+      },
+      {
+        type: 'p',
+        text: "And perhaps most importantly: it means staying genuinely interested in other people as separate beings. Not as mirrors. Not as teachers the universe dispatched.",
+      },
+      {
+        type: 'p',
+        text: 'Not as low or high vibration. Just as people — messy, complete, opaque, real — with their own inner lives that have nothing to do with yours.',
+      },
+      { type: 'h2', text: 'On Manifestation and Respect' },
+      {
+        type: 'p',
+        text: 'Manifestation, at its best, is about becoming someone who can receive what they need — clearing the inner obstructions that keep good things out. That’s a worthy project.',
+      },
+      {
+        type: 'p',
+        text: 'But it has to coexist with a fundamental respect for the reality of others.',
+      },
+      {
+        type: 'p',
+        text: 'The universe doesn’t deliver people to you like packages. Other people are not instruments of your growth.',
+      },
+      {
+        type: 'p',
+        text: 'Relationships are not co-created vision boards.',
+      },
+      {
+        type: 'p',
+        text: 'The most profound things that come into your life — love, connection, unexpected grace — tend to come sideways, from directions you weren’t pointing toward, through people who were just being themselves.',
+      },
+      {
+        type: 'p',
+        text: 'You can’t manifest that. You can only be the kind of person who’s open to it.',
+      },
+      {
+        type: 'p',
+        text: "And that kind of openness, paradoxically, requires putting down the framework just long enough to let something real get through.",
+      },
+      {
+        type: 'p',
+        text: 'Don’t lay your trip on others. Not as a rule. As a practice in genuine presence — which is, in the end, the only thing worth manifesting anyway.',
+      },
+      {
+        type: 'p',
+        text: 'This post is part of an ongoing series on inner work, projection, and the practice of becoming — without making everyone else your raw material.',
+      },
+    ],
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
