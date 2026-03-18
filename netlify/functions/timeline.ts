@@ -43,6 +43,32 @@ export const handler: Handler = async (event, context) => {
       };
     }
 
+    const normalizedPrompt = typeof prompt === 'string' ? prompt : '';
+    const durationDaysMatch =
+      normalizedPrompt.match(/(\d+)\s*(day|days)\b/i) ||
+      normalizedPrompt.match(/\b(\d+)\s*-\s*day\b/i);
+    const durationWeeksMatch = normalizedPrompt.match(/(\d+)\s*(week|weeks)\b/i);
+    const durationDays = durationDaysMatch ? Number(durationDaysMatch[1]) : null;
+    const durationWeeks = durationWeeksMatch ? Number(durationWeeksMatch[1]) : null;
+
+    const timeboxText = durationDays
+      ? `${durationDays} days`
+      : durationWeeks
+        ? `${durationWeeks} weeks`
+        : null;
+
+    const businessIntent = /\b(start( a)? business|start a startup|startup|entrepreneur|founder|launch|company|business plan|venture)\b/i.test(
+      normalizedPrompt
+    );
+
+    const extractedProgramTheme = (() => {
+      if (/\b(heartache|heart break|breakup|break-up)\b/i.test(normalizedPrompt)) return 'heartache';
+      if (/\b(grief|loss|bereavement)\b/i.test(normalizedPrompt)) return 'grief';
+      if (/\b(anxiety|panic)\b/i.test(normalizedPrompt)) return 'anxiety';
+      if (/\b(depression)\b/i.test(normalizedPrompt)) return 'depression';
+      return 'inner healing';
+    })();
+
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -55,6 +81,11 @@ export const handler: Handler = async (event, context) => {
           {
             role: 'system',
             content: `You are a Temporal Architect. Output ONLY a valid JSON object representing 3 distinct hybrid manifestation paths for a user's goal.
+
+            SKILLS you must use (pick & combine based on the user's text):
+            1) Healing Program Timeboxing: When the user provides a program length (e.g. "21 days", "3 weeks"), the first nodes in each path MUST reflect that timeboxed inner work/healing theme.
+            2) Business Launch Roadmap: When the user indicates business/startup/entrepreneurship, the later nodes in each path MUST include milestones that lead to "start a business" (planning, building, launching).
+            3) Long-Term Vision & Scale: When the user mentions long-term vision (or implicitly implies it via business goals), include a final node about sustaining/growing beyond launch.
             
             THE 3 PATHS:
             1. "The Steady Orbit" (Conservative/Low Risk): Focused on gradual, consistent growth.
@@ -78,11 +109,21 @@ export const handler: Handler = async (event, context) => {
             2. The "pathId" field is MANDATORY for each node (values: "steady", "warp", "quantum").
             3. All paths should originate from the concept of the user's "Current Reality".
             4. Use distinct IDs for nodes in different paths.
-            5. Return ONLY valid JSON.`
+            5. If the user includes a program length (days/weeks), timebox the first nodes to that duration using the detected length (e.g., "Days 1-21: ...", or "Weeks 1-3: ...").
+            6. If the user includes business/startup intent, include at least one node in each path whose label explicitly contains one of: "start a business", "launch", "business launch", "found your company" (choose the closest wording).
+            7. In the business+program case: the healing timeboxed nodes must appear before the business-start/launch nodes in each path.
+            8. Include a "Long-Term Vision" style final node when business intent is present (even if the user only says "long term vision").
+            9. Edges: connect the nodes within each path in an intuitive forward sequence (at least nodes_in_path - 1 edges total).
+            10. Return ONLY valid JSON.`
           },
           {
             role: 'user',
-            content: `Generate 3 hybrid manifestation paths for: ${prompt}`
+            content: `Goal prompt: ${normalizedPrompt}
+Timebox detected: ${timeboxText ?? 'none'}
+Inner healing theme guess: ${extractedProgramTheme}
+Business/startup intent detected: ${businessIntent ? 'yes' : 'no'}
+
+Generate 3 hybrid manifestation paths that follow the rules and include healing timeboxing and business milestones as specified.`
           }
         ],
         temperature: 0.7,

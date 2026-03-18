@@ -118,6 +118,31 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
   const [status, setStatus] = useState<string>('');
   const [isInitiatingDownload, setIsInitiatingDownload] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(MANIFESTATION_PROMPTS[0]);
+
+  const speakInBrowser = (text: string) => {
+    // Browser TTS fallback when server-side TTS providers fail.
+    if (typeof window === 'undefined') return;
+    if (!('speechSynthesis' in window)) return;
+
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.98;
+      utterance.pitch = 1.0;
+
+      // Pick a reasonable default voice (mostly to ensure the right language).
+      const voices = window.speechSynthesis.getVoices();
+      const englishVoice =
+        voices.find((v) => v.lang?.toLowerCase().startsWith('en') && v.name) ??
+        voices.find((v) => v.name) ??
+        null;
+      if (englishVoice) utterance.voice = englishVoice;
+
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn('Browser TTS failed:', err);
+    }
+  };
   
   const currentMeditationIsUnlocked = meditation?.id ? isMeditationUnlocked(meditation.id) : false;
   const userHasCredits = getDownloadCredits() > 0;
@@ -145,34 +170,47 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         const meditationData = await textResponse.json();
         setStatus('Generating audio...');
         const cleanedTextForAudio = cleanupText(meditationData.content);
-        const audioResponse = await fetch('/.netlify/functions/meditations/audio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: cleanedTextForAudio,
-            voiceId: selectedVoice,
-            duration: parseInt(meditationLength)
-          }),
-          signal: controller.signal
-        });
-        if (!audioResponse.ok) {
-          const errorText = await audioResponse.text();
-          throw new Error(`Failed to generate audio: ${errorText}`);
+
+        let audioUrl: string | undefined;
+        try {
+          const audioResponse = await fetch('/.netlify/functions/meditations/audio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text: cleanedTextForAudio,
+              voiceId: selectedVoice,
+              duration: parseInt(meditationLength),
+            }),
+            signal: controller.signal,
+          });
+
+          if (!audioResponse.ok) {
+            const errorText = await audioResponse.text();
+            throw new Error(`Failed to generate audio: ${errorText}`);
+          }
+
+          const audioBuffer = await audioResponse.arrayBuffer();
+          if (audioBuffer.byteLength === 0) {
+            throw new Error('Audio buffer is empty');
+          }
+
+          const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+          audioUrl = URL.createObjectURL(audioBlob);
+        } catch (audioErr: any) {
+          console.warn('Audio generation failed; using browser TTS fallback:', audioErr);
+          setStatus('Audio unavailable. Speaking in your browser…');
+          speakInBrowser(cleanedTextForAudio);
         }
-        const audioBuffer = await audioResponse.arrayBuffer();
-        if (audioBuffer.byteLength === 0) {
-          throw new Error('Audio buffer is empty');
-        }
-        const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-        const audioUrl = URL.createObjectURL(audioBlob);
+
         const newMeditation: Meditation = {
           id: meditationData.id,
           prompt,
           text: meditationData.content,
-          audioUrl: audioUrl,
+          audioUrl, // optional - may be undefined when fallback is used
           date: new Date().toLocaleDateString(),
-          duration: meditationData.duration || parseInt(meditationLength)
+          duration: meditationData.duration || parseInt(meditationLength),
         };
+
         setMeditation(newMeditation);
         onSubmit(prompt);
       } catch (err: any) {
