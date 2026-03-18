@@ -35,18 +35,18 @@ const renderBlock = (block: BlogPostBlock, index: number) => {
     case 'blockquote':
       return (
         <div key={index}>
-          <p
-            className="text-xl text-white font-medium italic border-l-4 border-[var(--cosmic-accent)] pl-6 py-2 bg-white/5 rounded-r-xl"
-          >
-            "{block.text}"
+          <div className="h-px bg-white/10 my-10" />
+          <p className="font-serif text-center text-xl md:text-2xl italic text-[var(--cosmic-text)] leading-relaxed px-2">
+            {block.text}
           </p>
           {hasDraft && <Footnote id={fnId} label="Second draft">{block.draft}</Footnote>}
+          <div className="h-px bg-white/10 my-10" />
         </div>
       );
     case 'p':
       return (
         <div key={index}>
-          <p className="text-white/80">
+          <p className="font-serif text-[var(--cosmic-text-muted)] text-lg leading-relaxed">
             {block.text}
           </p>
           {hasDraft && <Footnote id={fnId} label="Second draft">{block.draft}</Footnote>}
@@ -54,7 +54,10 @@ const renderBlock = (block: BlogPostBlock, index: number) => {
       );
     case 'h2':
       return (
-        <h2 key={index} className="text-3xl font-bold text-white pt-4">
+        <h2
+          key={index}
+          className="font-serif text-center text-2xl md:text-3xl font-bold text-[var(--cosmic-text)] pt-2"
+        >
           {block.text}
         </h2>
       );
@@ -142,7 +145,7 @@ const BlogPostPage: React.FC = () => {
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-extrabold font-serif text-[var(--cosmic-text)] mb-6 leading-tight">
             {post.title}
           </h1>
 
@@ -162,7 +165,7 @@ const BlogPostPage: React.FC = () => {
           </div>
         </header>
 
-        <div className="prose prose-invert max-w-none text-lg leading-relaxed space-y-8">
+        <div className="max-w-2xl mx-auto text-lg leading-relaxed space-y-8">
           {post.content.map((block, i) => {
             if (i === 0) footnoteCounter = 0;
             return renderBlock(block, i);
