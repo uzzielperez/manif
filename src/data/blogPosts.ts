@@ -188,182 +188,6 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
   {
-    slug: 'the-cry-that-creates',
-    title: 'On Grief & Manifestation: The Cry That Creates',
-    date: 'Mar 18, 2026',
-    category: 'Healing',
-    excerpt:
-      "Nobody talks about the crying part. After years of inner work, I believe the most powerful portal in transformation isn't visualization—it's the breaking.",
-    content: [
-      {
-        type: 'blockquote',
-        text: 'Nobody talks about the crying part.',
-      },
-      {
-        type: 'p',
-        text: 'Manifestation culture tends to live in the highlight reel — vision boards, affirmations, scripting your future in the present tense. The energy is upward, forward, luminous. And I get it. Hope is a beautiful posture.',
-      },
-      {
-        type: 'p',
-        text: "But after years of doing real inner work, I've come to believe that the most powerful portal in any genuine transformation isn't the visualization. It's the breaking.",
-      },
-      {
-        type: 'p',
-        text: 'It’s the cry you let go of at 2am. The grief you finally stop swallowing. The moment your chest cracks open and something you’ve been holding for years — sometimes a decade, sometimes a whole lifetime — comes flooding out.',
-      },
-      {
-        type: 'p',
-        text: "That’s when things change. That's when the field shifts.",
-      },
-      { type: 'h2', text: 'What Breaking Open Actually Is' },
-      {
-        type: 'p',
-        text: 'In Tibetan Buddhist practice, there is a teaching on the tender heart — what they call bodhicitta, or awakening mind. It is described not as a state you achieve through effort, but as something already present within you, like a sky behind clouds.',
-      },
-      {
-        type: 'p',
-        text: 'The work is not to manufacture it. The work is to stop armoring against it.',
-      },
-      {
-        type: 'p',
-        text: 'Grief does that. Real crying — the kind that isn’t performance, but release — is one of the most direct routes to that undefended place.',
-      },
-      {
-        type: 'blockquote',
-        text: 'You are not falling apart. You are falling open.',
-      },
-      {
-        type: 'p',
-        text: 'There is a difference. Falling apart is collapse with no witness. Falling open is the same intensity, but with a part of you present to receive it — to hold the one who is breaking with a kind of steady love.',
-      },
-      {
-        type: 'p',
-        text: 'When you cry like that, something in the nervous system lets go of a grip it didn’t even know it had. Muscles release. The breath deepens. The jaw unclenches. And in that physiological opening, something else becomes possible: you become permeable. To new information. To new timings. To a version of reality you had been too defended to let in.',
-      },
-      { type: 'h2', text: 'The Manifestation Nobody Wants to Sell You' },
-      {
-        type: 'p',
-        text: 'Here’s what the mainstream conversation about manifestation gets wrong: it treats the mind as a machine to be reprogrammed. Change your thoughts. Raise your vibration. Command the universe.',
-      },
-      {
-        type: 'p',
-        text: "But the heart doesn't respond to commands. And the field — whatever you want to call it, the quantum field, God, the intelligence behind synchronicity — doesn't respond to performance. It responds to truth.",
-      },
-      {
-        type: 'p',
-        text: 'And sometimes the most true thing you can do is sob on the kitchen floor. Not because you are giving up. But because you are finally, fully, arriving.',
-      },
-      {
-        type: 'p',
-        text: 'There is a concept in contemplative practice called non-grasping — the releasing of attachment to outcome, to timeline, to how things are supposed to look. Most people understand this intellectually and spend years trying to perform non-attachment without actually feeling it.',
-      },
-      {
-        type: 'p',
-        text: 'But crying breaks the grasping open naturally. When you weep for what was lost, what didn’t come, what you longed for and didn’t receive — something loosens. The clench of wanting eases. And in that ease, you move from contraction to receptivity.',
-      },
-      {
-        type: 'p',
-        text: 'Receptivity is where things arrive.',
-      },
-      { type: 'h2', text: 'The Physiology of the Portal' },
-      {
-        type: 'p',
-        text: "This isn't just metaphysics. The body knows what it's doing.",
-      },
-      {
-        type: 'p',
-        text: 'Emotional tears — the kind produced by grief or deep feeling, as opposed to physical irritation — contain stress hormones. Cortisol. Adrenocorticotropic hormone. Leucine enkephalin, an endorphin. When you cry fully, you are literally releasing the chemical architecture of your stress. Your body is doing a kind of sacred housekeeping.',
-      },
-      {
-        type: 'p',
-        text: "After a genuine cry, many people report a feeling of lightness. A clarity. A sense of having passed through something. This is real. The nervous system has genuinely shifted. The parasympathetic state — rest, digest, receive — has become available in a way it wasn't before.",
-      },
-      {
-        type: 'p',
-        text: "You cannot receive what you are too contracted to hold.",
-      },
-      {
-        type: 'p',
-        text: 'Think about it physically. A fist cannot hold water. A clenched chest cannot hold love. When you crack open, you become capacious. You become the kind of vessel that things can finally enter.',
-      },
-      { type: 'h2', text: 'How to Work With the Cry' },
-      {
-        type: 'p',
-        text: "I'm not suggesting you manufacture grief or perform sadness. The nervous system knows the difference between real release and theater, and so does whatever intelligence moves beneath the surface of things.",
-      },
-      {
-        type: 'p',
-        text: 'What I am suggesting is simpler: when the cry wants to come, let it come. Don’t manage it. Don’t cut it short. Don’t pivot immediately to gratitude or affirmation to escape the feeling. Be willing to go all the way down into it.',
-      },
-      {
-        type: 'p',
-        text: 'Then — and this is the practice — receive yourself on the other side. When the wave passes, meet yourself with softness. With the same care you would offer a child who had just cried themselves into stillness. Hold that openness gently. Don’t armor back up immediately.',
-      },
-      {
-        type: 'p',
-        text: 'That tender, post-cry window — that’s your window. That’s when you speak the truth of what you want. Not as a command. Not as a demand. But as a quiet, honest disclosure to something that is listening.',
-      },
-      {
-        type: 'p',
-        text: "This is what I want. This is what I'm available for. I'm here. I'm open.",
-      },
-      {
-        type: 'p',
-        text: 'Then let it go.',
-      },
-      { type: 'h2', text: 'Grief as Devotion' },
-      {
-        type: 'p',
-        text: "I've come to think of grief as a form of love that has nowhere left to go — and crying as the act of letting that love move through you rather than staying lodged in the chest like a stone.",
-      },
-      {
-        type: 'p',
-        text: 'Every time you cry for something that mattered — a relationship, a version of yourself, a life you imagined — you are not being weak. You are honoring the fact that you were present enough, open enough, to actually care. To actually be in it.',
-      },
-      {
-        type: 'p',
-        text: 'That capacity — to be in it, to let things matter — is the same capacity that makes manifestation possible. The same nerve-endings that register grief register joy. The same heart that breaks is the heart that receives.',
-      },
-      {
-        type: 'p',
-        text: 'You cannot selectively numb. Open to the grief, and you open to the grace.',
-      },
-      {
-        type: 'p',
-        text: 'This is the paradox the highlight-reel version of manifestation never quite reaches: the path to more is often through the loss. Through the reckoning. Through the cry you’ve been holding back for three years because you were afraid if you started, you might not stop.',
-      },
-      {
-        type: 'p',
-        text: 'You will stop. And when you do, you will be wider than you were before.',
-      },
-      { type: 'h2', text: 'A Closing Thought' },
-      {
-        type: 'p',
-        text: "I don't know what you're carrying. I don't know what's been building behind your eyes, what grief hasn't been witnessed, what longing you've locked behind productivity and forward motion and the performance of being fine.",
-      },
-      {
-        type: 'p',
-        text: 'But if it wants to move — let it move.',
-      },
-      {
-        type: 'p',
-        text: "The universe, in my experience, does not respond to strategy nearly as reliably as it responds to sincerity. And there is nothing more sincere than a human being at the end of their armor, finally willing to feel the full weight of what they love and what they've lost.",
-      },
-      {
-        type: 'p',
-        text: 'That is not weakness. That is not breakdown.',
-      },
-      {
-        type: 'blockquote',
-        text: 'That is the beginning of the real work. And it is, in its own devastated and luminous way, a form of prayer.',
-      },
-      {
-        type: 'blockquote',
-        text: 'Let yourself be broken open.',
-      },
-    ],
-  },
-  {
     slug: 'seven-points-mind-training-lojong-manifestation',
     title: 'The Seven Points of Mind Training: Lojong, Tibetan Buddhism, and Manifestation',
     date: 'Feb 9, 2026',
@@ -512,53 +336,6 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: 'p',
         text: 'Knowing what to want by opening your heart doesn’t mean wanting less or giving up on ambition. It means wanting with more clarity and less noise. Some wants will fall away when you look at them with an open heart; others will strengthen because they’re tied to meaning, connection, and the good of others as well as yourself. James Doty’s journey—from a difficult childhood to a magic shop that changed his life, to a career in medicine and a mission to study and teach compassion—is a reminder that the heart, when trained and attended to, can guide the mind toward what’s not only achievable but worth achieving. Align heart and mind. Ask what you want. Ask whether this want can make you happy—and whether it leaves room for others to flourish too. That’s when manifestation becomes not just powerful, but wise.',
-      },
-    ],
-  },
-  {
-    slug: 'manifest-qualities-not-a-specific-person-valentines',
-    title: 'Manifest Qualities, Not a Specific Person: What to Call In This Valentine’s Day',
-    date: 'Feb 14, 2026',
-    category: 'Practice',
-    excerpt:
-      'The wiser move is not to wish for a particular face but for the conditions of love: consistency, presence, respect, and someone who helps you become more yourself.',
-    content: [
-      {
-        type: 'blockquote',
-        text: 'One ought not to wish for a face. One ought to wish for the kind of life—and the kind of person—that can sustain the wish.',
-      },
-      {
-        type: 'p',
-        text: 'Valentine’s Day has a way of concentrating the mind on a single question: whom do you want? It is tempting to answer with a name—to fix upon a particular person, as if the universe were a catalogue and one had only to point. The trouble is that the person one has in mind is often a fiction: a composite of glimpses, projections, and the private cinema of longing. The actual human may turn out to be inconsistent, unkind, or incapable of returning to the conversation after a quarrel. None of this is “meant to be” simply because one wished for them. The wiser move is to wish not for a face but for certain qualities—so that whoever appears, whether new or already in one’s life, is the sort of person who can love you well.',
-      },
-      { type: 'h2', text: 'On Fixating on a Particular Person' },
-      {
-        type: 'p',
-        text: 'When we fixate on a specific person, we are often manifesting an idea of them—or the intensity of our own longing—rather than the full, flawed creature they are. They may be avoidant, dismissive of our needs, or unable to regulate their emotions and find their way back to the table. Manifesting a face can lead to heartbreak; manifesting qualities leaves room for the universe—and for us—to recognize the right match when it appears, even if it does not resemble the picture we had in our heads.',
-      },
-      { type: 'h2', text: 'What to Wish For Instead' },
-      {
-        type: 'p',
-        text: 'So what does one call in? Someone who treats you with respect, kindness, and care. Someone who is consistent despite a busy life—who shows up, follows through, and does not vanish when the calendar fills. Someone who can regulate and return: who does not stonewall or blow up but can calm down and repair. Someone who offers presence and clarity—who is there when you are together and communicates in a way that does not leave you guessing. Someone who encourages you to grow and to take care of yourself, who does not shrink you but supports your becoming. And, yes, the part that the body knows—the pull, the spark—ought not to be neglected. Fun. Values-aligned. Kind. Smart. Chemistry and character both matter.',
-      },
-      { type: 'h2', text: 'Your Role in Attracting This Person' },
-      {
-        type: 'p',
-        text: 'One often forgets that attracting such a person is not only a matter of wishing. It is also a matter of becoming the sort of person who can recognize and receive them—and who can sustain a love when it arrives. That means developing in oneself the very qualities one hopes to find: learning to pour love into oneself without tipping into self-absorption; being kind to oneself, not as a performance of wellness but as a steady practice; aligning with one’s purpose so that one’s life has direction and room for another; being consistent and healthy enough to show up for the relationship when it comes; and knowing how to regulate—so that one can calm down, return to the conversation, and repair rather than flee or attack. The person one is calling in is, in a sense, a mirror: they tend to appear when one has begun to embody what one seeks.',
-      },
-      {
-        type: 'tip',
-        title: 'A Practical Turn',
-        text: 'Try writing a “qualities list” rather than a “person list”: how you want to feel (safe, seen, challenged in a good way) and what behaviors you want (consistency, repair after conflict, presence). Use that list in meditation or visualization, and let go of the face. When one aligns with qualities, one becomes a match for people who carry them.',
-      },
-      { type: 'h2', text: 'Chemistry and Character' },
-      {
-        type: 'p',
-        text: 'The excitement one feels—the pull, the spark—is real and worth honoring. But it is not sufficient. A person can be fun, attractive, and clever and still be wrong for you: inconsistent, disrespectful, unable to show up. One does well to wish for both the aliveness and the alignment—someone who treats you right and also makes your body say yes. That is not settling; that is clarity.',
-      },
-      {
-        type: 'p',
-        text: 'This Valentine’s Day, then: do not wish for a specific person. Wish for the qualities that make a love you can actually live in—and trust that the right person will be the one who carries them.',
       },
     ],
   },
@@ -829,6 +606,400 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: 'p',
         text: 'Set your intention. Hold your vision. Then ask the more urgent question: what will you do about it today? Not eventually. Not when the conditions are perfect. Today. One is what one does.',
+      },
+    ],
+  },
+  {
+    slug: 'manifest-qualities-not-a-specific-person-valentines',
+    title: 'Manifest Qualities, Not a Specific Person: What to Call In This Valentine’s Day',
+    date: 'Feb 14, 2026',
+    category: 'Practice',
+    excerpt:
+      'The wiser move is not to wish for a particular face but for the conditions of love: consistency, presence, respect, and someone who helps you become more yourself.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'One ought not to wish for a face. One ought to wish for the kind of life—and the kind of person—that can sustain the wish.',
+      },
+      {
+        type: 'p',
+        text: 'Valentine’s Day has a way of concentrating the mind on a single question: whom do you want? It is tempting to answer with a name—to fix upon a particular person, as if the universe were a catalogue and one had only to point. The trouble is that the person one has in mind is often a fiction: a composite of glimpses, projections, and the private cinema of longing. The actual human may turn out to be inconsistent, unkind, or incapable of returning to the conversation after a quarrel. None of this is “meant to be” simply because one wished for them. The wiser move is to wish not for a face but for certain qualities—so that whoever appears, whether new or already in one’s life, is the sort of person who can love you well.',
+      },
+      { type: 'h2', text: 'On Fixating on a Particular Person' },
+      {
+        type: 'p',
+        text: 'When we fixate on a specific person, we are often manifesting an idea of them—or the intensity of our own longing—rather than the full, flawed creature they are. They may be avoidant, dismissive of our needs, or unable to regulate their emotions and find their way back to the table. Manifesting a face can lead to heartbreak; manifesting qualities leaves room for the universe—and for us—to recognize the right match when it appears, even if it does not resemble the picture we had in our heads.',
+      },
+      { type: 'h2', text: 'What to Wish For Instead' },
+      {
+        type: 'p',
+        text: 'So what does one call in? Someone who treats you with respect, kindness, and care. Someone who is consistent despite a busy life—who shows up, follows through, and does not vanish when the calendar fills. Someone who can regulate and return: who does not stonewall or blow up but can calm down and repair. Someone who offers presence and clarity—who is there when you are together and communicates in a way that does not leave you guessing. Someone who encourages you to grow and to take care of yourself, who does not shrink you but supports your becoming. And, yes, the part that the body knows—the pull, the spark—ought not to be neglected. Fun. Values-aligned. Kind. Smart. Chemistry and character both matter.',
+      },
+      { type: 'h2', text: 'Your Role in Attracting This Person' },
+      {
+        type: 'p',
+        text: 'One often forgets that attracting such a person is not only a matter of wishing. It is also a matter of becoming the sort of person who can recognize and receive them—and who can sustain a love when it arrives. That means developing in oneself the very qualities one hopes to find: learning to pour love into oneself without tipping into self-absorption; being kind to oneself, not as a performance of wellness but as a steady practice; aligning with one’s purpose so that one’s life has direction and room for another; being consistent and healthy enough to show up for the relationship when it comes; and knowing how to regulate—so that one can calm down, return to the conversation, and repair rather than flee or attack. The person one is calling in is, in a sense, a mirror: they tend to appear when one has begun to embody what one seeks.',
+      },
+      {
+        type: 'tip',
+        title: 'A Practical Turn',
+        text: 'Try writing a “qualities list” rather than a “person list”: how you want to feel (safe, seen, challenged in a good way) and what behaviors you want (consistency, repair after conflict, presence). Use that list in meditation or visualization, and let go of the face. When one aligns with qualities, one becomes a match for people who carry them.',
+      },
+      { type: 'h2', text: 'Chemistry and Character' },
+      {
+        type: 'p',
+        text: 'The excitement one feels—the pull, the spark—is real and worth honoring. But it is not sufficient. A person can be fun, attractive, and clever and still be wrong for you: inconsistent, disrespectful, unable to show up. One does well to wish for both the aliveness and the alignment—someone who treats you right and also makes your body say yes. That is not settling; that is clarity.',
+      },
+      {
+        type: 'p',
+        text: 'This Valentine’s Day, then: do not wish for a specific person. Wish for the qualities that make a love you can actually live in—and trust that the right person will be the one who carries them.',
+      },
+    ],
+  },
+  {
+    slug: 'the-cry-that-creates',
+    title: 'On Grief & Manifestation: The Cry That Creates',
+    date: 'Mar 18, 2026',
+    category: 'Healing',
+    excerpt:
+      "Nobody talks about the crying part. After years of inner work, I believe the most powerful portal in transformation isn't visualization—it's the breaking.",
+    content: [
+      {
+        type: 'blockquote',
+        text: 'Nobody talks about the crying part.',
+      },
+      {
+        type: 'p',
+        text: 'Manifestation culture tends to live in the highlight reel — vision boards, affirmations, scripting your future in the present tense. The energy is upward, forward, luminous. And I get it. Hope is a beautiful posture.',
+      },
+      {
+        type: 'p',
+        text: "But after years of doing real inner work, I've come to believe that the most powerful portal in any genuine transformation isn't the visualization. It's the breaking.",
+      },
+      {
+        type: 'p',
+        text: 'It’s the cry you let go of at 2am. The grief you finally stop swallowing. The moment your chest cracks open and something you’ve been holding for years — sometimes a decade, sometimes a whole lifetime — comes flooding out.',
+      },
+      {
+        type: 'p',
+        text: "That’s when things change. That's when the field shifts.",
+      },
+      { type: 'h2', text: 'What Breaking Open Actually Is' },
+      {
+        type: 'p',
+        text: 'In Tibetan Buddhist practice, there is a teaching on the tender heart — what they call bodhicitta, or awakening mind. It is described not as a state you achieve through effort, but as something already present within you, like a sky behind clouds.',
+      },
+      {
+        type: 'p',
+        text: 'The work is not to manufacture it. The work is to stop armoring against it.',
+      },
+      {
+        type: 'p',
+        text: 'Grief does that. Real crying — the kind that isn’t performance, but release — is one of the most direct routes to that undefended place.',
+      },
+      {
+        type: 'blockquote',
+        text: 'You are not falling apart. You are falling open.',
+      },
+      {
+        type: 'p',
+        text: 'There is a difference. Falling apart is collapse with no witness. Falling open is the same intensity, but with a part of you present to receive it — to hold the one who is breaking with a kind of steady love.',
+      },
+      {
+        type: 'p',
+        text: 'When you cry like that, something in the nervous system lets go of a grip it didn’t even know it had. Muscles release. The breath deepens. The jaw unclenches. And in that physiological opening, something else becomes possible: you become permeable. To new information. To new timings. To a version of reality you had been too defended to let in.',
+      },
+      { type: 'h2', text: 'The Manifestation Nobody Wants to Sell You' },
+      {
+        type: 'p',
+        text: 'Here’s what the mainstream conversation about manifestation gets wrong: it treats the mind as a machine to be reprogrammed. Change your thoughts. Raise your vibration. Command the universe.',
+      },
+      {
+        type: 'p',
+        text: "But the heart doesn't respond to commands. And the field — whatever you want to call it, the quantum field, God, the intelligence behind synchronicity — doesn't respond to performance. It responds to truth.",
+      },
+      {
+        type: 'p',
+        text: 'And sometimes the most true thing you can do is sob on the kitchen floor. Not because you are giving up. But because you are finally, fully, arriving.',
+      },
+      {
+        type: 'p',
+        text: 'There is a concept in contemplative practice called non-grasping — the releasing of attachment to outcome, to timeline, to how things are supposed to look. Most people understand this intellectually and spend years trying to perform non-attachment without actually feeling it.',
+      },
+      {
+        type: 'p',
+        text: 'But crying breaks the grasping open naturally. When you weep for what was lost, what didn’t come, what you longed for and didn’t receive — something loosens. The clench of wanting eases. And in that ease, you move from contraction to receptivity.',
+      },
+      {
+        type: 'p',
+        text: 'Receptivity is where things arrive.',
+      },
+      { type: 'h2', text: 'The Physiology of the Portal' },
+      {
+        type: 'p',
+        text: "This isn't just metaphysics. The body knows what it's doing.",
+      },
+      {
+        type: 'p',
+        text: 'Emotional tears — the kind produced by grief or deep feeling, as opposed to physical irritation — contain stress hormones. Cortisol. Adrenocorticotropic hormone. Leucine enkephalin, an endorphin. When you cry fully, you are literally releasing the chemical architecture of your stress. Your body is doing a kind of sacred housekeeping.',
+      },
+      {
+        type: 'p',
+        text: "After a genuine cry, many people report a feeling of lightness. A clarity. A sense of having passed through something. This is real. The nervous system has genuinely shifted. The parasympathetic state — rest, digest, receive — has become available in a way it wasn't before.",
+      },
+      {
+        type: 'p',
+        text: "You cannot receive what you are too contracted to hold.",
+      },
+      {
+        type: 'p',
+        text: 'Think about it physically. A fist cannot hold water. A clenched chest cannot hold love. When you crack open, you become capacious. You become the kind of vessel that things can finally enter.',
+      },
+      { type: 'h2', text: 'How to Work With the Cry' },
+      {
+        type: 'p',
+        text: "I'm not suggesting you manufacture grief or perform sadness. The nervous system knows the difference between real release and theater, and so does whatever intelligence moves beneath the surface of things.",
+      },
+      {
+        type: 'p',
+        text: 'What I am suggesting is simpler: when the cry wants to come, let it come. Don’t manage it. Don’t cut it short. Don’t pivot immediately to gratitude or affirmation to escape the feeling. Be willing to go all the way down into it.',
+      },
+      {
+        type: 'p',
+        text: 'Then — and this is the practice — receive yourself on the other side. When the wave passes, meet yourself with softness. With the same care you would offer a child who had just cried themselves into stillness. Hold that openness gently. Don’t armor back up immediately.',
+      },
+      {
+        type: 'p',
+        text: 'That tender, post-cry window — that’s your window. That’s when you speak the truth of what you want. Not as a command. Not as a demand. But as a quiet, honest disclosure to something that is listening.',
+      },
+      {
+        type: 'p',
+        text: "This is what I want. This is what I'm available for. I'm here. I'm open.",
+      },
+      {
+        type: 'p',
+        text: 'Then let it go.',
+      },
+      { type: 'h2', text: 'Grief as Devotion' },
+      {
+        type: 'p',
+        text: "I've come to think of grief as a form of love that has nowhere left to go — and crying as the act of letting that love move through you rather than staying lodged in the chest like a stone.",
+      },
+      {
+        type: 'p',
+        text: 'Every time you cry for something that mattered — a relationship, a version of yourself, a life you imagined — you are not being weak. You are honoring the fact that you were present enough, open enough, to actually care. To actually be in it.',
+      },
+      {
+        type: 'p',
+        text: 'That capacity — to be in it, to let things matter — is the same capacity that makes manifestation possible. The same nerve-endings that register grief register joy. The same heart that breaks is the heart that receives.',
+      },
+      {
+        type: 'p',
+        text: 'You cannot selectively numb. Open to the grief, and you open to the grace.',
+      },
+      {
+        type: 'p',
+        text: 'This is the paradox the highlight-reel version of manifestation never quite reaches: the path to more is often through the loss. Through the reckoning. Through the cry you’ve been holding back for three years because you were afraid if you started, you might not stop.',
+      },
+      {
+        type: 'p',
+        text: 'You will stop. And when you do, you will be wider than you were before.',
+      },
+      { type: 'h2', text: 'A Closing Thought' },
+      {
+        type: 'p',
+        text: "I don't know what you're carrying. I don't know what's been building behind your eyes, what grief hasn't been witnessed, what longing you've locked behind productivity and forward motion and the performance of being fine.",
+      },
+      {
+        type: 'p',
+        text: 'But if it wants to move — let it move.',
+      },
+      {
+        type: 'p',
+        text: "The universe, in my experience, does not respond to strategy nearly as reliably as it responds to sincerity. And there is nothing more sincere than a human being at the end of their armor, finally willing to feel the full weight of what they love and what they've lost.",
+      },
+      {
+        type: 'p',
+        text: 'That is not weakness. That is not breakdown.',
+      },
+      {
+        type: 'blockquote',
+        text: 'That is the beginning of the real work. And it is, in its own devastated and luminous way, a form of prayer.',
+      },
+      {
+        type: 'blockquote',
+        text: 'Let yourself be broken open.',
+      },
+    ],
+  },
+  {
+    slug: 'inner-work-unconditional-love-as-manifestation',
+    title: 'Inner Work & Manifestation: Learning to Access Unconditional Love as Manifestation',
+    date: 'Mar 18, 2026',
+    category: 'Practice',
+    excerpt:
+      'Most manifestation treats love like something you earn. This reframes unconditional love as the ground you learn to access—changing your presence and how things move.',
+    content: [
+      {
+        type: 'blockquote',
+        text: 'Most of us have been taught to earn love — from others, from God, from ourselves. But what if love isn’t a reward? What if it’s the ground everything else grows from?',
+      },
+      {
+        type: 'p',
+        text: 'The standard manifestation model runs on desire. You decide what you want, you visualize it clearly, you believe it\'s coming, and you take aligned action toward it. There\'s a logic to this — intention matters, attention shapes experience, belief opens doors that doubt keeps closed.',
+      },
+      {
+        type: 'p',
+        text: 'But underneath most manifestation work is a quiet premise that rarely gets questioned: I am incomplete, and the thing I want will complete me.',
+      },
+      {
+        type: 'p',
+        text: 'Which means most manifestation is run, at its root, by a conditional relationship with love. When I have this, I\'ll feel whole. When this arrives, I\'ll know I\'m worthy. When this person chooses me, I\'ll finally believe I\'m worth choosing.',
+      },
+      {
+        type: 'p',
+        text: 'That\'s not a small thing to notice. Because manifestation that comes from that premise doesn\'t actually solve the problem — it just temporarily quiets it. The desire shifts. The incompleteness returns. And the cycle runs again.',
+      },
+      {
+        type: 'p',
+        text: 'There\'s another way in. It\'s older, less photogenic, and doesn\'t fit neatly on a vision board. It begins not with desire but with a different kind of source material: unconditional love as the ground state — not a destination you\'re manifesting toward, but the energy you\'re learning to access before anything else.',
+      },
+      { type: 'h2', text: 'What unconditional love actually is' },
+      {
+        type: 'p',
+        text: 'Unconditional love is one of those phrases that gets used so often it\'s almost meaningless. It ends up sounding like a Hallmark card or a therapy platitude — something warm and fuzzy and slightly unreal.',
+      },
+      {
+        type: 'p',
+        text: 'But in the contemplative traditions, it\'s a precise and demanding concept. The Sanskrit word metta — often translated as loving-kindness — isn\'t primarily a feeling. It\'s a capacity.',
+      },
+      {
+        type: 'p',
+        text: 'A trained orientation of the heart toward beings, including yourself, that doesn\'t depend on those beings behaving well, returning the feeling, or being people you particularly like.',
+      },
+      {
+        type: 'p',
+        text: 'In the Tibetan Lojong teachings, there is a practice of extending compassion outward in widening circles — from those you love easily, to neutral strangers, to those who have hurt you, to all beings without distinction.',
+      },
+      {
+        type: 'p',
+        text: 'The point isn\'t to pretend everyone deserves the same response to their actions. It\'s to discover that your capacity to love doesn\'t actually require certain conditions to be met first.',
+      },
+      {
+        type: 'p',
+        text: 'That capacity — that groundlessness, in the best sense of the word — is what the contemplatives are pointing at when they talk about unconditional love. It\'s not sentiment. It\'s source.',
+      },
+      {
+        type: 'p',
+        text: 'When love stops being something you\'re trying to earn or attract, it becomes something you\'re learning to generate. That changes everything about how you move through the world.',
+      },
+      { type: 'h2', text: 'The manifestation problem it solves' },
+      {
+        type: 'p',
+        text: 'Here\'s a pattern most people in serious inner work eventually recognize: you work on your beliefs, your blocks, your attachment wounds — and things do shift.',
+      },
+      {
+        type: 'p',
+        text: 'Relationships improve. Opportunities come. The inner landscape genuinely changes. But there\'s often still a subtle grasping underneath it all. A tracking, almost — is this working? Is love coming? Am I doing it right?',
+      },
+      {
+        type: 'p',
+        text: 'That grasping is the signature of conditional love operating as your baseline. Even when you\'re doing the work sincerely, some part of the apparatus is still running the old code: love is something that has to arrive from outside.',
+      },
+      {
+        type: 'p',
+        text: 'When you begin — even tentatively — to access unconditional love as a practice rather than a destination, something different starts to happen. You\'re no longer operating from scarcity. You\'re not pulling toward you; you\'re radiating outward. And paradoxically, this is when things actually begin to move.',
+      },
+      {
+        type: 'p',
+        text: 'Not because the universe rewards generosity like a cosmic vending machine. But because the energy you carry when you\'re sourced in love is completely different from the energy you carry when you\'re seeking it.',
+      },
+      {
+        type: 'p',
+        text: 'You stop scanning for proof you\'re worthy. You stop testing people to see if they\'ll leave. You stop holding back until safety is confirmed. You arrive. And your arrival changes rooms.',
+      },
+      { type: 'h2', text: 'What the practice looks like' },
+      {
+        type: 'p',
+        text: 'This isn\'t an abstract philosophy — it\'s a daily practice with texture and method.',
+      },
+      {
+        type: 'p',
+        text: 'The Tonglen practice from Tibetan Buddhism is one of the most direct techniques for this. In Tonglen, you breathe in the suffering of others — including your own — and breathe out relief, warmth, openness.',
+      },
+      {
+        type: 'p',
+        text: 'You deliberately reverse the habitual pattern of self-protection. Instead of shielding yourself from difficulty and grasping for comfort, you turn toward difficulty with a generous heart, and breathe love outward into the space.',
+      },
+      {
+        type: 'p',
+        text: 'It sounds counterintuitive. It is. But the effect, practiced consistently, is a gradual loosening of the belief that love is scarce, that you need to protect your supply, that opening means being depleted. You start to discover that the source doesn\'t run out.',
+      },
+      {
+        type: 'p',
+        text: 'A simpler entry point is the question you bring into your day: what would I do right now if I already felt completely loved? Not asking the universe to prove it. Not waiting for your circumstances to reflect it back.',
+      },
+      {
+        type: 'p',
+        text: 'Just — from this moment, as an experiment, as if the love were already there — what action, what conversation, what choice opens up that wasn\'t available a moment ago?',
+      },
+      {
+        type: 'p',
+        text: 'The answer is usually specific and quietly radical. You say the thing you\'ve been holding back. You reach out without calculating the odds. You rest without earning it first. You let someone see you without the armor on.',
+      },
+      {
+        type: 'p',
+        text: 'The question isn\'t whether you\'re worthy of love. The question is whether you\'re willing to stop treating love as a verdict, and start treating it as a practice.',
+      },
+      { type: 'h2', text: 'Love as the substance of manifestation' },
+      {
+        type: 'p',
+        text: 'There\'s a teaching in the mystical traditions — across Sufism, Christian contemplative practice, certain strands of Vedanta, and the Tibetan schools — that love is not one quality among many. It\'s the nature of awareness itself, prior to content. You don\'t need to manufacture it. You need to stop blocking it.',
+      },
+      {
+        type: 'p',
+        text: 'The blocks are familiar: the belief that you have to earn your place. The half-conscious sense that you\'re fundamentally lacking something. The armor that went on early and stayed on because it worked. The story that love is conditional — that it comes when you perform well, achieve enough, become the right version of yourself.',
+      },
+      {
+        type: 'p',
+        text: 'When those blocks soften — not all at once, but in practice, over time — what comes through isn\'t just a feeling. It\'s a different quality of presence. And presence, it turns out, is the real substance of manifestation. Not the vision board. Not the affirmation. Not the 5x5 technique.',
+      },
+      {
+        type: 'p',
+        text: 'The quality of your being in a room, in a conversation, in a moment — that\'s what draws things toward you or keeps them away.',
+      },
+      {
+        type: 'p',
+        text: 'Love, accessed unconditionally, changes the quality of your presence in a way that strategy never quite can. Because strategy is still conditional — it\'s trying to get something. Love, offered without agenda, creates a different field entirely.',
+      },
+      { type: 'h2', text: 'The discipline of not making it conditional again' },
+      {
+        type: 'p',
+        text: 'The trap, once you start working with this, is subtler than the original one. Instead of I\'ll feel loved when X arrives, it becomes I\'ll access unconditional love so that X arrives. The conditionality just goes one level deeper. The love is still instrumental. Still a means to an end.',
+      },
+      {
+        type: 'p',
+        text: 'This is the real practice: learning to let the love be complete in itself. To offer it to a moment that isn\'t giving you what you want. To extend warmth toward someone who is frustrating you, not to change them, but because warmth is who you\'re choosing to be. To rest in the groundlessness of not knowing if anything will come — and to find that the resting itself is full.',
+      },
+      {
+        type: 'p',
+        text: 'This is, genuinely, one of the hardest things a person can practice. Because everything in us wants the love to pay off. We want confirmation. We want reciprocity. We want the universe to put its money where its mouth is.',
+      },
+      {
+        type: 'p',
+        text: 'And sometimes it does. Things do come. Relationships deepen. Doors open in ways that feel unearned. But the practice only stays clean if you\'re willing for it not to — if you\'re willing to love without guarantee, and to discover, in that willingness, something that was never actually absent.',
+      },
+      {
+        type: 'p',
+        text: 'The old phrase has a new meaning here: don\'t lay your trip on others applies just as much to love as it does to projection. Love that needs to be received, validated, reciprocated before you\'ll let it be real — that\'s not unconditional love. That\'s a transaction with spiritual vocabulary.',
+      },
+      {
+        type: 'p',
+        text: 'The invitation is harder and more generous than manifestation usually asks of us: to become a source rather than a seeker. To let the love move through you before you know where it\'s going. To trust, against all prior evidence, that what you\'re made of is enough to give from — and that the giving is, already, the abundance you were looking for.',
+      },
+      {
+        type: 'p',
+        text: 'This post is part of an ongoing series on contemplative practice, inner work, and what it actually means to live from the inside out.',
       },
     ],
   },
