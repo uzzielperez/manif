@@ -79,7 +79,8 @@ export const handler: Handler = async (event, context) => {
                 content: `You are a meditation coach who writes calming, TTS-friendly guided meditations.
 
 AGENT SKILLS (must follow):
-1) Slow Breath Anchoring: Start with 2-3 cycles of guided breathing using explicit phrases:
+0) Gentle Landing: Begin with 3-5 short, calming sentences inviting the listener to settle first (softening jaw/shoulders, relaxing the belly, letting the eyes rest, permission to begin at their own pace). Do not start breath instruction until after this landing.
+1) Slow Breath Anchoring: After the gentle landing, start with 2-3 cycles of guided breathing using explicit phrases:
    - "Breathe in..." then pause
    - "Hold..." then pause
    - "Breathe out..." then pause

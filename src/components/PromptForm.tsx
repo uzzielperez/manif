@@ -126,9 +126,11 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
 
     try {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.98;
-      utterance.pitch = 1.0;
+
+      const lower = text.toLowerCase();
+      const breatheIdx = lower.indexOf('breathe in');
+      const introText = breatheIdx > 0 ? text.slice(0, breatheIdx).trim() : '';
+      const mainText = breatheIdx > 0 ? text.slice(breatheIdx).trim() : text.trim();
 
       // Pick a reasonable default voice (mostly to ensure the right language).
       const voices = window.speechSynthesis.getVoices();
@@ -136,9 +138,36 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
         voices.find((v) => v.lang?.toLowerCase().startsWith('en') && v.name) ??
         voices.find((v) => v.name) ??
         null;
-      if (englishVoice) utterance.voice = englishVoice;
 
-      window.speechSynthesis.speak(utterance);
+      const speakParts = (parts: Array<{ t: string; rate: number }>, partIndex: number) => {
+        if (partIndex >= parts.length) return;
+        const { t, rate } = parts[partIndex];
+        if (!t) {
+          speakParts(parts, partIndex + 1);
+          return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(t);
+        // Ramp speed: ease in slower, then continue at a calmer rate.
+        utterance.rate = rate;
+        utterance.pitch = 1.0;
+        if (englishVoice) utterance.voice = englishVoice;
+
+        utterance.onend = () => speakParts(parts, partIndex + 1);
+        utterance.onerror = () => {
+          console.warn('Browser TTS utterance error. Stopping playback.');
+        };
+
+        window.speechSynthesis.speak(utterance);
+      };
+
+      // First part (landing) is slower; breath portion is still slower than normal.
+      const parts: Array<{ t: string; rate: number }> = [
+        ...(introText ? [{ t: introText, rate: 0.58 }] : []),
+        { t: mainText, rate: 0.72 },
+      ];
+
+      speakParts(parts, 0);
     } catch (err) {
       console.warn('Browser TTS failed:', err);
     }
@@ -168,39 +197,13 @@ const PromptForm: React.FC<PromptFormProps> = ({ onSubmit }) => {
           throw new Error(`Failed to generate meditation text: ${errorText}`);
         }
         const meditationData = await textResponse.json();
-        setStatus('Generating audio...');
+        setStatus('Playing in your browser…');
         const cleanedTextForAudio = cleanupText(meditationData.content);
 
-        let audioUrl: string | undefined;
-        try {
-          const audioResponse = await fetch('/.netlify/functions/meditations/audio', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              text: cleanedTextForAudio,
-              voiceId: selectedVoice,
-              duration: parseInt(meditationLength),
-            }),
-            signal: controller.signal,
-          });
-
-          if (!audioResponse.ok) {
-            const errorText = await audioResponse.text();
-            throw new Error(`Failed to generate audio: ${errorText}`);
-          }
-
-          const audioBuffer = await audioResponse.arrayBuffer();
-          if (audioBuffer.byteLength === 0) {
-            throw new Error('Audio buffer is empty');
-          }
-
-          const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-          audioUrl = URL.createObjectURL(audioBlob);
-        } catch (audioErr: any) {
-          console.warn('Audio generation failed; using browser TTS fallback:', audioErr);
-          setStatus('Audio unavailable. Speaking in your browser…');
-          speakInBrowser(cleanedTextForAudio);
-        }
+        // Play-in-browser only: we intentionally do not request server MP3/audio.
+        // This avoids payment-required MP3 downloads and keeps speech speed under our control.
+        speakInBrowser(cleanedTextForAudio);
+        const audioUrl: string | undefined = undefined;
 
         const newMeditation: Meditation = {
           id: meditationData.id,
